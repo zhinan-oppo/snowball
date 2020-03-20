@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/canvas-player",
-  "version": "1.0.5",
+  "version": "1.0.6-alpha.0",
   "description": "Play image sequences with Canvas.",
   "main": "dist/index.js",
   "scripts": {
