@@ -10,7 +10,5 @@
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
   "license": "MIT",
-  "dependencies": {
-    "lodash": "^4.17.15"
-  }
+  "dependencies": {}
 }
