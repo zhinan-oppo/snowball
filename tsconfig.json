@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "noImplicitAny": true,
+    "pretty": true,
+    "declaration": true,
+    "lib": ["esnext", "dom"]
+  },
+  "include": [
+    "packages/*/src",
+    "packages/*/tests"
+  ]
+}

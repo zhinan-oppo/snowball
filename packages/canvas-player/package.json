@@ -1,0 +1,16 @@
+{
+  "name": "@zhinan-oppo/canvas-player",
+  "version": "1.0.5",
+  "description": "Play image sequences with Canvas.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "parcel test/index.pug --out-dir test/dist"
+  },
+  "repository": "https://github.com/zhinan-oppo/snowball",
+  "author": "xsfour",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.15"
+  }
+}
