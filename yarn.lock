@@ -1776,6 +1776,11 @@
   dependencies:
     lodash "^4.17.15"
 
+"@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
+  version "1.0.5"
+  dependencies:
+    lodash "^4.17.15"
+
 "@zkochan/cmd-shim@^3.1.0":
   version "3.1.0"
   resolved "https://registry.npm.taobao.org/@zkochan/cmd-shim/download/@zkochan/cmd-shim-3.1.0.tgz#2ab8ed81f5bb5452a85f25758eb9b8681982fd2e"

@@ -17,6 +17,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@zhinan-oppo/canvas-player": "file:packages/canvas-player"
+    "@zhinan-oppo/canvas-player": "file:packages/canvas-player",
+    "@zhinan-oppo/scroll-handle": "file:packages/scroll-handle"
   }
 }
