@@ -10,14 +10,11 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "outDir": "dist",
-    "baseUrl": ".",
+    "baseUrl": "./packages",
     "noImplicitAny": true,
     "pretty": true,
     "declaration": true,
     "lib": ["esnext", "dom"]
   },
-  "include": [
-    "packages/*/src",
-    "packages/*/tests"
-  ]
+  "exclude": ["node_modules"]
 }

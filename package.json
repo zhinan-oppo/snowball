@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@zhinan-oppo/canvas-player": "file:packages/canvas-player",
-    "@zhinan-oppo/scroll-handle": "file:packages/scroll-handle",
-    "@zhinan-oppo/lazyload": "file:packages/lazyload"
+    "@zhinan-oppo/lazyload": "file:packages/lazyload",
+    "@zhinan-oppo/scroll-handle": "file:packages/scroll-handle"
   }
 }

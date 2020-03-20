@@ -2,16 +2,20 @@
   "name": "@zhinan-oppo/lazyload",
   "version": "1.0.0",
   "description": "lazyload images and videos",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc -p tsconfig.json"
   },
-  "repository": "https://github.com/zhinan-oppo/snowballs",
+  "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
   "license": "MIT",
   "dependencies": {
     "@types/jquery": "^3.3.33",
     "@zhinan-oppo/scroll-handle": "^1.0.5",
     "jquery": "^3.4.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

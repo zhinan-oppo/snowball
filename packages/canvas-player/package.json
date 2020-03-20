@@ -2,9 +2,9 @@
   "name": "@zhinan-oppo/canvas-player",
   "version": "1.0.6-alpha.1",
   "description": "Play image sequences with Canvas.",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "test": "parcel test/index.pug --out-dir test/dist"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",
