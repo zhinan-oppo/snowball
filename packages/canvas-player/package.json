@@ -4,7 +4,7 @@
   "description": "Play image sequences with Canvas.",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "test": "parcel test/index.pug --out-dir test/dist"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",

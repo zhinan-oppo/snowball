@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
+    "build": "lerna run build",
     "lint": "prettier --write --parser typescript \"packages/**/*.ts?(x)\"",
     "test": "parcel test/index.pug --out-dir test/dist"
   },

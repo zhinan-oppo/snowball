@@ -1,20 +1,10 @@
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "strict": true,
-    "importHelpers": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "outDir": "dist",
     "baseUrl": "./packages",
-    "noImplicitAny": true,
-    "pretty": true,
-    "declaration": true,
-    "lib": ["esnext", "dom"]
+    "paths": {
+      "@zhinan-oppo/*": ["*/src"]
+    }
   },
   "exclude": ["node_modules"]
 }

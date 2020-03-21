@@ -4,7 +4,7 @@
   "description": "lazyload images and videos",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.build.json"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
