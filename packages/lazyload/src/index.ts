@@ -1,5 +1,5 @@
-import scrollHandle from "@zhinan-oppo/scroll-handle";
-import $ from "jquery";
+import scrollHandle from '@zhinan-oppo/scroll-handle';
+import $ from 'jquery';
 
 export interface Media {
   name?: string;
@@ -12,15 +12,15 @@ export interface Media {
 export function getMedia(
   mediaConfig: Media[] = [
     {
-      attr: "z-src-mb",
-      end: 568
+      attr: 'z-src-mb',
+      end: 568,
     },
     {
-      attr: "z-src-pc",
-      start: 569
-    }
+      attr: 'z-src-pc',
+      start: 569,
+    },
   ],
-  defaultAttr: string
+  defaultAttr: string,
 ): Media {
   const width =
     window.innerWidth ||
@@ -40,15 +40,15 @@ export function getMedia(
 export const lazyLoad = (
   dom: HTMLElement,
   mediaConfig: Media[],
-  defaultAttr: string
+  defaultAttr: string,
 ): void => {
   // eslint-disable-next-line eqeqeq
-  const isBg = $(dom).attr("z-bg") != undefined;
+  const isBg = $(dom).attr('z-bg') != undefined;
   const removeHandle = scrollHandle({
     dom,
     handlers: {
       onStateChange: (dom, state): void => {
-        if (state !== "inView") {
+        if (state !== 'inView') {
           return;
         }
         // eslint-disable-next-line eqeqeq
@@ -57,36 +57,36 @@ export const lazyLoad = (
           $(dom).attr(defaultAttr);
 
         if (!src) {
-          console.error("没有一个默认的 src 值");
+          console.error('没有一个默认的 src 值');
           if (removeHandle) removeHandle();
           return;
         }
 
         if (isBg) {
-          $(dom).css("background-image", `url(${src})`);
+          $(dom).css('background-image', `url(${src})`);
         } else {
-          $(dom).attr("src", src);
+          $(dom).attr('src', src);
         }
 
         if (removeHandle) removeHandle();
-      }
+      },
     },
-    start: { placement: 2 }
+    start: { placement: 2 },
   });
 };
 
 export const init = ({
   mediaConfig = [
     {
-      attr: "z-src-mb",
-      end: 568
+      attr: 'z-src-mb',
+      end: 568,
     },
     {
-      attr: "z-src-pc",
-      start: 569
-    }
+      attr: 'z-src-pc',
+      start: 569,
+    },
   ],
-  defaultAttr = "z-src"
+  defaultAttr = 'z-src',
 }: {
   mediaConfig?: Media[];
   defaultAttr?: string;
@@ -94,7 +94,7 @@ export const init = ({
   const queryString = mediaConfig
     .map(({ attr }) => `[${attr}]`)
     .concat([`[${defaultAttr}]`])
-    .join(",");
+    .join(',');
   $(queryString).each((i, dom) => {
     lazyLoad(dom, mediaConfig, defaultAttr);
   });

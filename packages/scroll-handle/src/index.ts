@@ -1,26 +1,26 @@
-import { getWindowHeight } from "./windowSize";
+import { getWindowHeight } from './windowSize';
 
 const PLACEMENTS = {
   bottom: 1,
   center: 0.5,
   top: 0,
   nextPage: 2,
-  prevPage: -1
+  prevPage: -1,
 };
 
-type PLACEMENT = "bottom" | "center" | "top" | "nextPage" | "prevPage" | number;
-type ScrollState = "before" | "inView" | "after";
+type PLACEMENT = 'bottom' | 'center' | 'top' | 'nextPage' | 'prevPage' | number;
+type ScrollState = 'before' | 'inView' | 'after';
 type StateHandle = (
   dom: Element,
   distance: number,
-  totalDistance: number
+  totalDistance: number,
 ) => void | string;
 
 export interface ScrollHandlers {
   onStateChange?: (
     dom: Element,
     newState: ScrollState,
-    oldState: ScrollState
+    oldState: ScrollState,
   ) => void;
   before?: StateHandle;
   inView?: StateHandle;
@@ -48,7 +48,7 @@ function warn(message: string): void {
 }
 
 function getPercentFromPlacement(placement: PLACEMENT): number {
-  if (typeof placement === "number") {
+  if (typeof placement === 'number') {
     return placement;
   }
   return PLACEMENTS[placement] || 0;
@@ -58,18 +58,18 @@ const scrollHandle = ({
   dom,
   handlers = {},
   start = {
-    placement: "bottom",
-    distance: 0
+    placement: 'bottom',
+    distance: 0,
   },
   end = {
-    placement: "top",
-    distance: 0
+    placement: 'top',
+    distance: 0,
   },
-  addListener = true
+  addListener = true,
 }: ScrollHandleOptions): null | (() => void) => {
   let element: Element;
 
-  if (typeof dom === "string") {
+  if (typeof dom === 'string') {
     const doms = document.querySelectorAll(dom);
     if (doms.length === 0) {
       warn(`未选中任何 DOM: ${dom}`);
@@ -83,23 +83,23 @@ const scrollHandle = ({
     element = dom;
   }
 
-  if (typeof start === "string" && Object.keys(PLACEMENTS).includes(start)) {
+  if (typeof start === 'string' && Object.keys(PLACEMENTS).includes(start)) {
     start = {
       placement: PLACEMENTS[start],
-      distance: 0
+      distance: 0,
     };
   }
-  if (typeof end === "string" && Object.keys(PLACEMENTS).includes(end)) {
+  if (typeof end === 'string' && Object.keys(PLACEMENTS).includes(end)) {
     end = {
       placement: PLACEMENTS[end],
-      distance: 0
+      distance: 0,
     };
   }
 
-  const startPercent = getPercentFromPlacement(start.placement || "bottom");
-  const endPercent = getPercentFromPlacement(end.placement || "top");
+  const startPercent = getPercentFromPlacement(start.placement || 'bottom');
+  const endPercent = getPercentFromPlacement(end.placement || 'top');
 
-  let state: ScrollState = "before";
+  let state: ScrollState = 'before';
   const changeState = (newState: ScrollState): void => {
     if (newState !== state) {
       if (handlers.onStateChange) {
@@ -119,23 +119,23 @@ const scrollHandle = ({
     const distance = startY - top;
     const totalDistance = startY - endY + height;
     if (top > startY) {
-      changeState("before");
+      changeState('before');
       if (handlers.before) {
-        if (handlers.before(element, distance, totalDistance) === "done") {
+        if (handlers.before(element, distance, totalDistance) === 'done') {
           handlers.before = undefined;
         }
       }
     } else if (bottom >= endY) {
-      changeState("inView");
+      changeState('inView');
       if (handlers.inView) {
-        if (handlers.inView(element, distance, totalDistance) === "done") {
+        if (handlers.inView(element, distance, totalDistance) === 'done') {
           handlers.inView = undefined;
         }
       }
     } else {
-      changeState("after");
+      changeState('after');
       if (handlers.after) {
-        if (handlers.after(element, distance, totalDistance) === "done") {
+        if (handlers.after(element, distance, totalDistance) === 'done') {
           handlers.after = undefined;
         }
       }
@@ -151,11 +151,11 @@ const scrollHandle = ({
     });
   };
   const removeHandle = (): void =>
-    window.removeEventListener("scroll", handler);
+    window.removeEventListener('scroll', handler);
   if (addListener) {
-    window.addEventListener("scroll", handler, {
+    window.addEventListener('scroll', handler, {
       passive: false,
-      capture: false
+      capture: false,
     });
   }
 

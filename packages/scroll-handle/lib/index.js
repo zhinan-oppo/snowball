@@ -6,28 +6,28 @@ var PLACEMENTS = {
     center: 0.5,
     top: 0,
     nextPage: 2,
-    prevPage: -1
+    prevPage: -1,
 };
 function warn(message) {
     // eslint-disable-next-line no-console
     console.warn("[scrollHandle] " + message);
 }
 function getPercentFromPlacement(placement) {
-    if (typeof placement === "number") {
+    if (typeof placement === 'number') {
         return placement;
     }
     return PLACEMENTS[placement] || 0;
 }
 var scrollHandle = function (_a) {
     var dom = _a.dom, _b = _a.handlers, handlers = _b === void 0 ? {} : _b, _c = _a.start, start = _c === void 0 ? {
-        placement: "bottom",
-        distance: 0
+        placement: 'bottom',
+        distance: 0,
     } : _c, _d = _a.end, end = _d === void 0 ? {
-        placement: "top",
-        distance: 0
+        placement: 'top',
+        distance: 0,
     } : _d, _e = _a.addListener, addListener = _e === void 0 ? true : _e;
     var element;
-    if (typeof dom === "string") {
+    if (typeof dom === 'string') {
         var doms = document.querySelectorAll(dom);
         if (doms.length === 0) {
             warn("\u672A\u9009\u4E2D\u4EFB\u4F55 DOM: " + dom);
@@ -41,21 +41,21 @@ var scrollHandle = function (_a) {
     else {
         element = dom;
     }
-    if (typeof start === "string" && Object.keys(PLACEMENTS).includes(start)) {
+    if (typeof start === 'string' && Object.keys(PLACEMENTS).includes(start)) {
         start = {
             placement: PLACEMENTS[start],
-            distance: 0
+            distance: 0,
         };
     }
-    if (typeof end === "string" && Object.keys(PLACEMENTS).includes(end)) {
+    if (typeof end === 'string' && Object.keys(PLACEMENTS).includes(end)) {
         end = {
             placement: PLACEMENTS[end],
-            distance: 0
+            distance: 0,
         };
     }
-    var startPercent = getPercentFromPlacement(start.placement || "bottom");
-    var endPercent = getPercentFromPlacement(end.placement || "top");
-    var state = "before";
+    var startPercent = getPercentFromPlacement(start.placement || 'bottom');
+    var endPercent = getPercentFromPlacement(end.placement || 'top');
+    var state = 'before';
     var changeState = function (newState) {
         if (newState !== state) {
             if (handlers.onStateChange) {
@@ -75,25 +75,25 @@ var scrollHandle = function (_a) {
         var distance = startY - top;
         var totalDistance = startY - endY + height;
         if (top > startY) {
-            changeState("before");
+            changeState('before');
             if (handlers.before) {
-                if (handlers.before(element, distance, totalDistance) === "done") {
+                if (handlers.before(element, distance, totalDistance) === 'done') {
                     handlers.before = undefined;
                 }
             }
         }
         else if (bottom >= endY) {
-            changeState("inView");
+            changeState('inView');
             if (handlers.inView) {
-                if (handlers.inView(element, distance, totalDistance) === "done") {
+                if (handlers.inView(element, distance, totalDistance) === 'done') {
                     handlers.inView = undefined;
                 }
             }
         }
         else {
-            changeState("after");
+            changeState('after');
             if (handlers.after) {
-                if (handlers.after(element, distance, totalDistance) === "done") {
+                if (handlers.after(element, distance, totalDistance) === 'done') {
                     handlers.after = undefined;
                 }
             }
@@ -108,12 +108,12 @@ var scrollHandle = function (_a) {
         });
     };
     var removeHandle = function () {
-        return window.removeEventListener("scroll", handler);
+        return window.removeEventListener('scroll', handler);
     };
     if (addListener) {
-        window.addEventListener("scroll", handler, {
+        window.addEventListener('scroll', handler, {
             passive: false,
-            capture: false
+            capture: false,
         });
     }
     window.setTimeout(function () { return handle(); }, 0);

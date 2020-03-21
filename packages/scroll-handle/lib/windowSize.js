@@ -21,7 +21,7 @@ var onResize = debounce_1.default(function () {
     _getWindowWidth();
     _getWindowHeight();
 }, 500);
-window.addEventListener("resize", onResize);
+window.addEventListener('resize', onResize);
 /**
  * @returns {number}
  */

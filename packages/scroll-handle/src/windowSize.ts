@@ -1,4 +1,4 @@
-import debounce from "lodash/debounce";
+import debounce from 'lodash/debounce';
 
 const size = Object.create(null);
 
@@ -22,7 +22,7 @@ const onResize = debounce(() => {
   _getWindowWidth();
   _getWindowHeight();
 }, 500);
-window.addEventListener("resize", onResize);
+window.addEventListener('resize', onResize);
 
 /**
  * @returns {number}
