@@ -7,7 +7,9 @@
     "lib"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json",
+    "prebuild": "npm run clean",
+    "clean": "rimraf -f lib"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",

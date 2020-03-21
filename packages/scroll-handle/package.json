@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prebuild": "npm run clean",
+    "clean": "rimraf -f lib",
     "test": "parcel test/index.pug --out-dir test/dist"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",

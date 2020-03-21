@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "lerna run build",
+    "clean": "lerna run clean",
     "lint": "prettier --write --parser typescript \"packages/**/*.ts?(x)\"",
     "test": "parcel test/index.pug --out-dir test/dist"
   },
@@ -18,6 +19,7 @@
     "parcel-bundler": "^1.12.4",
     "prettier": "^1.19.1",
     "pug": "^2.0.4",
+    "rimraf": "^3.0.2",
     "stylus": "^0.54.7",
     "typescript": "^3.8.3"
   },

@@ -1784,25 +1784,24 @@
     tsutils "^3.17.1"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
-  version "1.0.6"
+  version "1.0.7"
 
 "@zhinan-oppo/lazyload@file:packages/lazyload":
-  version "1.0.6"
+  version "1.0.7"
   dependencies:
     "@types/jquery" "^3.3.33"
-    "@zhinan-oppo/scroll-handle" "^1.0.5"
+    "@zhinan-oppo/scroll-handle" "^1.0.7"
     jquery "^3.4.1"
 
-"@zhinan-oppo/scroll-handle@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.npm.taobao.org/@zhinan-oppo/scroll-handle/download/@zhinan-oppo/scroll-handle-1.0.5.tgz#b04038c36ff10fda73aadb432501591c418b8bb8"
-  integrity sha1-sEA4w2/xD9pzqttDJQFZHEGLi7g=
+"@zhinan-oppo/scroll-handle@^1.0.7":
+  version "1.0.6"
+  resolved "https://registry.npm.taobao.org/@zhinan-oppo/scroll-handle/download/@zhinan-oppo/scroll-handle-1.0.6.tgz#6a9bb476e7d6cc5ea715ae78a754116297c10c7f"
+  integrity sha1-apu0dufWzF6nFa54p1QRYpfBDH8=
   dependencies:
-    "@types/lodash" "^4.14.149"
     lodash "^4.17.15"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
-  version "1.0.6"
+  version "1.0.7"
   dependencies:
     lodash "^4.17.15"
 
@@ -7718,6 +7717,13 @@ rimraf@^2.5.4, rimraf@^2.6.2, rimraf@^2.6.3:
   version "2.7.1"
   resolved "https://registry.npm.taobao.org/rimraf/download/rimraf-2.7.1.tgz?cache=0&sync_timestamp=1581257110269&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Frimraf%2Fdownload%2Frimraf-2.7.1.tgz#35797f13a7fdadc566142c29d4f07ccad483e3ec"
   integrity sha1-NXl/E6f9rcVmFCwp1PB8ytSD4+w=
+  dependencies:
+    glob "^7.1.3"
+
+rimraf@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.npm.taobao.org/rimraf/download/rimraf-3.0.2.tgz#f1a5402ba6220ad52cc1282bac1ae3aa49fd061a"
+  integrity sha1-8aVAK6YiCtUswSgrrBrjqkn9Bho=
   dependencies:
     glob "^7.1.3"
 
