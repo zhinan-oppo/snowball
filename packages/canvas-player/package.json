@@ -3,15 +3,18 @@
   "version": "1.0.6",
   "description": "Play image sequences with Canvas.",
   "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "test": "parcel test/index.pug --out-dir test/dist"
+    "build": "tsc -p tsconfig.build.json"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
   "license": "MIT",
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "directory": "lib"
   }
 }

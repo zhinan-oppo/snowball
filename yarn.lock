@@ -1784,12 +1784,10 @@
     tsutils "^3.17.1"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
-  version "1.0.6-alpha.0"
-  dependencies:
-    lodash "^4.17.15"
+  version "1.0.6"
 
 "@zhinan-oppo/lazyload@file:packages/lazyload":
-  version "1.0.0"
+  version "1.0.6"
   dependencies:
     "@types/jquery" "^3.3.33"
     "@zhinan-oppo/scroll-handle" "^1.0.5"
@@ -1804,7 +1802,7 @@
     lodash "^4.17.15"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
-  version "1.0.6-alpha.0"
+  version "1.0.6"
   dependencies:
     lodash "^4.17.15"
 

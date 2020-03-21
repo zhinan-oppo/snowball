@@ -3,6 +3,9 @@
   "version": "1.0.6",
   "description": "lazyload images and videos",
   "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json"
   },
@@ -16,6 +19,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "directory": "lib"
   }
 }
