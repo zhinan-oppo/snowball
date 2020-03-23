@@ -152,7 +152,7 @@ export function initStickyItem(
 
 export function init({ debug = false } = {}): void {
   document.querySelectorAll('.sticky-item').forEach(element => {
-    if (element.hasAttribute('z-sticky-added')) {
+    if (!element.hasAttribute('z-sticky-added')) {
       initStickyItem(element, {}, debug);
     }
   });
