@@ -112,7 +112,7 @@ export function lazyLoadByAttributes(element: HTMLElement) {
 }
 
 export function initByAttributes(root = window.document) {
-  const elements = root.querySelectorAll<HTMLElement>(attr);
+  const elements = root.querySelectorAll<HTMLElement>(`[${attr}]`);
   elements.forEach(element => {
     lazyLoadByAttributes(element);
   });
