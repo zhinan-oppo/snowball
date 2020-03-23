@@ -39,7 +39,7 @@ interface ScrollHandleOptions {
     placement?: PLACEMENT;
     distance?: number;
   };
-  addListener?: boolean;
+  addListener?: boolean | 'impassive';
 }
 
 function warn(message: string): void {
@@ -154,7 +154,7 @@ const scrollHandle = ({
     window.removeEventListener('scroll', handler);
   if (addListener) {
     window.addEventListener('scroll', handler, {
-      passive: false,
+      passive: addListener !== 'impassive',
       capture: false,
     });
   }
