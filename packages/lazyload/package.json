@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/lazyload",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "lazyload images and videos",
   "main": "lib/index.js",
   "files": [
