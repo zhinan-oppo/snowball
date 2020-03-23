@@ -1,14 +1,13 @@
 import { lazyLoad } from './lazyLoad';
 
 export interface MediaConfig {
-  name: string;
-  px?: number;
+  attr: string;
   start?: number;
   end?: number;
 }
 
 export interface LazyLoadConfig {
-  srcPrefix: string;
+  defaultURLAttr: string;
   dstNameAttr: string;
   bgFlag: string;
   loadEarlyFlag: string;
@@ -19,7 +18,7 @@ export interface LazyLoadConfig {
   medias: MediaConfig[];
 }
 const config: LazyLoadConfig = {
-  srcPrefix: 'z-src',
+  defaultURLAttr: 'z-src',
   dstNameAttr: 'z-dst',
   bgFlag: 'z-bg',
   loadEarlyFlag: 'z-early',
@@ -29,33 +28,33 @@ const config: LazyLoadConfig = {
   },
   medias: [
     {
-      name: 'mb',
+      attr: 'z-src-mb',
       start: 0,
       end: 568,
     },
     {
-      name: 'pc',
+      attr: 'z-src-pc',
       start: 569,
     },
   ],
 };
 
-function getAttr(): string {
+function getURLAttr(): string {
   const width =
     window.innerWidth ||
     document.documentElement.clientWidth ||
     document.body.clientWidth;
-  const { srcPrefix: prefix, medias } = config;
+  const { defaultURLAttr, medias } = config;
 
   for (const media of medias) {
-    const { start = 0, end = 20000, name } = media;
+    const { start = 0, end = 20000, attr } = media;
     if (width >= start && width <= end) {
-      return `${prefix}-${name}`;
+      return attr;
     }
   }
-  return prefix;
+  return defaultURLAttr;
 }
-let attr = getAttr();
+let attr = getURLAttr();
 
 export function configure({
   medias,
@@ -82,11 +81,12 @@ export function configure({
       }
     });
   }
-  attr = getAttr();
+  attr = getURLAttr();
 }
 
 export function lazyLoadByAttributes(element: HTMLElement) {
-  const url = element.getAttribute(attr);
+  const url =
+    element.getAttribute(attr) || element.getAttribute(config.defaultURLAttr);
   if (!url) {
     return;
   }
@@ -112,7 +112,9 @@ export function lazyLoadByAttributes(element: HTMLElement) {
 }
 
 export function initByAttributes(root = window.document) {
-  const elements = root.querySelectorAll<HTMLElement>(`[${attr}]`);
+  const elements = root.querySelectorAll<HTMLElement>(
+    `[${attr}],[${config.defaultURLAttr}]`,
+  );
   elements.forEach(element => {
     lazyLoadByAttributes(element);
   });
