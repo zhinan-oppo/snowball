@@ -1,101 +1,126 @@
-import scrollHandle from '@zhinan-oppo/scroll-handle';
-import $ from 'jquery';
+import { lazyLoad } from './lazyLoad';
 
-export interface Media {
-  name?: string;
-  attr: string;
+export interface MediaConfig {
+  name: string;
   px?: number;
   start?: number;
   end?: number;
 }
 
-export function getMedia(
-  mediaConfig: Media[] = [
+export interface LazyLoadConfig {
+  srcPrefix: string;
+  dstNameAttr: string;
+  bgFlag: string;
+  loadEarlyFlag: string;
+  stateClasses: {
+    default: string;
+    loaded: string;
+  };
+  medias: MediaConfig[];
+}
+const config: LazyLoadConfig = {
+  srcPrefix: 'z-src',
+  dstNameAttr: 'z-dst',
+  bgFlag: 'z-bg',
+  loadEarlyFlag: 'z-early',
+  stateClasses: {
+    default: '--lazy-load',
+    loaded: '--lazy-loaded',
+  },
+  medias: [
     {
-      attr: 'z-src-mb',
+      name: 'mb',
+      start: 0,
       end: 568,
     },
     {
-      attr: 'z-src-pc',
+      name: 'pc',
       start: 569,
     },
   ],
-  defaultAttr: string,
-): Media {
+};
+
+function getAttr(): string {
   const width =
     window.innerWidth ||
     document.documentElement.clientWidth ||
     document.body.clientWidth;
-  let result: Media = { attr: defaultAttr };
-  mediaConfig.forEach(media => {
-    const start = media.start || 0;
-    const end = media.end || 20000;
+  const { srcPrefix: prefix, medias } = config;
+
+  for (const media of medias) {
+    const { start = 0, end = 20000, name } = media;
     if (width >= start && width <= end) {
-      result = media;
+      return `${prefix}-${name}`;
     }
-  });
-  return result;
+  }
+  return prefix;
+}
+let attr = getAttr();
+
+export function configure({
+  medias,
+  stateClasses,
+  ...attrConfig
+}: Partial<LazyLoadConfig>) {
+  if (medias) {
+    config.medias = medias;
+  }
+  if (stateClasses) {
+    const { default: defaultClass, loaded } = stateClasses;
+    if (defaultClass) {
+      config.stateClasses.default = defaultClass;
+    }
+    if (loaded) {
+      config.stateClasses.loaded = loaded;
+    }
+  }
+  if (attrConfig) {
+    (Object.keys(attrConfig) as Array<keyof typeof attrConfig>).forEach(key => {
+      const conf = attrConfig[key];
+      if (conf) {
+        config[key] = conf;
+      }
+    });
+  }
+  attr = getAttr();
 }
 
-export const lazyLoad = (
-  dom: HTMLElement,
-  mediaConfig: Media[],
-  defaultAttr: string,
-): void => {
-  // eslint-disable-next-line eqeqeq
-  const isBg = $(dom).attr('z-bg') != undefined;
-  const removeHandle = scrollHandle({
-    dom,
-    handlers: {
-      onStateChange: (dom, state): void => {
-        if (state !== 'inView') {
-          return;
-        }
-        // eslint-disable-next-line eqeqeq
-        const src =
-          $(dom).attr(getMedia(mediaConfig, defaultAttr).attr) ||
-          $(dom).attr(defaultAttr);
-
-        if (!src) {
-          console.error('没有一个默认的 src 值');
-          if (removeHandle) removeHandle();
-          return;
-        }
-
-        if (isBg) {
-          $(dom).css('background-image', `url(${src})`);
-        } else {
-          $(dom).attr('src', src);
-        }
-
-        if (removeHandle) removeHandle();
-      },
+export function lazyLoadByAttributes(element: HTMLElement) {
+  const url = element.getAttribute(attr);
+  if (!url) {
+    return;
+  }
+  const { bgFlag, dstNameAttr, loadEarlyFlag, stateClasses } = config;
+  const isBackgroundImage = element.hasAttribute(bgFlag);
+  const loadEarly = element.hasAttribute(loadEarlyFlag);
+  const attrName =
+    (!isBackgroundImage && element.getAttribute(dstNameAttr)) || 'src';
+  if (!loadEarly) {
+    element.classList.add(stateClasses.default);
+  }
+  lazyLoad(element, url, {
+    attrName,
+    loadEarly,
+    isBackgroundImage,
+    onLoaded: () => {
+      if (!loadEarly) {
+        element.classList.remove(stateClasses.default);
+      }
+      element.classList.add(stateClasses.loaded);
     },
-    start: { placement: 2 },
   });
-};
+}
 
-export const init = ({
-  mediaConfig = [
-    {
-      attr: 'z-src-mb',
-      end: 568,
-    },
-    {
-      attr: 'z-src-pc',
-      start: 569,
-    },
-  ],
-  defaultAttr = 'z-src',
-}: {
-  mediaConfig?: Media[];
-  defaultAttr?: string;
-} = {}): void => {
-  const queryString = mediaConfig
-    .map(({ attr }) => `[${attr}]`)
-    .concat([`[${defaultAttr}]`])
-    .join(',');
-  $(queryString).each((i, dom) => {
-    lazyLoad(dom, mediaConfig, defaultAttr);
+export function initByAttributes(root = window.document) {
+  const elements = root.querySelectorAll<HTMLElement>(`[${attr}]`);
+  elements.forEach(element => {
+    lazyLoadByAttributes(element);
   });
-};
+}
+
+export function init(config?: Partial<LazyLoadConfig>, root = window.document) {
+  if (config) {
+    configure(config);
+  }
+  initByAttributes(root);
+}

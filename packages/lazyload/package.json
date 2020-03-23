@@ -1,18 +1,21 @@
 {
   "name": "@zhinan-oppo/lazyload",
-  "version": "1.0.6",
+  "version": "1.0.8-alpha.0",
   "description": "lazyload images and videos",
   "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.build.json",
+    "prebuild": "npm run clean",
+    "clean": "rimraf -f lib"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
   "license": "MIT",
   "dependencies": {
-    "@types/jquery": "^3.3.33",
-    "@zhinan-oppo/scroll-handle": "^1.0.5",
-    "jquery": "^3.4.1"
+    "@zhinan-oppo/scroll-handle": "^1.0.8-alpha.0"
   },
   "publishConfig": {
     "access": "public",
