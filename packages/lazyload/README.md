@@ -62,8 +62,8 @@ const config: LazyLoadConfig = {
 - `srcPrefix`: 添加在 media name 前，默认为`'z-src'`
   - 例如当 media 匹配到`'mb'`时，所有带`'z-src-mb'`属性的`element`会被初始化
 - `dstNameAttr`: lazyload 默认给 element 添加 src 属性，通过 dstNameAttr 可以修改为其它属性
-  - dstNameAttr 默认为`'z-dst-name'`
-  - 例如，`<a z-src="/path/to.png" z-dst-name="href" z-early>`会被加载为`<a href="/path/to.png">`
+  - dstNameAttr 默认为`'z-dst'`
+  - 例如，`<a z-src="/path/to.png" z-dst="href" z-early>`会被加载为`<a href="/path/to.png">`
 - `bgFlag`: 通过该属性判断是否设置为背景图片
 - `loadEarlyFlag`: 通过该属性判断是否在**初始化时就加载**
 - `stateClasses`: 不同状态下添加的类名，有两个状态
