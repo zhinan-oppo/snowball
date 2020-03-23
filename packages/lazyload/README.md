@@ -63,7 +63,7 @@ const config: LazyLoadConfig = {
   - 例如当 media 匹配到`'mb'`时，所有带`'z-src-mb'`属性的`element`会被初始化
 - `dstNameAttr`: lazyload 默认给 element 添加 src 属性，通过 dstNameAttr 可以修改为其它属性
   - dstNameAttr 默认为`'z-dst-name'`
-  - 例如，`<a z-src="/path/to.png" z-dst-name="href" z-load-early>`会被加载为`<a href="/path/to.png">`
+  - 例如，`<a z-src="/path/to.png" z-dst-name="href" z-early>`会被加载为`<a href="/path/to.png">`
 - `bgFlag`: 通过该属性判断是否设置为背景图片
 - `loadEarlyFlag`: 通过该属性判断是否在**初始化时就加载**
 - `stateClasses`: 不同状态下添加的类名，有两个状态
@@ -127,15 +127,15 @@ document.addEventListener('DOMContentLoaded', event => {
 #### 在初始化时立即加载
 
 ```html
-<div z-load-early z-src-mb="example-mb.png" z-src-pc="example-pc.png"></div>
+<div z-early z-src-mb="example-mb.png" z-src-pc="example-pc.png"></div>
 ```
 
 #### 将 url 加载到属性 href
 
 ```html
 <a
-  z-dst-name="href"
-  z-load-early
+  z-dst="href"
+  z-early
   z-src-mb="example-mb.png"
   z-src-pc="example-pc.png"
 ></a>

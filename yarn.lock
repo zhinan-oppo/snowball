@@ -1703,13 +1703,6 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/jquery@^3.3.33":
-  version "3.3.33"
-  resolved "https://registry.npm.taobao.org/@types/jquery/download/@types/jquery-3.3.33.tgz#61d9cbd4004ffcdf6cf7e34720a87a5625a7d8e9"
-  integrity sha1-YdnL1ABP/N9s9+NHIKh6ViWn2Ok=
-  dependencies:
-    "@types/sizzle" "*"
-
 "@types/json-schema@^7.0.3":
   version "7.0.4"
   resolved "https://registry.npm.taobao.org/@types/json-schema/download/@types/json-schema-7.0.4.tgz#38fd73ddfd9b55abb1e1b2ed578cb55bd7b7d339"
@@ -1734,11 +1727,6 @@
   version "1.5.2"
   resolved "https://registry.npm.taobao.org/@types/q/download/@types/q-1.5.2.tgz?cache=0&sync_timestamp=1580864548163&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fq%2Fdownload%2F%40types%2Fq-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
   integrity sha1-aQoUdbhPKohP0HzXl8APXzE1bqg=
-
-"@types/sizzle@*":
-  version "2.3.2"
-  resolved "https://registry.npm.taobao.org/@types/sizzle/download/@types/sizzle-2.3.2.tgz#a811b8c18e2babab7d542b3365887ae2e4d9de47"
-  integrity sha1-qBG4wY4rq6t9VCszZYh64uTZ3kc=
 
 "@typescript-eslint/eslint-plugin@^2.23.0":
   version "2.24.0"
@@ -1784,24 +1772,17 @@
     tsutils "^3.17.1"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
-  version "1.0.7"
+  version "1.0.8-alpha.0"
 
-"@zhinan-oppo/lazyload@file:packages/lazyload":
-  version "1.0.7"
+"@zhinan-oppo/lazyload@^1.0.8-alpha.0":
+  version "1.0.8-alpha.0"
+  resolved "https://registry.npm.taobao.org/@zhinan-oppo/lazyload/download/@zhinan-oppo/lazyload-1.0.8-alpha.0.tgz#848af54007003b0a7f91f32c5356ba9467c5bb99"
+  integrity sha1-hIr1QAcAOwp/kfMsU1a6lGfFu5k=
   dependencies:
-    "@types/jquery" "^3.3.33"
-    "@zhinan-oppo/scroll-handle" "^1.0.7"
-    jquery "^3.4.1"
+    "@zhinan-oppo/scroll-handle" "^1.0.8-alpha.0"
 
-"@zhinan-oppo/scroll-handle@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.npm.taobao.org/@zhinan-oppo/scroll-handle/download/@zhinan-oppo/scroll-handle-1.0.7.tgz#ae0a8bfb3ff05bbfe882fc099706cfce881b4e3e"
-  integrity sha1-rgqL+z/wW7/ogvwJlwbPzogbTj4=
-  dependencies:
-    lodash "^4.17.15"
-
-"@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
-  version "1.0.7"
+"@zhinan-oppo/scroll-handle@^1.0.8-alpha.0", "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
+  version "1.0.8-alpha.0"
   dependencies:
     lodash "^4.17.15"
 
@@ -5166,11 +5147,6 @@ isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.npm.taobao.org/isstream/download/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
   integrity sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
-
-jquery@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.npm.taobao.org/jquery/download/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
-  integrity sha1-cU8fjZ3eS9+lV2S6N+8hRjDYDvI=
 
 js-stringify@^1.0.1:
   version "1.0.2"
