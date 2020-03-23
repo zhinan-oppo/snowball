@@ -4,12 +4,12 @@ document.addEventListener('DOMContentLoaded', event => {
   init({
     medias: [
       {
-        attr: 'z-src-mb',
+        name: 'mb',
         start: 0,
         end: 568,
       },
       {
-        attr: 'z-src-pc',
+        name: 'pc',
         start: 569,
       },
     ],
