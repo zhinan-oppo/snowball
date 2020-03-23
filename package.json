@@ -4,6 +4,8 @@
   "scripts": {
     "build": "lerna run build",
     "clean": "lerna run clean",
+    "release": "lerna publish",
+    "prerelease": "lerna run build",
     "lint": "prettier --write --parser typescript \"packages/**/*.ts?(x)\"",
     "test": "parcel test/index.pug --out-dir test/dist"
   },
