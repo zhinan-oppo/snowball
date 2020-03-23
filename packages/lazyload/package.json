@@ -15,9 +15,7 @@
   "author": "xsfour",
   "license": "MIT",
   "dependencies": {
-    "@types/jquery": "^3.3.33",
-    "@zhinan-oppo/scroll-handle": "^1.0.7",
-    "jquery": "^3.4.1"
+    "@zhinan-oppo/scroll-handle": "^1.0.7"
   },
   "publishConfig": {
     "access": "public",

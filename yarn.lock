@@ -1794,9 +1794,9 @@
     jquery "^3.4.1"
 
 "@zhinan-oppo/scroll-handle@^1.0.7":
-  version "1.0.6"
-  resolved "https://registry.npm.taobao.org/@zhinan-oppo/scroll-handle/download/@zhinan-oppo/scroll-handle-1.0.6.tgz#6a9bb476e7d6cc5ea715ae78a754116297c10c7f"
-  integrity sha1-apu0dufWzF6nFa54p1QRYpfBDH8=
+  version "1.0.7"
+  resolved "https://registry.npm.taobao.org/@zhinan-oppo/scroll-handle/download/@zhinan-oppo/scroll-handle-1.0.7.tgz#ae0a8bfb3ff05bbfe882fc099706cfce881b4e3e"
+  integrity sha1-rgqL+z/wW7/ogvwJlwbPzogbTj4=
   dependencies:
     lodash "^4.17.15"
 

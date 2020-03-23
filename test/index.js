@@ -2,7 +2,7 @@ import { init } from '@zhinan-oppo/lazyload';
 
 document.addEventListener('DOMContentLoaded', event => {
   init({
-    mediaConfig: [
+    medias: [
       {
         attr: 'z-src-mb',
         start: 0,
