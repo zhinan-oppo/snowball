@@ -123,7 +123,10 @@ export class CanvasPlayer {
       const update = (i: number) => {
         if (waitOnLoading) {
           waiting = true;
-          this.seek(i).then(() => emitUpdate(i));
+          this.seek(i).then(() => {
+            waiting = false;
+            emitUpdate(i);
+          });
         } else {
           this.seek(i).catch(console.error);
           emitUpdate(i);
@@ -163,6 +166,7 @@ export class CanvasPlayer {
     }
 
     this.last = this.cur;
+    console.log(image);
     if (image instanceof window.Image) {
       return this.drawImage(image);
     }
