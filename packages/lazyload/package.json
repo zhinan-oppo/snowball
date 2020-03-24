@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/lazyload",
-  "version": "1.0.11",
+  "version": "1.0.14",
   "description": "lazyload images and videos",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -18,7 +18,7 @@
   "author": "xsfour",
   "license": "MIT",
   "dependencies": {
-    "@zhinan-oppo/scroll-handle": "^1.0.11"
+    "@zhinan-oppo/scroll-handle": "^1.0.14"
   },
   "publishConfig": {
     "access": "public",
