@@ -3,11 +3,14 @@
   "version": "1.0.13",
   "description": "Play image sequences with Canvas.",
   "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
   "files": [
     "lib"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "watch": "npm run build -- -w",
+    "build": "rollup -c=../../rollup.config.js",
     "prebuild": "npm run clean",
     "clean": "rimraf -f lib"
   },
