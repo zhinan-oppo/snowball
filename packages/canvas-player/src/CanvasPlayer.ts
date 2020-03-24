@@ -9,7 +9,7 @@ interface SeekOptions {
   draw?: boolean;
 }
 
-export const enum PlayMode {
+export enum PlayMode {
   Normal,
   Reverse,
   Loop,
@@ -166,7 +166,6 @@ export class CanvasPlayer {
     }
 
     this.last = this.cur;
-    console.log(image);
     if (image instanceof window.Image) {
       return this.drawImage(image);
     }
