@@ -8,10 +8,10 @@
 yarn add @zhinan-oppo/scroll-handle
 ```
 
-CommonJS 引用方式
+引用方式
 
 ```
-import scrollHandle from 'scroll-handle';
+import { scrollHandle } from '@zhinan-oppo/scroll-handle';
 ```
 
 ## Instruction (Examples)
@@ -19,14 +19,14 @@ import scrollHandle from 'scroll-handle';
 ```typescript
 scrollHandle(options: {
   dom: string | Element;                                   // 对象 DOM 元素
-  // 当 dom 进入到 viewport 的哪个位置开始属于 inView 状态：`placement * viewportHeight + distance`
+  // 当 dom 进入到相对于 viewport 顶部的哪个位置开始属于 inView 状态：`percent * viewportHeight + distance`
   start: {
-    placement: 'top' | 'center' | 'bottom' | number;   // viewport 高度的倍数，top center bottom 分别对应 0 0.5 1
+    percent: 'top' | 'center' | 'bottom' | number;   // viewport 高度的倍数，top center bottom 分别对应 0 0.5 1, // 默认为 'bottom'
     distance: number;                                  // px
   }；
   // 与 start 类似，确定状态变为 after 的时机
   end: {
-    placement: 'top' | 'center' | 'bottom' | number;
+    percent: 'top' | 'center' | 'bottom' | number;  // 默认为 'top'
     distance: number;
   };
   // 滚动时触发的 callback 函数

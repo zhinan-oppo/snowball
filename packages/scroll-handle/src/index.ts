@@ -1,6 +1,6 @@
 import { getWindowHeight } from './windowSize';
 
-const PLACEMENTS = {
+const PERCENTS = {
   bottom: 1,
   center: 0.5,
   top: 0,
@@ -8,99 +8,84 @@ const PLACEMENTS = {
   prevPage: -1,
 };
 
-type PLACEMENT = 'bottom' | 'center' | 'top' | 'nextPage' | 'prevPage' | number;
-type ScrollState = 'before' | 'inView' | 'after';
-type StateHandle = (
+type PercentToTopAlias = keyof typeof PERCENTS;
+type PercentToTop = PercentToTopAlias | number;
+type State = 'before' | 'inView' | 'after';
+type Handler = (
   dom: Element,
   distance: number,
   totalDistance: number,
-) => void | string;
+) => void | 'done';
+type AlwaysHandler = (
+  dom: Element,
+  distance: number,
+  totalDistance: number,
+) => void;
 
 export interface ScrollHandlers {
-  onStateChange?: (
-    dom: Element,
-    newState: ScrollState,
-    oldState: ScrollState,
-  ) => void;
-  before?: StateHandle;
-  inView?: StateHandle;
-  after?: StateHandle;
-  always?: StateHandle;
+  onStateChange?: (dom: Element, newState: State, oldState: State) => void;
+  before?: Handler;
+  inView?: Handler;
+  after?: Handler;
+  always?: AlwaysHandler;
 }
 
+interface PlacementToTop {
+  percent: PercentToTop;
+  distance: number;
+}
 interface ScrollHandleOptions {
-  dom: string | Element;
   handlers?: ScrollHandlers;
-  start?: {
-    placement?: PLACEMENT;
-    distance?: number;
-  };
-  end?: {
-    placement?: PLACEMENT;
-    distance?: number;
-  };
+  start?: Partial<PlacementToTop> | PercentToTop;
+  end?: Partial<PlacementToTop> | PercentToTop;
   addListener?: boolean | 'impassive';
 }
 
-function warn(message: string): void {
-  // eslint-disable-next-line no-console
-  console.warn(`[scrollHandle] ${message}`);
+function getPercentFromAlias(alias: PercentToTop): number {
+  if (typeof alias === 'number') {
+    return alias;
+  }
+  return PERCENTS[alias] || 0;
 }
 
-function getPercentFromPlacement(placement: PLACEMENT): number {
-  if (typeof placement === 'number') {
-    return placement;
-  }
-  return PLACEMENTS[placement] || 0;
-}
-
-const scrollHandle = ({
-  dom,
-  handlers = {},
-  start = {
-    placement: 'bottom',
-    distance: 0,
-  },
-  end = {
-    placement: 'top',
-    distance: 0,
-  },
-  addListener = true,
-}: ScrollHandleOptions): null | (() => void) => {
-  let element: Element;
-
-  if (typeof dom === 'string') {
-    const doms = document.querySelectorAll(dom);
-    if (doms.length === 0) {
-      warn(`未选中任何 DOM: ${dom}`);
-      return null;
-    }
-    if (doms.length > 1) {
-      warn(`选中了多个 DOM，但只有第一个会生效: ${dom}`);
-    }
-    element = doms[0];
-  } else {
-    element = dom;
-  }
-
-  if (typeof start === 'string' && Object.keys(PLACEMENTS).includes(start)) {
-    start = {
-      placement: PLACEMENTS[start],
+export function scrollHandle(
+  element: Element,
+  {
+    handlers = {},
+    start: _start = {
+      percent: 'bottom',
       distance: 0,
-    };
-  }
-  if (typeof end === 'string' && Object.keys(PLACEMENTS).includes(end)) {
-    end = {
-      placement: PLACEMENTS[end],
+    },
+    end: _end = {
+      percent: 'top',
       distance: 0,
-    };
-  }
+    },
+    addListener = true,
+  }: ScrollHandleOptions,
+): () => void {
+  const start =
+    typeof _start === 'string' || typeof _start === 'number'
+      ? {
+          percent: getPercentFromAlias(_start),
+          distance: 0,
+        }
+      : {
+          percent: getPercentFromAlias(_start.percent || 'bottom'),
+          distance: _start.distance || 0,
+        };
+  const end =
+    typeof _end === 'string' || typeof _end === 'number'
+      ? {
+          percent: getPercentFromAlias(_end),
+          distance: 0,
+        }
+      : {
+          percent: getPercentFromAlias(_end.percent || 'top'),
+          distance: _end.distance || 0,
+        };
 
-  const startPercent = getPercentFromPlacement(start.placement || 'bottom');
-  const endPercent = getPercentFromPlacement(end.placement || 'top');
-
-  let state: ScrollState = 'before';
-  const changeState = (newState: ScrollState): void => {
+  let state: State = 'before';
+  const changeState = (newState: State): void => {
     if (newState !== state) {
       if (handlers.onStateChange) {
         handlers.onStateChange(element, newState, state);
@@ -114,8 +99,8 @@ const scrollHandle = ({
     const top = domRect.top;
     const bottom = domRect.bottom;
     const height = domRect.height;
-    const startY = startPercent * windowHeight + (start.distance || 0);
-    const endY = endPercent * windowHeight + (end.distance || 0);
+    const startY = start.percent * windowHeight + start.distance;
+    const endY = end.percent * windowHeight + end.distance;
     const distance = startY - top;
     const totalDistance = startY - endY + height;
     if (top > startY) {
@@ -146,9 +131,7 @@ const scrollHandle = ({
   };
 
   const handler = (): void => {
-    window.requestAnimationFrame(() => {
-      handle();
-    });
+    window.requestAnimationFrame(handle);
   };
   const removeHandle = (): void =>
     window.removeEventListener('scroll', handler);
@@ -161,6 +144,6 @@ const scrollHandle = ({
 
   window.setTimeout(() => handle(), 0);
   return removeHandle;
-};
+}
 
 export default scrollHandle;

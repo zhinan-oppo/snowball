@@ -1,4 +1,4 @@
-import scrollHandle, { ScrollHandlers } from '@zhinan-oppo/scroll-handle';
+import { scrollHandle, ScrollHandlers } from '@zhinan-oppo/scroll-handle';
 
 type ChangeableStyles =
   | 'left'
@@ -27,76 +27,60 @@ function setStyles(
   });
 }
 
-function warn(message: string): void {
-  // eslint-disable-next-line no-console
-  console.warn(`[sticky] ${message}`);
-}
-
 export interface StickyOption {
-  container?: string | HTMLElement;
+  container?: HTMLElement;
   scrollHandlers?: ScrollHandlers;
 }
 
-export function initStickyItem(
-  dom: string | Element,
-  { container, scrollHandlers = {} }: StickyOption = { scrollHandlers: {} },
-  debug = false,
-): null | (() => void) {
-  let element: HTMLElement;
-  let parent: HTMLElement;
+const CONFIGS = {
+  debug: false,
+  addedFlagAttr: 'z-sticky-added',
+};
+type Configs = typeof CONFIGS;
+export function configure<T extends keyof Configs>(key: T, value: Configs[T]) {
+  CONFIGS[key] = value;
+}
 
-  if (typeof dom === 'string') {
-    const doms = document.querySelectorAll(dom);
-    if (doms.length === 0) {
-      warn(`未选中任何 DOM: ${dom}`);
-      return null;
+export function initStickyElement(
+  element: HTMLElement,
+  { container: _container, scrollHandlers = {} }: StickyOption = {},
+): () => void {
+  let container: Element;
+  if (!_container) {
+    const parent = element.offsetParent;
+    if (!parent) {
+      throw new Error(
+        'The container is not set explicitly; The element should have a NOT NULL offsetParent; See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent',
+      );
     }
-    if (doms.length > 1) {
-      warn(`选中了多个 DOM，但只有第一个会生效: ${dom}`);
-    }
-    element = doms[0] as HTMLElement;
+    container = parent;
   } else {
-    element = dom as HTMLElement;
+    container = _container;
   }
-
-  if (!container) {
-    if (element.parentElement === null) {
-      warn('没有指定或找不到 sticky container');
-      return null;
-    } else {
-      parent = element.parentElement;
-    }
-  } else if (typeof container === 'string') {
-    parent = document.querySelectorAll(container)[0] as HTMLElement;
-  } else {
-    parent = container;
-  }
-
-  element.setAttribute('z-sticky-added', '');
+  element.setAttribute(CONFIGS.addedFlagAttr, CONFIGS.addedFlagAttr);
   element.style.position = 'relative';
-  parent.style.position = 'relative';
 
-  const itemRect = element.getBoundingClientRect();
-  const containerRect = parent.getBoundingClientRect();
-  if (debug) {
+  const elementRect = element.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  if (CONFIGS.debug) {
     // eslint-disable-next-line no-console
     console.debug({
-      itemRect,
+      elementRect,
       containerRect,
       element,
+      container,
     });
   }
 
-  const bottomToParentTop = itemRect.bottom - containerRect.top;
-  const top = `${itemRect.top - containerRect.top}px`;
-  const left = `${itemRect.left}px`;
-  const width = `${itemRect.width}px`;
-  const height = `${itemRect.height}px`;
+  const bottomToContainerTop = elementRect.bottom - containerRect.top;
+  const top = `${elementRect.top - containerRect.top}px`;
+  const left = `${elementRect.left}px`;
+  const width = `${elementRect.width}px`;
+  const height = `${elementRect.height}px`;
 
-  const removeHandle = scrollHandle({
-    dom: parent,
-    start: { placement: 'top' },
-    end: { distance: bottomToParentTop },
+  const removeHandle = scrollHandle(container, {
+    start: 'top',
+    end: { distance: bottomToContainerTop },
     handlers: {
       before: scrollHandlers.before,
       inView: scrollHandlers.inView,
@@ -118,7 +102,7 @@ export function initStickyItem(
           case 'after':
             setStyles(element, {
               left: `${element.getBoundingClientRect().left -
-                parent.getBoundingClientRect().left}px`,
+                container.getBoundingClientRect().left}px`,
               top: 'auto',
               bottom: '0',
               position: 'absolute',
@@ -130,7 +114,7 @@ export function initStickyItem(
           default:
             setStyles(element);
         }
-        if (debug) {
+        if (CONFIGS.debug) {
           const position =
             state === 'inView' ? 'fixed' : state === 'after' ? 'absolute' : '';
           // eslint-disable-next-line no-console
@@ -150,10 +134,13 @@ export function initStickyItem(
   return destroy;
 }
 
-export function init({ debug = false } = {}): void {
-  document.querySelectorAll('.sticky-item').forEach(element => {
-    if (!element.hasAttribute('z-sticky-added')) {
-      initStickyItem(element, {}, debug);
+export function initAllBySelector(
+  selector: string,
+  root = window.document,
+): void {
+  root.querySelectorAll<HTMLElement>(selector).forEach(element => {
+    if (!element.hasAttribute(CONFIGS.addedFlagAttr)) {
+      initStickyElement(element);
     }
   });
 }
