@@ -1,4 +1,6 @@
-import { lazyLoad } from './lazyLoad';
+import { lazyLoad, LazyLoadOptions } from './lazyLoad';
+
+export { lazyLoad, LazyLoadOptions };
 
 export interface MediaConfig {
   attr: string;
