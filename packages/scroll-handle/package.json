@@ -3,11 +3,14 @@
   "version": "1.0.11",
   "description": "A library to handle scroll event of browser. Apply custom callback when scolling into elements like inView event.",
   "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
   "files": [
     "lib"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "watch": "npm run build -- -w",
+    "build": "rollup -c=../../rollup.config.js",
     "prebuild": "npm run clean",
     "clean": "rimraf -f lib",
     "test": "parcel test/index.pug --out-dir test/dist"
