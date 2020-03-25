@@ -41,7 +41,7 @@ const config: LazyLoadConfig = {
   ],
 };
 
-function getURLAttr(): string {
+export function getURLAttr(): string {
   const width =
     window.innerWidth ||
     document.documentElement.clientWidth ||
