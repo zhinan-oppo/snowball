@@ -14,4 +14,11 @@ document.addEventListener('DOMContentLoaded', event => {
       },
     ],
   });
+
+  const lzWithEvent = document.getElementById('lz-event');
+  lzWithEvent.addEventListener('lazy-loaded', event => {
+    console.log(event);
+    lzWithEvent.textContent = `Loaded URL: ${event.detail}`;
+    event.preventDefault(); // z-loaded-class 不会被添加
+  });
 });

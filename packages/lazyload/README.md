@@ -27,23 +27,19 @@ interface MediaConfig {
 export interface LazyLoadConfig {
   defaultURLAttr: string;
   dstNameAttr: string;
+  loadedClassAttr: string;
+  eventFlag: string;
   bgFlag: string;
   loadEarlyFlag: string;
-  stateClasses: {
-    default: string;
-    loaded: string;
-  };
   medias: MediaConfig[];
 }
 const config: LazyLoadConfig = {
   defaultURLAttr: 'z-src',
   dstNameAttr: 'z-dst',
+  loadedClassAttr: 'z-loaded-class',
+  eventFlag: 'z-event',
   bgFlag: 'z-bg',
   loadEarlyFlag: 'z-early',
-  stateClasses: {
-    default: '--lazy-load',
-    loaded: '--lazy-loaded',
-  },
   medias: [
     {
       attr: 'z-src-mb',
@@ -63,11 +59,12 @@ const config: LazyLoadConfig = {
 - `dstNameAttr`: 默认给 element 添加 src 属性，通过 dstNameAttr 可以修改为其它属性
   - dstNameAttr 默认为`'z-dst'`
   - 例如，`<a z-src="/path/to.png" z-dst="href" z-early>`会被加载为`<a href="/path/to.png">`
+- `loadedClassAttr`: 通过该属性设置懒加载后添加的类名，可以通过`' '`隔开多个类名
+- `eventFlag`: 通过该属性判断是否在懒加载完成后触发`lazy-loaded`事件，可以通过`element.addEventListener('lazy-loaded', ...)`监听
+  - `event.detail` 为实际 load 的`URL`
+  - 注意：如果添加了`z-early`，事件会在初始化的时候就 dispatch，在这之后添加的处理函数无法被触发
 - `bgFlag`: 通过该属性判断是否设置为背景图片
 - `loadEarlyFlag`: 通过该属性判断是否在**初始化时就加载**
-- `stateClasses`: 不同状态下添加的类名，有两个状态
-  - `default`: 已初始化，未完成加载
-  - `loaded`: 已初始化，并完成加载
 - `medias`: 屏幕宽度查询条件
 
 ### 修改配置
@@ -138,4 +135,43 @@ document.addEventListener('DOMContentLoaded', event => {
 
 ```html
 <a href="example-pc.png"></a>
+```
+
+#### 懒加载后添加`lazy-loaded`类名
+
+```html
+<div
+  z-loaded-class="lazy-loaded"
+  z-src-mb="example-mb.png"
+  z-src-pc="example-pc.png"
+></div>
+```
+
+在懒加载后将得到
+
+```html
+<div class="lazy-loaded" src="example-mb.png"></div>
+```
+
+#### 触发`lazy-loaded`事件
+
+##### HTML
+
+```html
+<div
+  z-event
+  z-src-mb="example-mb.png"
+  z-src-pc="example-pc.png"
+  id="element"
+></div>
+```
+
+##### js
+
+```javascript
+const element = document.getElementById('element');
+element.addEventListener('lazy-loaded', event => {
+  console.log(`Loaded URL: ${event.detail}`);
+  event.preventDefault(); // 可以阻止 z-loaded-class 被添加
+});
 ```

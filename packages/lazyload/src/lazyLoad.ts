@@ -17,9 +17,7 @@ function load(
     attrName = 'src',
     isBackgroundImage: isBG = false,
     onLoaded,
-  }: LoadOptions = {
-    attrName: 'src',
-  },
+  }: LoadOptions = {},
 ) {
   if (!isBG) {
     element.setAttribute(attrName, url);

@@ -11,23 +11,20 @@ export interface MediaConfig {
 export interface LazyLoadConfig {
   defaultURLAttr: string;
   dstNameAttr: string;
+  loadedClassAttr: string;
+  eventFlag: string;
   bgFlag: string;
   loadEarlyFlag: string;
-  stateClasses: {
-    default: string;
-    loaded: string;
-  };
   medias: MediaConfig[];
 }
+
 const config: LazyLoadConfig = {
   defaultURLAttr: 'z-src',
   dstNameAttr: 'z-dst',
+  loadedClassAttr: 'z-loaded-class',
+  eventFlag: 'z-event',
   bgFlag: 'z-bg',
   loadEarlyFlag: 'z-early',
-  stateClasses: {
-    default: '--lazy-load',
-    loaded: '--lazy-loaded',
-  },
   medias: [
     {
       attr: 'z-src-mb',
@@ -65,22 +62,9 @@ export function getURLAttr(
 }
 let attr = getURLAttr();
 
-export function configure({
-  medias,
-  stateClasses,
-  ...attrConfig
-}: Partial<LazyLoadConfig>) {
+export function configure({ medias, ...attrConfig }: Partial<LazyLoadConfig>) {
   if (medias) {
     config.medias = medias;
-  }
-  if (stateClasses) {
-    const { default: defaultClass, loaded } = stateClasses;
-    if (defaultClass) {
-      config.stateClasses.default = defaultClass;
-    }
-    if (loaded) {
-      config.stateClasses.loaded = loaded;
-    }
   }
   if (attrConfig) {
     (Object.keys(attrConfig) as Array<keyof typeof attrConfig>).forEach(key => {
@@ -99,23 +83,38 @@ export function lazyLoadByAttributes(element: HTMLElement) {
   if (!url) {
     return;
   }
-  const { bgFlag, dstNameAttr, loadEarlyFlag, stateClasses } = config;
+  const {
+    eventFlag,
+    bgFlag,
+    dstNameAttr,
+    loadEarlyFlag,
+    loadedClassAttr,
+  } = config;
+  const shouldEmitEvent = element.hasAttribute(eventFlag);
   const isBackgroundImage = element.hasAttribute(bgFlag);
   const loadEarly = element.hasAttribute(loadEarlyFlag);
+  const loadedClass = element.getAttribute(loadedClassAttr);
   const attrName =
     (!isBackgroundImage && element.getAttribute(dstNameAttr)) || 'src';
-  if (!loadEarly) {
-    element.classList.add(stateClasses.default);
-  }
   lazyLoad(element, url, {
     attrName,
     loadEarly,
     isBackgroundImage,
     onLoaded: () => {
-      if (!loadEarly) {
-        element.classList.remove(stateClasses.default);
+      let preventDefault = false;
+      if (shouldEmitEvent) {
+        const event = new window.CustomEvent('lazy-loaded', {
+          detail: url,
+          bubbles: false,
+          cancelable: true,
+        });
+        if (!element.dispatchEvent(event)) {
+          preventDefault = true;
+        }
       }
-      element.classList.add(stateClasses.loaded);
+      if (!preventDefault && loadedClass) {
+        element.classList.add(...loadedClass.split(' '));
+      }
     },
   });
 }
