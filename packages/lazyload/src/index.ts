@@ -41,12 +41,19 @@ const config: LazyLoadConfig = {
   ],
 };
 
-export function getURLAttr(): string {
+export function getURLAttr(
+  {
+    medias,
+    defaultAttr,
+  }: {
+    medias: MediaConfig[];
+    defaultAttr: string;
+  } = { medias: config.medias, defaultAttr: config.defaultURLAttr },
+): string {
   const width =
     window.innerWidth ||
     document.documentElement.clientWidth ||
     document.body.clientWidth;
-  const { defaultURLAttr, medias } = config;
 
   for (const media of medias) {
     const { start = 0, end = 20000, attr } = media;
@@ -54,7 +61,7 @@ export function getURLAttr(): string {
       return attr;
     }
   }
-  return defaultURLAttr;
+  return defaultAttr;
 }
 let attr = getURLAttr();
 
