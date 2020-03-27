@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/sticky",
-  "version": "1.0.14",
+  "version": "1.4.0",
   "description": "A library to handle sticky position",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -18,7 +18,7 @@
   "author": "xsfour",
   "license": "MIT",
   "dependencies": {
-    "@zhinan-oppo/scroll-handle": "^1.0.14"
+    "@zhinan-oppo/scroll-handle": "^1.4.0"
   },
   "publishConfig": {
     "access": "public",
