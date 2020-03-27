@@ -39,6 +39,7 @@ interface ScrollHandleOptions {
   start?: Partial<PlacementToTop> | PercentToTop;
   end?: Partial<PlacementToTop> | PercentToTop;
   addListener?: boolean | 'impassive';
+  container?: Window | Element;
 }
 
 function getPercentFromAlias(alias: PercentToTop): number {
@@ -61,6 +62,7 @@ export function scrollHandle(
       distance: 0,
     },
     addListener = true,
+    container = window,
   }: ScrollHandleOptions,
 ): () => void {
   const start =
@@ -93,14 +95,18 @@ export function scrollHandle(
       state = newState;
     }
   };
+  // FIXME: container 大小位置相关的属性需要判断是否是 windows
   const handle = (): void => {
-    const windowHeight = getWindowHeight();
+    const containerHeight =
+      container === window
+        ? getWindowHeight()
+        : (container as Element).getBoundingClientRect().height;
     const domRect = element.getBoundingClientRect();
     const top = domRect.top;
     const bottom = domRect.bottom;
     const height = domRect.height;
-    const startY = start.percent * windowHeight + start.distance;
-    const endY = end.percent * windowHeight + end.distance;
+    const startY = start.percent * containerHeight + start.distance;
+    const endY = end.percent * containerHeight + end.distance;
     const distance = startY - top;
     const totalDistance = startY - endY + height;
     if (top > startY) {
@@ -133,10 +139,11 @@ export function scrollHandle(
   const handler = (): void => {
     window.requestAnimationFrame(handle);
   };
-  const removeHandle = (): void =>
-    window.removeEventListener('scroll', handler);
+  const removeHandle = addListener
+    ? (): void => container.removeEventListener('scroll', handler)
+    : () => undefined;
   if (addListener) {
-    window.addEventListener('scroll', handler, {
+    container.addEventListener('scroll', handler, {
       passive: addListener !== 'impassive',
       capture: false,
     });
