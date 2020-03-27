@@ -39,7 +39,10 @@ export class ImageSequence {
         this.imagePromises[i] = new Promise((resolve, reject) => {
           const image = new window.Image();
           image.src = this.urls[i];
-          image.onload = () => resolve(image);
+          image.onload = () => {
+            this.images[i] = image;
+            resolve(image);
+          };
           image.onerror = e => reject(e);
         });
       }

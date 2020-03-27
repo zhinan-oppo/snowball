@@ -3,3 +3,5 @@ node_modules
 test/dist
 .cache
 packages/*/lib
+
+*.log

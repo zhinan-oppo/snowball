@@ -1,4 +1,4 @@
-import scrollHandle from '@zhinan-oppo/scroll-handle';
+import { scrollHandle } from '@zhinan-oppo/scroll-handle';
 
 interface LoadOptions {
   attrName?: string;
@@ -17,9 +17,7 @@ function load(
     attrName = 'src',
     isBackgroundImage: isBG = false,
     onLoaded,
-  }: LoadOptions = {
-    attrName: 'src',
-  },
+  }: LoadOptions = {},
 ) {
   if (!isBG) {
     element.setAttribute(attrName, url);
@@ -39,15 +37,12 @@ export function lazyLoad(
   if (loadEarly) {
     load(element, url, options);
   } else {
-    const removeHandle = scrollHandle({
-      dom: element,
+    const removeHandle = scrollHandle(element, {
       handlers: {
         onStateChange(_, state) {
           if (state === 'inView') {
             load(element, url, options);
-            if (removeHandle) {
-              removeHandle();
-            }
+            removeHandle();
           }
         },
       },

@@ -1,7 +1,7 @@
 {
-  "name": "@zhinan-oppo/lazyload",
+  "name": "@zhinan-oppo/sticky",
   "version": "1.4.0",
-  "description": "lazyload images and videos",
+  "description": "A library to handle sticky position",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",

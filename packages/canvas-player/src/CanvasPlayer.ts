@@ -9,7 +9,7 @@ interface SeekOptions {
   draw?: boolean;
 }
 
-export const enum PlayMode {
+export enum PlayMode {
   Normal,
   Reverse,
   Loop,
@@ -123,7 +123,10 @@ export class CanvasPlayer {
       const update = (i: number) => {
         if (waitOnLoading) {
           waiting = true;
-          this.seek(i).then(() => emitUpdate(i));
+          this.seek(i).then(() => {
+            waiting = false;
+            emitUpdate(i);
+          });
         } else {
           this.seek(i).catch(console.error);
           emitUpdate(i);
