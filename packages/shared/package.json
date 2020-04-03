@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/shared",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Utilities",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -17,7 +17,6 @@
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
   "license": "MIT",
-  "dependencies": {},
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
