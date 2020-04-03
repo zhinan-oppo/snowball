@@ -1,0 +1,25 @@
+{
+  "name": "@zhinan-oppo/shared",
+  "version": "1.4.0",
+  "description": "Utilities",
+  "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "watch": "npm run build -- -w",
+    "build": "rollup -c=../../rollup.config.js",
+    "prebuild": "npm run clean",
+    "clean": "rimraf -f lib"
+  },
+  "repository": "https://github.com/zhinan-oppo/snowball",
+  "author": "xsfour",
+  "license": "MIT",
+  "dependencies": {},
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
