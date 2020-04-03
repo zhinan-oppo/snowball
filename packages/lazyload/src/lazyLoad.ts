@@ -47,5 +47,6 @@ export function lazyLoad(
         },
       },
     });
+    return removeHandle;
   }
 }

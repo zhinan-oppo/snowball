@@ -1772,24 +1772,32 @@
     tsutils "^3.17.1"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
-  version "1.0.13"
+  version "1.0.14"
 
 "@zhinan-oppo/lazyload@file:packages/lazyload":
-  version "1.0.11"
+  version "1.4.0"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "^1.0.11"
+    "@zhinan-oppo/scroll-handle" "^1.4.0"
 
-"@zhinan-oppo/scroll-handle@^1.0.11":
-  version "1.0.11"
-  resolved "https://registry.npmjs.org/@zhinan-oppo/scroll-handle/-/scroll-handle-1.0.11.tgz#690f4a4d4f9a3e70b896e689109c74e9f4fefb85"
-  integrity sha512-7yHN+9VasVzyCG7JRj46bdvtUXf0hrmz6rFgaHSuPlToSyc3vpqhLOdw13Fb0rUoDTBlydF/UIqum8Wfbj1rIA==
+"@zhinan-oppo/scroll-handle@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.npm.taobao.org/@zhinan-oppo/scroll-handle/download/@zhinan-oppo/scroll-handle-1.4.0.tgz#d7a97698bd91e6aa6cdd456d2944b6285e63c2d0"
+  integrity sha1-16l2mL2R5qps3UVtKUS2KF5jwtA=
   dependencies:
     lodash "^4.17.15"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
-  version "1.0.11"
+  version "1.4.0"
   dependencies:
     lodash "^4.17.15"
+
+"@zhinan-oppo/shared@file:packages/shared":
+  version "1.4.0"
+
+"@zhinan-oppo/sticky@file:packages/lazyload":
+  version "1.4.0"
+  dependencies:
+    "@zhinan-oppo/scroll-handle" "^1.4.0"
 
 "@zkochan/cmd-shim@^3.1.0":
   version "3.1.0"

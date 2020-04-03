@@ -9,6 +9,7 @@ export interface MediaConfig {
 }
 
 export interface LazyLoadConfig {
+  preferredURLAttr: string;
   defaultURLAttr: string;
   dstNameAttr: string;
   loadedClassAttr: string;
@@ -19,6 +20,7 @@ export interface LazyLoadConfig {
 }
 
 const config: LazyLoadConfig = {
+  preferredURLAttr: 'z-src-prefer',
   defaultURLAttr: 'z-src',
   dstNameAttr: 'z-dst',
   loadedClassAttr: 'z-loaded-class',
@@ -60,7 +62,10 @@ export function getURLAttr(
   }
   return defaultAttr;
 }
-let attr = getURLAttr();
+let urlAttr = getURLAttr();
+export function resetURLAttr() {
+  urlAttr = getURLAttr();
+}
 
 export function configure({ medias, ...attrConfig }: Partial<LazyLoadConfig>) {
   if (medias) {
@@ -74,12 +79,14 @@ export function configure({ medias, ...attrConfig }: Partial<LazyLoadConfig>) {
       }
     });
   }
-  attr = getURLAttr();
+  urlAttr = getURLAttr();
 }
 
 export function lazyLoadByAttributes(element: HTMLElement) {
   const url =
-    element.getAttribute(attr) || element.getAttribute(config.defaultURLAttr);
+    element.getAttribute(config.preferredURLAttr) ||
+    element.getAttribute(urlAttr) ||
+    element.getAttribute(config.defaultURLAttr);
   if (!url) {
     return;
   }
@@ -96,7 +103,8 @@ export function lazyLoadByAttributes(element: HTMLElement) {
   const loadedClass = element.getAttribute(loadedClassAttr);
   const attrName =
     (!isBackgroundImage && element.getAttribute(dstNameAttr)) || 'src';
-  lazyLoad(element, url, {
+
+  const removeHandle = lazyLoad(element, url, {
     attrName,
     loadEarly,
     isBackgroundImage,
@@ -117,20 +125,42 @@ export function lazyLoadByAttributes(element: HTMLElement) {
       }
     },
   });
+  return removeHandle;
 }
 
 export function initByAttributes(root = window.document) {
   const elements = root.querySelectorAll<HTMLElement>(
-    `[${attr}],[${config.defaultURLAttr}]`,
+    [urlAttr, config.defaultURLAttr, config.preferredURLAttr]
+      .map(url => `[${url}]`)
+      .join(','),
   );
+  const controllers: Array<ReturnType<typeof lazyLoadByAttributes>> = [];
   elements.forEach(element => {
-    lazyLoadByAttributes(element);
+    controllers.push(lazyLoadByAttributes(element));
   });
+  const destroy = () => {
+    for (let i = 0; i < controllers.length; i += 1) {
+      const removeHandle = controllers[i];
+      if (removeHandle) {
+        removeHandle();
+        controllers[i] = undefined;
+      }
+    }
+  };
+  const reset = () => {
+    resetURLAttr();
+    destroy();
+    elements.forEach((element, i) => {
+      controllers[i] = lazyLoadByAttributes(element);
+    });
+  };
+
+  return { reset, destroy };
 }
 
 export function init(config?: Partial<LazyLoadConfig>, root = window.document) {
   if (config) {
     configure(config);
   }
-  initByAttributes(root);
+  return initByAttributes(root);
 }

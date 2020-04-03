@@ -30,6 +30,8 @@
   "dependencies": {
     "@zhinan-oppo/canvas-player": "file:packages/canvas-player",
     "@zhinan-oppo/lazyload": "file:packages/lazyload",
-    "@zhinan-oppo/scroll-handle": "file:packages/scroll-handle"
+    "@zhinan-oppo/scroll-handle": "file:packages/scroll-handle",
+    "@zhinan-oppo/sticky": "file:packages/lazyload",
+    "@zhinan-oppo/shared": "file:packages/shared"
   }
 }
