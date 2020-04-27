@@ -1,7 +1,7 @@
 {
-  "name": "@zhinan-oppo/sticky",
-  "version": "1.6.0",
-  "description": "A library to handle sticky position",
+  "name": "@zhinan-oppo/trans-webpack-plugin",
+  "version": "1.5.0",
+  "description": "HtmlWebpackPlugin",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
@@ -17,11 +17,16 @@
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
   "license": "MIT",
-  "dependencies": {
-    "@zhinan-oppo/scroll-handle": "file:../scroll-handle"
-  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "posthtml": "^0.12.3",
+    "util.promisify": "^1.0.1"
+  },
+  "peerDependencies": {
+    "html-webpack-plugin": ">=4.0.0",
+    "webpack": ">=4.0.0"
   }
 }

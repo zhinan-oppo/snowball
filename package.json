@@ -11,12 +11,15 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.149",
+    "@types/node": "^13.13.4",
+    "@types/webpack": "^4.41.12",
     "@typescript-eslint/eslint-plugin": "^2.23.0",
     "@typescript-eslint/parser": "^2.23.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-prettier": "^3.1.2",
+    "html-webpack-plugin": "^4.2.0",
     "lerna": "^3.20.2",
     "parcel-bundler": "^1.12.4",
     "prettier": "^1.19.1",
@@ -25,14 +28,16 @@
     "rollup": "^2.1.0",
     "rollup-plugin-typescript2": "^0.26.0",
     "stylus": "^0.54.7",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0"
   },
   "dependencies": {
     "@zhinan-oppo/canvas-player": "file:packages/canvas-player",
     "@zhinan-oppo/lazyload": "file:packages/lazyload",
     "@zhinan-oppo/scroll-handle": "file:packages/scroll-handle",
-    "@zhinan-oppo/sticky": "file:packages/lazyload",
-    "@zhinan-oppo/shared": "file:packages/shared"
+    "@zhinan-oppo/shared": "file:packages/shared",
+    "@zhinan-oppo/sticky": "file:packages/sticky",
+    "@zhinan-oppo/trans-webpack-plugin": "file:packages/trans-webpack-plugin"
   },
   "resolutions": {
     "**/optimist/minimist": "^0.2.1"
