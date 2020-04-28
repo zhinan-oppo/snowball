@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/trans-webpack-plugin",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "HtmlWebpackPlugin",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
