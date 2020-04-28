@@ -111,6 +111,10 @@ export class TransWebpackPlugin implements webpack.Plugin {
             }
           });
         });
+        if (dryRun) {
+          return resolve(stats);
+        }
+
         writeToFile(fullPath, translations)
           .then(() => {
             logger.info(`Translation files are merged into ${fullPath}`);
@@ -159,7 +163,7 @@ export class TransWebpackPlugin implements webpack.Plugin {
         if (!dryRun) {
           node.content = [this.getWrappedKey(`${prefix}${key}`)];
         }
-      } else if (!dryRun && node.content) {
+      } else if (node.content) {
         node.content = node.content.map((item) => {
           if (typeof item === 'string') {
             return item;
@@ -179,9 +183,11 @@ export class TransWebpackPlugin implements webpack.Plugin {
         reject,
       ) => {
         posthtml()
-          .use((tree) => {
-            tree.walk((node) => processNode(node, namespace));
-          })
+          .use((tree) =>
+            tree instanceof Array
+              ? tree.map((node) => processNode(node, namespace))
+              : processNode(tree, namespace),
+          )
           .process(html)
           .then(({ html }) => {
             resolve({ html, translations });
