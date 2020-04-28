@@ -1,11 +1,16 @@
 import { writeFile } from 'fs';
+import mkdirp from 'mkdirp';
+import { dirname } from 'path';
 import { PostHTML } from 'posthtml';
 import render from 'posthtml-render';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const promisify = require('util.promisify');
 
-const writeFileAsync = promisify(writeFile);
+const writeFileAsync = promisify(writeFile) as (
+  path: string,
+  data: string,
+) => Promise<void>;
 
 export function renderContent(content?: Array<string | PostHTML.Node>) {
   if (!content) {
@@ -35,9 +40,16 @@ export function isDuplicatedOrFail(
 }
 
 export function writeToFile(path: string, data: Map<string, string>) {
-  const items: Array<{ key: string; value: string }> = [];
-  data.forEach((value, key) => {
-    items.push({ key, value });
+  return new Promise((resolve, reject) => {
+    const dir = dirname(path);
+    mkdirp(dir).then(() => {
+      const items: Array<{ key: string; value: string }> = [];
+      data.forEach((value, key) => {
+        items.push({ key, value });
+      });
+      writeFileAsync(path, JSON.stringify(items, undefined, 2))
+        .then(resolve)
+        .catch(reject);
+    });
   });
-  return writeFileAsync(path, JSON.stringify(items, undefined, 2));
 }

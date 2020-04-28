@@ -22,6 +22,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
+    "mkdirp": "^1.0.4",
     "posthtml": "^0.12.3",
     "util.promisify": "^1.0.1"
   },

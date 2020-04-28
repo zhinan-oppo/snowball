@@ -1728,6 +1728,13 @@
   resolved "https://registry.npm.taobao.org/@types/minimatch/download/@types/minimatch-3.0.3.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fminimatch%2Fdownload%2F%40types%2Fminimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha1-PcoOPzOyAPx9ETnAzZbBJoyt/Z0=
 
+"@types/mkdirp@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npm.taobao.org/@types/mkdirp/download/@types/mkdirp-1.0.0.tgz#16ce0eabe4a9a3afe64557ad0ee6886ec3d32927"
+  integrity sha1-Fs4Oq+Spo6/mRVetDuaIbsPTKSc=
+  dependencies:
+    "@types/node" "*"
+
 "@types/node@*", "@types/node@>= 8":
   version "13.9.2"
   resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-13.9.2.tgz#ace1880c03594cc3e80206d96847157d8e7fa349"
@@ -1980,12 +1987,12 @@
   integrity sha1-0pHGpOl5ibXGHZrPOWrk/hM6cY0=
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
-  version "1.0.14"
+  version "1.7.0"
 
 "@zhinan-oppo/lazyload@file:packages/lazyload":
-  version "1.6.0"
+  version "1.7.0"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-1.6.0-0530b085-b1cf-443e-ab07-71c578ef3aed-1588042894117/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-1.7.0-0d9f900b-b0aa-4d61-b5cf-70e41019f96b-1588055969057/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
   version "1.4.0"
@@ -1996,14 +2003,16 @@
   version "1.5.0"
 
 "@zhinan-oppo/sticky@file:packages/sticky":
-  version "1.6.0"
+  version "1.7.0"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-1.6.0-4937323b-c02b-4424-a0a7-8bcf957e216b-1588042894127/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-1.7.0-d18ab73c-9b48-4feb-9444-bd99d3fabadd-1588055969066/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:packages/trans-webpack-plugin":
-  version "1.5.0"
+  version "1.7.0"
   dependencies:
+    mkdirp "^1.0.4"
     posthtml "^0.12.3"
+    util.promisify "^1.0.1"
 
 "@zkochan/cmd-shim@^3.1.0":
   version "3.1.0"
@@ -6281,6 +6290,11 @@ mkdirp@^0.5.3:
   dependencies:
     minimist "^1.2.5"
 
+mkdirp@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npm.taobao.org/mkdirp/download/mkdirp-1.0.4.tgz?cache=0&sync_timestamp=1587535418745&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmkdirp%2Fdownload%2Fmkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
+  integrity sha1-PrXtYmInVteaXw4qIh3+utdcL34=
+
 modify-values@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/modify-values/download/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
@@ -9481,7 +9495,7 @@ util.promisify@1.0.0:
     define-properties "^1.1.2"
     object.getownpropertydescriptors "^2.0.3"
 
-util.promisify@~1.0.0:
+util.promisify@^1.0.1, util.promisify@~1.0.0:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/util.promisify/download/util.promisify-1.0.1.tgz#6baf7774b80eeb0f7520d8b81d07982a59abbaee"
   integrity sha1-a693dLgO6w91INi4HQeYKlmruu4=
