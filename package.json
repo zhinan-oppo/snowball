@@ -14,6 +14,7 @@
     "@types/lodash": "^4.14.149",
     "@types/mkdirp": "^1.0.0",
     "@types/node": "^13.13.4",
+    "@types/sharp": "^0.25.0",
     "@types/webpack": "^4.41.12",
     "@typescript-eslint/eslint-plugin": "^2.23.0",
     "@typescript-eslint/parser": "^2.23.0",
@@ -29,6 +30,7 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.1.0",
     "rollup-plugin-typescript2": "^0.26.0",
+    "schema-utils": "^2.6.6",
     "stylus": "^0.54.7",
     "typescript": "^3.8.3",
     "webpack": "^4.43.0"
