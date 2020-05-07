@@ -87,9 +87,11 @@ export default function(this: loader.LoaderContext) {
   );
 
   const options = (getOptions(this) as Options) || {};
-  const { factors, ...queries } =
+  const { factors, name, esModule: es, ...queries } =
     (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
   options.factors = factors || options.factors;
+  options.name = name || options.name;
+  options.esModule = typeof es === 'boolean' ? es : options.esModule;
   validate(schema, options, {
     name: LOADER_NAME,
     baseDataPath: 'options',
