@@ -1,6 +1,7 @@
 export default {
   additionalProperties: true,
   type: 'object' as 'object',
+  required: ['factors'],
   properties: {
     name: {
       description:
@@ -20,6 +21,40 @@ export default {
       },
       minItems: 1,
       uniqueItems: true,
+    },
+    output: {
+      type: 'object' as 'object',
+      additionalProperties: true,
+      properties: {
+        jpeg: {
+          type: 'object' as 'object',
+          additionalProperties: true,
+          properties: {
+            quality: {
+              type: 'number' as 'number',
+              min: 1,
+              max: 100,
+            },
+            progressive: {
+              type: 'boolean' as 'boolean',
+            },
+          },
+        },
+        png: {
+          type: 'object' as 'object',
+          additionalProperties: true,
+          properties: {
+            quality: {
+              type: 'number' as 'number',
+              min: 1,
+              max: 100,
+            },
+            progressive: {
+              type: 'boolean' as 'boolean',
+            },
+          },
+        },
+      },
     },
   },
 };

@@ -1,4 +1,4 @@
-import { getOptions, interpolateName } from 'loader-utils';
+import { getOptions, interpolateName, parseQuery } from 'loader-utils';
 import { parse as parsePath } from 'path';
 import validate from 'schema-utils';
 import sharp from 'sharp';
@@ -10,6 +10,13 @@ interface Options {
   factors?: number[];
   name?: string;
   esModule?: boolean;
+  output?: {
+    jpeg?: object;
+    png?: object;
+    webp?: object;
+    gif?: object;
+    svg?: object;
+  };
 }
 
 const LOADER_NAME = 'ResponsiveImageLoader';
@@ -20,7 +27,9 @@ async function scaleAndEmitImages(
   {
     name = '[contenthash].[ext]',
     factors = [],
-  }: Omit<Options, 'esModule'> = {},
+    output,
+    outputOptions,
+  }: Options & { outputOptions?: object } = {},
   logger: typeof console | Logger = console,
 ) {
   const url = interpolateName(loader, name, {
@@ -28,15 +37,28 @@ async function scaleAndEmitImages(
     content: source,
   });
   const img = sharp(source);
-  const { width: originWidth, height } = await img.metadata();
-  if (!originWidth || !height) {
+  const meta = await img.metadata();
+  const oriWidth = meta.width;
+  const format = meta.format as
+    | 'jpeg'
+    | 'png'
+    | 'webp'
+    | 'gif'
+    | 'svg'
+    | undefined;
+  if (!oriWidth || !format) {
     throw new Error('Unsupported image');
   }
-  logger.log({ width: originWidth, height, factors });
+  logger.log({ format, width: oriWidth, factors, outputOptions });
+
+  if (output && format && output[format]) {
+    outputOptions = Object.assign({}, output[format], outputOptions);
+  }
+  img.toFormat(format, outputOptions);
   const { name: oriName, ext, dir } = parsePath(url);
   return Promise.all(
     factors.map(async (factor) => {
-      const width = Math.round(originWidth * factor);
+      const width = Math.round(oriWidth * factor);
       const resized = await img
         .clone()
         .resize({ width })
@@ -65,13 +87,21 @@ export default function(this: loader.LoaderContext) {
   );
 
   const options = (getOptions(this) as Options) || {};
+  const { factors, ...queries } =
+    (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
+  options.factors = factors || options.factors;
   validate(schema, options, {
     name: LOADER_NAME,
     baseDataPath: 'options',
   });
 
   const { esModule = true, ...rest } = options;
-  scaleAndEmitImages(this, this.resourcePath, rest, logger)
+  scaleAndEmitImages(
+    this,
+    this.resourcePath,
+    { ...rest, outputOptions: queries },
+    logger,
+  )
     .then((res) => {
       const code = `${JSON.stringify(res)}.map(
         ({ filename, width }) => __webpack_public_path__ + filename + ' ' + width + 'w',
