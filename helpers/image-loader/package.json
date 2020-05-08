@@ -1,7 +1,7 @@
 {
-  "name": "@zhinan-oppo/responsive-image-loader",
+  "name": "@zhinan-oppo/image-loader",
   "version": "1.7.0",
-  "description": "Responsive images loader",
+  "description": "Image loader",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",

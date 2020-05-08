@@ -1,7 +1,15 @@
 export default {
+  definitions: {
+    Factor: {
+      description: 'The factor to scale images',
+      type: 'number' as 'number',
+      min: 1e-3,
+      max: 1,
+    },
+  },
   additionalProperties: true,
   type: 'object' as 'object',
-  required: ['factors'],
+  required: ['factor'],
   properties: {
     name: {
       description:
@@ -10,17 +18,14 @@ export default {
     },
     esModule: {
       description:
-        'By default, responsive-image-loader generates JS modules that use the ES modules syntax.',
+        'By default, image-loader generates JS modules that use the ES modules syntax.',
       type: 'boolean' as 'boolean',
     },
-    factors: {
-      description: 'Factors to scale images',
-      type: 'array' as 'array',
-      items: {
-        type: 'number' as 'number',
-      },
-      minItems: 1,
-      uniqueItems: true,
+    factor: {
+      $ref: '#/definitions/Factor',
+    },
+    type: {
+      enum: ['src', 'srcset'],
     },
     output: {
       type: 'object' as 'object',

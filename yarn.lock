@@ -2018,22 +2018,23 @@
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "1.7.0"
 
-"@zhinan-oppo/image-processor@file:helpers/image-processor":
+"@zhinan-oppo/image-loader@file:helpers/image-loader":
   version "1.7.0"
   dependencies:
+    loader-utils "^1.0.0"
+    schema-utils "^2.6.6"
+    sharp "^0.25.2"
+
+"@zhinan-oppo/lazyload-preprocessor@file:helpers/lazyload-preprocessor":
+  version "1.7.0"
+  dependencies:
+    loader-utils "^1.0.0"
     postman "^0.2.0"
 
 "@zhinan-oppo/lazyload@file:packages/lazyload":
   version "1.7.0"
   dependencies:
     lazyload "^2.0.0-rc.2"
-
-"@zhinan-oppo/responsive-image-loader@file:helpers/responsive-image-loader":
-  version "1.7.0"
-  dependencies:
-    loader-utils "^1.0.0"
-    schema-utils "^2.6.6"
-    sharp "^0.25.2"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
   version "1.4.0"
@@ -2046,7 +2047,7 @@
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "1.7.0"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-1.7.0-5886a41c-6df9-41ae-b368-f93f04bf9fb6-1588830483345/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-1.7.0-e7014118-7182-494a-89aa-651aeea09531-1588939044412/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "1.7.2"
@@ -5209,6 +5210,13 @@ ignore@^4.0.3, ignore@^4.0.6:
   resolved "https://registry.npm.taobao.org/ignore/download/ignore-4.0.6.tgz#750e3db5862087b4737ebac8207ffd1ef27b25fc"
   integrity sha1-dQ49tYYgh7RzfrrIIH/9HvJ7Jfw=
 
+image-size@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.npmjs.org/image-size/-/image-size-0.8.3.tgz#f0b568857e034f29baffd37013587f2c0cad8b46"
+  integrity sha512-SMtq1AJ+aqHB45c3FsB4ERK0UCiA2d3H1uq8s+8T0Pf8A3W4teyBQyaFaktH6xvZqh+npwlKU7i4fJo0r7TYTg==
+  dependencies:
+    queue "6.0.1"
+
 import-fresh@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npm.taobao.org/import-fresh/download/import-fresh-2.0.0.tgz?cache=0&sync_timestamp=1573665120798&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fimport-fresh%2Fdownload%2Fimport-fresh-2.0.0.tgz#d81355c15612d386c61f9ddd3922d4304822a546"
@@ -8038,6 +8046,13 @@ querystring@0.2.0:
   version "0.2.0"
   resolved "https://registry.npm.taobao.org/querystring/download/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
   integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
+
+queue@6.0.1:
+  version "6.0.1"
+  resolved "https://registry.npmjs.org/queue/-/queue-6.0.1.tgz#abd5a5b0376912f070a25729e0b6a7d565683791"
+  integrity sha512-AJBQabRCCNr9ANq8v77RJEv73DPbn55cdTb+Giq4X0AVnNVZvMHlYp7XlQiN+1npCZj1DuSmaA2hYVUUDgxFDg==
+  dependencies:
+    inherits "~2.0.3"
 
 quick-lru@^1.0.0:
   version "1.1.0"
