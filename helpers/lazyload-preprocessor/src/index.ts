@@ -1,18 +1,17 @@
 import { getOptions, parseQuery } from 'loader-utils';
 import posthtml, { PostHTML } from 'posthtml';
-import { loader } from 'webpack';
+import webpack from 'webpack';
 
 type SourceType = 'src' | 'srcset';
 
-interface PrepareURLOptions {
+interface TransformSrcOptions {
   url: string;
   factor: number | string;
   query: Record<string, any>;
-  attr: string;
   type: SourceType;
 }
 
-interface PrepareSizesOptions {
+interface TransformSizesOptions {
   url: string;
   query: Record<string, any>;
 }
@@ -27,11 +26,11 @@ export interface PluginOptions {
     factor: number;
     alias: string;
   }>;
-  prepareURL?: (
-    options: PrepareURLOptions,
+  transformSrcRequest?: (
+    options: TransformSrcOptions,
   ) => { url: string; query: Record<string, any> } | string;
-  prepareSizes?: (
-    options: PrepareSizesOptions,
+  transformSizesRequest?: (
+    options: TransformSizesOptions,
   ) => { url: string; query: Record<string, any> } | string;
 }
 
@@ -44,6 +43,47 @@ function stringifyQuery(query: Record<string, any>) {
   return JSON.stringify(query).replace(/"/g, "'");
 }
 
+function parseRequest(request: string, { root }: { root?: string }) {
+  const matches = request.match(/^([^?]+)(\?.*)?$/);
+  const [, url, queryStr] = matches || [];
+
+  return {
+    url: root && url && /^\//.test(url) ? `${root}${url}` : url || '',
+    query: (queryStr && parseQuery(queryStr)) || {},
+  };
+}
+
+function _prepareSrc(
+  callback: PluginOptions['transformSrcRequest'],
+  { query, ...options }: TransformSrcOptions,
+) {
+  query = { ...query, type: options.type, factor: options.factor };
+  const res = callback
+    ? callback({
+        ...options,
+        query,
+      })
+    : { url: options.url, query };
+  if (typeof res === 'string') {
+    return res;
+  }
+  return `${res.url}?${stringifyQuery(res.query)}`;
+}
+
+function _prepareSizes(
+  callback: PluginOptions['transformSizesRequest'],
+  options: TransformSizesOptions,
+) {
+  const res = callback
+    ? callback(options)
+    : { url: options.url, query: options.query };
+  if (typeof res === 'string') {
+    return res;
+  }
+  const { url, query } = res;
+  return `${url}?${stringifyQuery(query)}`;
+}
+
 function createPlugin({
   type = 'src',
   srcAttrName = 'z-src',
@@ -51,35 +91,26 @@ function createPlugin({
   sizesAttrName = type === 'srcset' ? 'data-sizes' : undefined,
   medias = [{ factor: 1, alias: 'default' }],
   shouldRemoveSrc = true,
-  prepareURL: _prepareURL,
-  prepareSizes: _prepareSizes,
+  transformSrcRequest,
+  transformSizesRequest,
   root,
 }: Partial<PluginOptions> & { root?: string; shouldRemoveSrc?: boolean } = {}) {
-  const prepareURL = ({ query, ...options }: PrepareURLOptions) => {
-    query = { ...query, type: options.type, factor: options.factor };
-    const res = _prepareURL
-      ? _prepareURL({
-          ...options,
-          query,
-        })
-      : { url: options.url, query };
-    if (typeof res === 'string') {
-      return res;
-    }
-    return `${res.url}?${stringifyQuery(res.query)}`;
-  };
-  const prepareSizes = (options: PrepareSizesOptions) => {
-    const res = _prepareSizes
-      ? _prepareSizes(options)
-      : { url: options.url, query: options.query };
-    if (typeof res === 'string') {
-      return res;
-    }
-    const { url, query } = res;
-    return `${url}?${stringifyQuery(query)}`;
-  };
+  const prepareSrc = (options: TransformSrcOptions) =>
+    _prepareSrc(transformSrcRequest, options);
+
+  const prepareSrcset = (
+    factors: number[],
+    options: Omit<TransformSrcOptions, 'type' | 'factor'>,
+  ) =>
+    factors
+      .map((factor) => prepareSrc({ ...options, type: 'srcset', factor }))
+      .join(', ');
+
+  const prepareSizes = (options: TransformSizesOptions) =>
+    _prepareSizes(transformSizesRequest, options);
 
   const attrReg = new RegExp(`^${srcAttrName}(:(.*))?$`);
+
   const processNode = async (node: PostHTML.Node) => {
     const { attrs, content } = node;
     if (attrs) {
@@ -93,26 +124,20 @@ function createPlugin({
           const [, hasDst, maybeDst] = matches;
           const dstAttr = (hasDst && maybeDst) || defaultDstAttr;
 
-          const resourceMatches = value.match(/^([^?]+)(\?.*)?$/);
-          let url = (resourceMatches && resourceMatches[1]) || '';
-          if (root && /^\//.test(url)) {
-            url = `${root}${url}`;
-          }
-
-          const queryStr = resourceMatches && resourceMatches[2];
-          const { exclude, ...query } =
-            (queryStr && parseQuery(queryStr)) || {};
-          const mediaExclude: string[] =
-            (exclude instanceof Array && exclude) || [];
-          const filteredMedias = medias.filter(
-            ({ alias }) => !mediaExclude.includes(alias),
-          );
+          const {
+            url,
+            query: { exclude, ...query },
+          } = parseRequest(value, { root });
+          const filteredMedias =
+            exclude instanceof Array
+              ? medias.filter(({ alias }) => !exclude.includes(alias))
+              : medias;
 
           if (type === 'srcset') {
-            attrs[dstAttr] = filteredMedias
-              .map(({ factor }) => factor)
-              .map((factor) => prepareURL({ url, factor, attr, query, type }))
-              .join(', ');
+            attrs[dstAttr] = prepareSrcset(
+              filteredMedias.map(({ factor }) => factor),
+              { url, query },
+            );
             if (sizesAttrName && typeof attrs[sizesAttrName] !== 'string') {
               attrs[sizesAttrName] = prepareSizes({
                 url,
@@ -121,10 +146,9 @@ function createPlugin({
             }
           } else {
             filteredMedias.forEach(({ alias, factor }) => {
-              attrs[`${dstAttr}-${alias}`] = prepareURL({
+              attrs[`${dstAttr}-${alias}`] = prepareSrc({
                 url,
                 factor,
-                attr,
                 query,
                 type,
               });
@@ -134,13 +158,10 @@ function createPlugin({
           if (attr !== dstAttr) {
             attrs[attr] = shouldRemoveSrc
               ? undefined
-              : prepareURL({
-                  url,
-                  attr,
-                  query,
-                  type,
-                  factor: filteredMedias.map(({ factor }) => factor).join('_'),
-                });
+              : prepareSrcset(
+                  filteredMedias.map(({ factor }) => factor),
+                  { url, query },
+                );
           }
         }),
       );
@@ -167,7 +188,7 @@ export function createProcessor(
   conf: Array<Partial<PluginOptions>>,
   { mode, defaultOptions = {} }: Partial<Options>,
 ) {
-  return async (html: string, loader: loader.LoaderContext) => {
+  return async (html: string, loader: webpack.loader.LoaderContext) => {
     const { root } = getOptions(loader);
     const { html: htmlProcessed } = await posthtml(
       conf.map((options) =>
