@@ -131,15 +131,17 @@ function createPlugin({
             });
           }
 
-          attrs[attr] = shouldRemoveSrc
-            ? undefined
-            : prepareURL({
-                url,
-                attr,
-                query,
-                type,
-                factor: filteredMedias.map(({ factor }) => factor).join('_'),
-              });
+          if (attr !== dstAttr) {
+            attrs[attr] = shouldRemoveSrc
+              ? undefined
+              : prepareURL({
+                  url,
+                  attr,
+                  query,
+                  type,
+                  factor: filteredMedias.map(({ factor }) => factor).join('_'),
+                });
+          }
         }),
       );
     }
