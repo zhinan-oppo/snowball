@@ -9,7 +9,6 @@ export default {
   },
   additionalProperties: true,
   type: 'object' as 'object',
-  required: ['factor'],
   properties: {
     name: {
       description:

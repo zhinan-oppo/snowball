@@ -12,9 +12,15 @@ interface PrepareURLOptions {
   type: SourceType;
 }
 
+interface PrepareSizesOptions {
+  url: string;
+  query: Record<string, any>;
+}
+
 export interface PluginOptions {
   srcAttrName: string;
   defaultDstAttr: string;
+  sizesAttrName?: string;
   type: SourceType;
   medias: Array<{
     width?: { min?: number; max?: number };
@@ -24,6 +30,9 @@ export interface PluginOptions {
   prepareURL?: (
     options: PrepareURLOptions,
   ) => { url: string; query: Record<string, any> } | string;
+  prepareSizes?: (
+    options: PrepareSizesOptions,
+  ) => { url: string; query: Record<string, any> } | string;
 }
 
 export interface Options {
@@ -31,35 +40,45 @@ export interface Options {
   defaultOptions: Partial<Omit<PluginOptions, 'srcAttrName'>>;
 }
 
+function stringifyQuery(query: Record<string, any>) {
+  return JSON.stringify(query).replace(/"/g, "'");
+}
+
 function createPlugin({
   type = 'src',
   srcAttrName = 'z-src',
   defaultDstAttr = type === 'src' ? 'data-src' : 'data-srcset',
+  sizesAttrName = type === 'srcset' ? 'data-sizes' : undefined,
   medias = [{ factor: 1, alias: 'default' }],
-  prepareURL: _prepareURL,
   shouldRemoveSrc = true,
+  prepareURL: _prepareURL,
+  prepareSizes: _prepareSizes,
   root,
 }: Partial<PluginOptions> & { root?: string; shouldRemoveSrc?: boolean } = {}) {
-  const prepareURL = (options: PrepareURLOptions) => {
-    if (!_prepareURL) {
-      return options.url;
+  const prepareURL = ({ query, ...options }: PrepareURLOptions) => {
+    query = { ...query, type: options.type, factor: options.factor };
+    const res = _prepareURL
+      ? _prepareURL({
+          ...options,
+          query,
+        })
+      : { url: options.url, query };
+    if (typeof res === 'string') {
+      return res;
     }
-    const res = _prepareURL(options);
+    return `${res.url}?${stringifyQuery(res.query)}`;
+  };
+  const prepareSizes = (options: PrepareSizesOptions) => {
+    const res = _prepareSizes
+      ? _prepareSizes(options)
+      : { url: options.url, query: options.query };
     if (typeof res === 'string') {
       return res;
     }
     const { url, query } = res;
-    const queries = Object.entries({ type, factor: options.factor, ...query });
-    if (queries.length < 1) {
-      return url;
-    }
-    return `${url}?{${queries
-      .map(
-        ([key, value]) =>
-          `${key}:${typeof value === 'string' ? `'${value}'` : value}`,
-      )
-      .join(',')}}`;
+    return `${url}?${stringifyQuery(query)}`;
   };
+
   const attrReg = new RegExp(`^${srcAttrName}(:(.*))?$`);
   const processNode = async (node: PostHTML.Node) => {
     const { attrs, content } = node;
@@ -94,6 +113,12 @@ function createPlugin({
               .map(({ factor }) => factor)
               .map((factor) => prepareURL({ url, factor, attr, query, type }))
               .join(', ');
+            if (sizesAttrName && typeof attrs[sizesAttrName] !== 'string') {
+              attrs[sizesAttrName] = prepareSizes({
+                url,
+                query: { exclude, ...query },
+              });
+            }
           } else {
             filteredMedias.forEach(({ alias, factor }) => {
               attrs[`${dstAttr}-${alias}`] = prepareURL({

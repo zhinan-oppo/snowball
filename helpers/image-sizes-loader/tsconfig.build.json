@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.build.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "baseUrl": "./src",
+    "outDir": "./lib"
+  },
+  "include": ["./src"]
+}
