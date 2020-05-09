@@ -1,16 +1,34 @@
+import { getOptions, parseQuery } from 'loader-utils';
 import posthtml, { PostHTML } from 'posthtml';
 import { loader } from 'webpack';
 
-interface Options {
+type SourceType = 'src' | 'srcset';
+
+interface PrepareURLOptions {
+  url: string;
+  factor: number | string;
+  query: Record<string, any>;
+  attr: string;
+  type: SourceType;
+}
+
+export interface PluginOptions {
   srcAttrName: string;
   defaultDstAttr: string;
-  type: 'src' | 'srcset';
+  type: SourceType;
   medias: Array<{
     width?: { min?: number; max?: number };
     factor: number;
     alias: string;
   }>;
-  prepareURL?: (url: string, factors: string | number, attr: string) => string;
+  prepareURL?: (
+    options: PrepareURLOptions,
+  ) => { url: string; query: Record<string, any> } | string;
+}
+
+export interface Options {
+  mode: 'development' | 'production';
+  defaultOptions: Partial<Omit<PluginOptions, 'srcAttrName'>>;
 }
 
 function createPlugin({
@@ -18,16 +36,31 @@ function createPlugin({
   srcAttrName = 'z-src',
   defaultDstAttr = type === 'src' ? 'data-src' : 'data-srcset',
   medias = [{ factor: 1, alias: 'default' }],
-  prepareURL = (url, factor) =>
-    url.replace(
-      /^~?/,
-      `~!!cache-loader!image-loader?-esModule,name=[path][name].[md5:contenthash:hex:6].[ext],type=${type},factor=${factor}!`,
-    ),
-  root,
+  prepareURL: _prepareURL,
   shouldRemoveSrc = true,
-}: Partial<Options> & { root?: string; shouldRemoveSrc?: boolean } = {}) {
+  root,
+}: Partial<PluginOptions> & { root?: string; shouldRemoveSrc?: boolean } = {}) {
+  const prepareURL = (options: PrepareURLOptions) => {
+    if (!_prepareURL) {
+      return options.url;
+    }
+    const res = _prepareURL(options);
+    if (typeof res === 'string') {
+      return res;
+    }
+    const { url, query } = res;
+    const queries = Object.entries({ type, factor: options.factor, ...query });
+    if (queries.length < 1) {
+      return url;
+    }
+    return `${url}?{${queries
+      .map(
+        ([key, value]) =>
+          `${key}:${typeof value === 'string' ? `'${value}'` : value}`,
+      )
+      .join(',')}}`;
+  };
   const attrReg = new RegExp(`^${srcAttrName}(:(.*))?$`);
-  const factors = medias.map(({ factor }) => factor);
   const processNode = async (node: PostHTML.Node) => {
     const { attrs, content } = node;
     if (attrs) {
@@ -40,23 +73,48 @@ function createPlugin({
           }
           const [, hasDst, maybeDst] = matches;
           const dstAttr = (hasDst && maybeDst) || defaultDstAttr;
-          let url = value;
+
+          const resourceMatches = value.match(/^([^?]+)(\?.*)?$/);
+          let url = (resourceMatches && resourceMatches[1]) || '';
           if (root && /^\//.test(url)) {
             url = `${root}${url}`;
           }
+
+          const queryStr = resourceMatches && resourceMatches[2];
+          const { exclude, ...query } =
+            (queryStr && parseQuery(queryStr)) || {};
+          const mediaExclude: string[] =
+            (exclude instanceof Array && exclude) || [];
+          const filteredMedias = medias.filter(
+            ({ alias }) => !mediaExclude.includes(alias),
+          );
+
           if (type === 'srcset') {
-            attrs[dstAttr] = factors
-              .map((factor) => prepareURL(url, factor, attr))
+            attrs[dstAttr] = filteredMedias
+              .map(({ factor }) => factor)
+              .map((factor) => prepareURL({ url, factor, attr, query, type }))
               .join(', ');
           } else {
-            medias.forEach(({ alias, factor }) => {
-              attrs[`${dstAttr}-${alias}`] = prepareURL(url, factor, attr);
+            filteredMedias.forEach(({ alias, factor }) => {
+              attrs[`${dstAttr}-${alias}`] = prepareURL({
+                url,
+                factor,
+                attr,
+                query,
+                type,
+              });
             });
           }
 
           attrs[attr] = shouldRemoveSrc
             ? undefined
-            : prepareURL(url, factors.join('_'), attr);
+            : prepareURL({
+                url,
+                attr,
+                query,
+                type,
+                factor: filteredMedias.map(({ factor }) => factor).join('_'),
+              });
         }),
       );
     }
@@ -77,15 +135,19 @@ function createPlugin({
   };
 }
 
+// TODO: validate options
 export function createProcessor(
-  conf: Array<Partial<Options>>,
-  mode?: 'development' | 'production',
+  conf: Array<Partial<PluginOptions>>,
+  { mode, defaultOptions = {} }: Partial<Options>,
 ) {
   return async (html: string, loader: loader.LoaderContext) => {
+    const { root } = getOptions(loader);
     const { html: htmlProcessed } = await posthtml(
       conf.map((options) =>
         createPlugin({
+          ...defaultOptions,
           ...options,
+          root,
           shouldRemoveSrc: (mode || loader.mode) !== 'development',
         }),
       ),
