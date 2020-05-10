@@ -37,6 +37,7 @@
     "webpack": "^4.43.0"
   },
   "dependencies": {
+    "@zhinan-oppo/attr-resolver": "file:packages/attr-resolver",
     "@zhinan-oppo/canvas-player": "file:packages/canvas-player",
     "@zhinan-oppo/image-loader": "file:helpers/image-loader",
     "@zhinan-oppo/image-sizes-loader": "file:helpers/image-sizes-loader",
