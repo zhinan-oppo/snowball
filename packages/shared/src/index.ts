@@ -1,1 +1,2 @@
-export * as windowSize from './windowSize';
+export * from './windowSize';
+export * from './media';
