@@ -1,52 +1,132 @@
-import { scrollHandle } from '@zhinan-oppo/scroll-handle';
+import Lazy from 'vanilla-lazyload';
 
-interface LoadOptions {
-  attrName?: string;
-  isBackgroundImage?: boolean;
-  onLoaded?: () => void;
+import { Media, matchMedia } from '@zhinan-oppo/shared';
+
+interface Options {
+  container?: HTMLElement;
+  elements?: string | NodeListOf<HTMLElement>;
+  medias: Media[];
+
+  src: string;
+  srcset: string;
+  poster: string;
+  delay?: number;
+  classes?: {
+    loaded?: string;
+    loading?: string;
+    applied?: string;
+    error?: string;
+  };
 }
 
-export interface LazyLoadOptions extends LoadOptions {
-  loadEarly?: boolean;
-}
-
-function load(
-  element: HTMLElement,
-  url: string,
+/* eslint-disable @typescript-eslint/camelcase */
+function toVanillaOptions(
   {
-    attrName = 'src',
-    isBackgroundImage: isBG = false,
-    onLoaded,
-  }: LoadOptions = {},
+    src,
+    poster,
+    srcset,
+    delay,
+    classes = {},
+  }: Pick<Options, 'src' | 'poster' | 'srcset' | 'delay' | 'classes'>,
+  media?: Media,
 ) {
-  if (!isBG) {
-    element.setAttribute(attrName, url);
-  } else {
-    element.style.backgroundImage = `url(${url})`;
+  if (media) {
+    const { alias } = media;
+    const postfix = (str: string) => `${str}-${alias}`;
+    src = postfix(src);
+    poster = postfix(poster);
   }
-  if (onLoaded) {
-    onLoaded();
+  return {
+    data_src: src,
+    data_srcset: srcset,
+    data_poster: poster,
+    load_delay: delay,
+    class_loading: classes.loading,
+    class_loaded: classes.loaded,
+    class_applied: classes.applied,
+    class_error: classes.error,
+  };
+}
+
+class LazyLoad {
+  static load(
+    element: HTMLElement,
+    options: ReturnType<typeof toVanillaOptions>,
+  ) {
+    return Lazy.load(element, options);
+  }
+
+  private lazyload: Lazy;
+  private destroyed = false;
+
+  private mediaMatched?: Media;
+
+  constructor(private readonly options: Options) {
+    this.lazyload = this.getLazy();
+  }
+
+  get media() {
+    return this.mediaMatched;
+  }
+
+  get loadingCount() {
+    return this.lazyload.loadingCount;
+  }
+
+  get toLoadCount() {
+    return this.lazyload.toLoadCount;
+  }
+
+  load(elements: { forEach: NodeListOf<HTMLElement>['forEach'] }) {
+    const options = toVanillaOptions(this.options, this.matchMedia());
+    elements.forEach((ele) => LazyLoad.load(ele, options));
+  }
+
+  loadAll() {
+    this.lazyload.loadAll();
+  }
+
+  update: Lazy['update'] = (elements) => {
+    return this.lazyload.update(elements);
+  };
+
+  refresh(windowWidth?: number) {
+    const media = this.matchMedia(windowWidth);
+    if (!this.destroyed && media === this.media) {
+      return;
+    }
+    this.lazyload.destroy();
+    this.lazyload = this.getLazy(media);
+    this.destroyed = false;
+  }
+
+  destroy() {
+    this.lazyload.destroy();
+    this.destroyed = true;
+  }
+
+  private matchMedia(windowWidth?: number) {
+    return matchMedia(this.options.medias, windowWidth);
+  }
+
+  private getLazy(media = this.matchMedia()) {
+    this.mediaMatched = media;
+
+    const { elements } = this.options;
+    const options = toVanillaOptions(this.options, media);
+    const { data_src, data_srcset, data_poster } = options;
+    return new Lazy(
+      {
+        ...options,
+        elements_selector:
+          typeof elements === 'string'
+            ? elements
+            : `[data-${data_src}],[data-${data_srcset}],[data-${data_poster}]`,
+        callback_error: (...args) => console.error(args),
+      },
+      elements instanceof window.NodeList ? elements : undefined,
+    );
   }
 }
 
-export function lazyLoad(
-  element: HTMLElement,
-  url: string,
-  { loadEarly, ...options }: LazyLoadOptions,
-) {
-  if (loadEarly) {
-    load(element, url, options);
-  } else {
-    const removeHandle = scrollHandle(element, {
-      handlers: {
-        onStateChange(_, state) {
-          if (state === 'inView') {
-            load(element, url, options);
-            removeHandle();
-          }
-        },
-      },
-    });
-    return removeHandle;
-  }
-}
+export { Options, LazyLoad };

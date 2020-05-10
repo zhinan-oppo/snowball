@@ -17,11 +17,12 @@
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
   "license": "MIT",
-  "dependencies": {
-    "@zhinan-oppo/scroll-handle": "file:../scroll-handle"
-  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@zhinan-oppo/shared": "file:../shared",
+    "vanilla-lazyload": "^15.2.0"
   }
 }
