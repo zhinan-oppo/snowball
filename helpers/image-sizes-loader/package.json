@@ -18,6 +18,7 @@
   "author": "xsfour",
   "license": "MIT",
   "dependencies": {
+    "image-size": "^0.8.3",
     "loader-utils": "^1.0.0",
     "schema-utils": "^2.6.6"
   },
