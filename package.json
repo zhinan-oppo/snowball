@@ -39,6 +39,7 @@
   "dependencies": {
     "@zhinan-oppo/canvas-player": "file:packages/canvas-player",
     "@zhinan-oppo/image-loader": "file:helpers/image-loader",
+    "@zhinan-oppo/image-sizes-loader": "file:helpers/image-sizes-loader",
     "@zhinan-oppo/lazyload": "file:packages/lazyload",
     "@zhinan-oppo/lazyload-preprocessor": "file:helpers/lazyload-preprocessor",
     "@zhinan-oppo/scroll-handle": "file:packages/scroll-handle",

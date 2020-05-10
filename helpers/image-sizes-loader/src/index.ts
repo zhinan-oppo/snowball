@@ -46,7 +46,7 @@ export default function(this: loader.LoaderContext) {
               : min
               ? `(min-width: ${min}px) ${w}`
               : max
-              ? `(max-width: ${max}px)) ${w}`
+              ? `(max-width: ${max}px) ${w}`
               : w.toString();
           })
           .join(', ')

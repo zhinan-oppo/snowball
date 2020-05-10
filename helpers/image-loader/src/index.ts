@@ -82,29 +82,31 @@ export default function(this: loader.LoaderContext) {
   );
 
   const options = (getOptions(this) as Options) || {};
-  const { factor, name, type, esModule: es, ...queries } =
-    (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
-  options.factor = parseFloat(factor || options.factor);
-  options.name = name || options.name;
-  options.esModule = typeof es === 'boolean' ? es : options.esModule;
-  options.type = type || options.type;
+  const {
+    factor: factorStr = options.factor,
+    name = options.name,
+    type = options.type,
+    esModule = options.esModule,
+    ...queries
+  } = (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
+  const factor = parseFloat(factorStr);
   validate(schema, options, {
     name: LOADER_NAME,
     baseDataPath: 'options',
   });
 
-  const { esModule = true, ...rest } = options;
   scaleAndEmitImage(
     this,
     this.resourcePath,
-    { ...rest, outputOptions: queries },
+    { factor, name, type, outputOptions: queries },
     logger,
   )
     .then(({ filename, width }) => {
       let code = `__webpack_public_path__ + ${JSON.stringify(filename)}`;
-      if (options.type === 'srcset') {
+      if (type === 'srcset') {
         code += ` + ' ${width}w'`;
       }
+
       callback(
         null,
         esModule ? `export default ${code}` : `module.exports = ${code}`,

@@ -2025,6 +2025,12 @@
     schema-utils "^2.6.6"
     sharp "^0.25.2"
 
+"@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
+  version "1.7.0"
+  dependencies:
+    loader-utils "^1.0.0"
+    schema-utils "^2.6.6"
+
 "@zhinan-oppo/lazyload-preprocessor@file:helpers/lazyload-preprocessor":
   version "1.7.0"
   dependencies:
@@ -2034,7 +2040,7 @@
 "@zhinan-oppo/lazyload@file:packages/lazyload":
   version "1.7.0"
   dependencies:
-    lazyload "^2.0.0-rc.2"
+    vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
   version "1.4.0"
@@ -2047,7 +2053,7 @@
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "1.7.0"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-1.7.0-e7014118-7182-494a-89aa-651aeea09531-1588939044412/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-1.7.0-df417e09-f9ae-4136-952c-1aabab603f99-1589034531724/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "1.7.2"
@@ -5855,11 +5861,6 @@ lazy-cache@^1.0.3:
   version "1.0.4"
   resolved "https://registry.npm.taobao.org/lazy-cache/download/lazy-cache-1.0.4.tgz#a1d78fc3a50474cb80845d3b3b6e1da49a446e8e"
   integrity sha1-odePw6UEdMuAhF07O24dpJpEbo4=
-
-lazyload@^2.0.0-rc.2:
-  version "2.0.0-rc.2"
-  resolved "https://registry.npmjs.org/lazyload/-/lazyload-2.0.0-rc.2.tgz#c774eb7966f334c9bed2f27580fc333a770eb256"
-  integrity sha512-v3OKwYrKHX09eAyeAmkpvVCF5qWZo8rxERT9AVOUFaRwlTIuCyMYVBfHYSra1uyBdKDEHnUkvpZTLgNWI9Y7lA==
 
 lerna@^3.20.2:
   version "3.20.2"
@@ -9826,6 +9827,11 @@ validate-npm-package-name@^3.0.0:
   integrity sha1-X6kS2B630MdK/BQN5zF/DKffQ34=
   dependencies:
     builtins "^1.0.3"
+
+vanilla-lazyload@^15.2.0:
+  version "15.2.0"
+  resolved "https://registry.npmjs.org/vanilla-lazyload/-/vanilla-lazyload-15.2.0.tgz#a9f2ef5612f2030bdb065f18de0060faff417f9a"
+  integrity sha512-OSwDUuo1pdGEJ3rCbwzF46gcu9qjdKsldXnQLK1CQuU8iJm9Z+DHYPKUhQs3Fb31dtQoQoUnBy+GygiOyOx0ug==
 
 vendors@^1.0.0:
   version "1.0.4"

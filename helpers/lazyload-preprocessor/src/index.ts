@@ -158,10 +158,12 @@ function createPlugin({
           if (attr !== dstAttr) {
             attrs[attr] = shouldRemoveSrc
               ? undefined
-              : prepareSrcset(
-                  filteredMedias.map(({ factor }) => factor),
-                  { url, query },
-                );
+              : prepareSrc({
+                  url,
+                  query,
+                  type,
+                  factor: filteredMedias.map(({ factor }) => factor).join('_'),
+                });
           }
         }),
       );
