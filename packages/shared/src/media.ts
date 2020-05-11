@@ -23,17 +23,15 @@ export function matchMedia(medias: Media[], windowWidth = getWindowWidth()) {
     const media = medias[i];
     const { width, orientation } = media;
 
-    if (orientation && orientation !== windowOrientation) {
-      return;
-    }
-
-    if (isMinWidth(width)) {
-      if (windowWidth >= width.min) {
-        return media;
-      }
-    } else {
-      if (windowWidth <= width.max) {
-        return media;
+    if (!orientation || orientation === windowOrientation) {
+      if (isMinWidth(width)) {
+        if (windowWidth >= width.min) {
+          return media;
+        }
+      } else {
+        if (windowWidth <= width.max) {
+          return media;
+        }
       }
     }
   }
