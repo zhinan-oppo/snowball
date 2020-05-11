@@ -5,13 +5,15 @@ import { loader } from 'webpack';
 
 import schema from './options.schema';
 
+type Medias = Array<{
+  factor: number;
+  alias?: string;
+  width?: { min?: number; max?: number };
+}>;
+
 interface Options {
   esModule?: boolean;
-  medias: Array<{
-    factor: number;
-    alias?: string;
-    width?: { min?: number; max?: number };
-  }>;
+  medias: Medias | { default: Medias; [name: string]: Medias };
 }
 
 const LOADER_NAME = 'ImageSizesLoader';
@@ -22,7 +24,11 @@ export default function(this: loader.LoaderContext) {
     this.cacheable(true);
   }
 
-  const options = getOptions(this) as Options;
+  const { medias: rawMedias, ...restOptions } = getOptions(this) as Options;
+  const options = {
+    ...restOptions,
+    medias: rawMedias instanceof Array ? { default: rawMedias } : rawMedias,
+  };
   const query = (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
   options.esModule =
     typeof query.esModule === 'boolean' ? query.esModule : options.esModule;
@@ -31,12 +37,16 @@ export default function(this: loader.LoaderContext) {
     baseDataPath: 'options',
   });
 
-  const exclude: string[] = query.exclude instanceof Array ? query.exclude : [];
   const { esModule = true, medias } = options;
+  const media: string = query.media || 'default';
+  if (!medias[media]) {
+    throw new Error(`Invalid query options: {media:${media}}`);
+  }
+  const exclude: string[] = query.exclude instanceof Array ? query.exclude : [];
   const { width: oriWidth } = imageSize(this.resourcePath) || {};
   const code =
     typeof oriWidth === 'number'
-      ? medias
+      ? medias[media]
           .filter(({ alias }) => !alias || !exclude.includes(alias))
           .map(({ factor, width }) => {
             const w = `${Math.round(oriWidth * factor)}px`;
