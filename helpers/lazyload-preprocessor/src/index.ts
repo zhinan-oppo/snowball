@@ -185,11 +185,19 @@ function createPlugin({
   };
 }
 
+type SrcAttrName = string;
 // TODO: validate options
 export function createProcessor(
-  conf: Array<Partial<PluginOptions>>,
-  { mode, defaultOptions = {} }: Partial<Options>,
+  {
+    default: defaultOptions = {},
+    ...options
+  }: Record<SrcAttrName, Partial<Omit<PluginOptions, 'srcAttrName'>>>,
+  { mode = 'production' }: Partial<Options> = {},
 ) {
+  const conf = Object.entries(options).map(([srcAttrName, item]) => ({
+    ...item,
+    srcAttrName,
+  }));
   return async (html: string, loader: webpack.loader.LoaderContext) => {
     const { root } = getOptions(loader);
     const { html: htmlProcessed } = await posthtml(
