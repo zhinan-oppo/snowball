@@ -2016,53 +2016,54 @@
   integrity sha1-0pHGpOl5ibXGHZrPOWrk/hM6cY0=
 
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
-  version "1.7.0"
+  version "2.1.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-1.7.0-d8e674fe-5efc-4369-912c-54489d7cec7b-1589102911553/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-2.1.0-6caa0c89-2d6a-4871-b830-9d867bddd2db-1589178613371/node_modules/@zhinan-oppo/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
-  version "1.7.0"
+  version "2.0.0"
 
 "@zhinan-oppo/image-loader@file:helpers/image-loader":
-  version "1.7.0"
+  version "2.0.0"
   dependencies:
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
     sharp "^0.25.2"
 
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
-  version "1.7.0"
+  version "2.0.1"
   dependencies:
+    image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
 
 "@zhinan-oppo/lazyload-preprocessor@file:helpers/lazyload-preprocessor":
-  version "1.7.0"
+  version "2.0.3"
   dependencies:
     loader-utils "^1.0.0"
     postman "^0.2.0"
 
 "@zhinan-oppo/lazyload@file:packages/lazyload":
-  version "1.7.0"
+  version "2.1.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-1.7.0-25834c3a-a675-4524-b0f8-85d7fab6d627-1589102911618/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-2.1.0-bc2e9dec-21ba-4fb2-b2c7-61e4b6b5ea3e-1589178613453/node_modules/@zhinan-oppo/shared"
     vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
-  version "1.4.0"
+  version "2.0.0"
   dependencies:
     lodash "^4.17.15"
 
 "@zhinan-oppo/shared@file:packages/shared":
-  version "1.5.0"
+  version "2.1.0"
 
 "@zhinan-oppo/sticky@file:packages/sticky":
-  version "1.7.0"
+  version "2.0.0"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-1.7.0-5db76ab8-b4e7-406a-8d1e-35abb6656c1a-1589102911639/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-2.0.0-d2a9bf24-9e4e-42b6-9a37-42b937511329-1589178613466/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
-  version "1.7.2"
+  version "2.0.0"
   dependencies:
     mkdirp "^1.0.4"
     posthtml "^0.12.3"
@@ -3358,6 +3359,11 @@ core-js@^2.4.0, core-js@^2.6.5:
   version "2.6.11"
   resolved "https://registry.npm.taobao.org/core-js/download/core-js-2.6.11.tgz#38831469f9922bded8ee21c9dc46985e0399308c"
   integrity sha1-OIMUafmSK97Y7iHJ3EaYXgOZMIw=
+
+core-js@^3.6.5:
+  version "3.6.5"
+  resolved "https://registry.npmjs.org/core-js/-/core-js-3.6.5.tgz#7395dc273af37fb2e50e9bd3d9fe841285231d1a"
+  integrity sha512-vZVEEwZoIsI+vPEuoF9Iqf5H7/M3eeQqWlQnYa8FSKKePuYTf5MWnxb5SDAzCa60b3JBRS5g9b+Dq7b1y/RCrA==
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
