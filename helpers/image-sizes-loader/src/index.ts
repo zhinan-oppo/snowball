@@ -47,7 +47,10 @@ export default function(this: loader.LoaderContext) {
   const code =
     typeof oriWidth === 'number'
       ? medias[media]
-          .filter(({ alias }) => !alias || !exclude.includes(alias))
+          .filter(
+            ({ alias, factor }) =>
+              factor > 0 && !(alias && exclude.includes(alias)),
+          )
           .map(({ factor, width }) => {
             const w = `${Math.round(oriWidth * factor)}px`;
             const { min, max } = width || {};

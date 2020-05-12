@@ -128,10 +128,11 @@ function createPlugin({
             url,
             query: { exclude, ...query },
           } = parseRequest(value, { root });
-          const filteredMedias =
-            exclude instanceof Array
-              ? medias.filter(({ alias }) => !exclude.includes(alias))
-              : medias;
+          const filteredMedias = medias.filter(
+            ({ alias, factor }) =>
+              factor > 0 &&
+              !(exclude instanceof Array && exclude.includes(alias)),
+          );
 
           if (type === 'srcset') {
             attrs[dstAttr] = prepareSrcset(
