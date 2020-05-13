@@ -6,7 +6,7 @@ type SourceType = 'src' | 'srcset';
 
 interface TransformSrcOptions {
   url: string;
-  factor: number | string;
+  ratio: number | string;
   query: Record<string, any>;
   type: SourceType;
 }
@@ -17,13 +17,18 @@ interface TransformSizesOptions {
 }
 
 export interface PluginOptions {
+  /** default to 1 */
+  baseRatio: number;
+  /** e.g. '@src' */
   srcAttrName: string;
+  /** e.g. 'data-srcset' */
   defaultDstAttr: string;
+  /** e.g. 'data-sizes' */
   sizesAttrName?: string;
   type: SourceType;
   medias: Array<{
     width?: { min?: number; max?: number };
-    factor: number;
+    ratio: number;
     alias: string;
   }>;
   transformSrcRequest?: (
@@ -36,7 +41,6 @@ export interface PluginOptions {
 
 export interface Options {
   mode: 'development' | 'production';
-  defaultOptions: Partial<Omit<PluginOptions, 'srcAttrName'>>;
 }
 
 function stringifyQuery(query: Record<string, any>) {
@@ -57,7 +61,7 @@ function _prepareSrc(
   callback: PluginOptions['transformSrcRequest'],
   { query, ...options }: TransformSrcOptions,
 ) {
-  query = { ...query, type: options.type, factor: options.factor };
+  query = { ...query, type: options.type, ratio: options.ratio };
   const res = callback
     ? callback({
         ...options,
@@ -85,11 +89,12 @@ function _prepareSizes(
 }
 
 function createPlugin({
+  baseRatio: defaultBaseRatio = 1,
   type = 'src',
   srcAttrName = 'z-src',
   defaultDstAttr = type === 'src' ? 'data-src' : 'data-srcset',
   sizesAttrName = type === 'srcset' ? 'data-sizes' : undefined,
-  medias = [{ factor: 1, alias: 'default' }],
+  medias = [{ ratio: 1, alias: 'default' }],
   shouldRemoveSrc = true,
   transformSrcRequest,
   transformSizesRequest,
@@ -99,11 +104,11 @@ function createPlugin({
     _prepareSrc(transformSrcRequest, options);
 
   const prepareSrcset = (
-    factors: number[],
-    options: Omit<TransformSrcOptions, 'type' | 'factor'>,
+    ratios: number[],
+    options: Omit<TransformSrcOptions, 'type' | 'ratio'>,
   ) =>
-    factors
-      .map((factor) => prepareSrc({ ...options, type: 'srcset', factor }))
+    ratios
+      .map((ratio) => prepareSrc({ ...options, type: 'srcset', ratio }))
       .join(', ');
 
   const prepareSizes = (options: TransformSizesOptions) =>
@@ -129,33 +134,42 @@ function createPlugin({
             query: { exclude, ...query },
           } = parseRequest(value, { root });
           const filteredMedias = medias.filter(
-            ({ alias, factor }) =>
-              factor > 0 &&
+            ({ alias, ratio }) =>
+              ratio > 0 &&
               !(exclude instanceof Array && exclude.includes(alias)),
           );
-          const maxFactor = filteredMedias.reduce(
-            (max, { factor }) => Math.max(max, factor),
+          const maxRatio = filteredMedias.reduce(
+            (max, { ratio }) => Math.max(max, ratio),
             0,
           );
 
           if (type === 'srcset') {
-            attrs[dstAttr] = prepareSrcset(
-              filteredMedias.map(({ factor }) => factor / maxFactor),
-              { url, query },
+            const baseRatio: number = query.baseRatio || defaultBaseRatio;
+            const ratios = new Set<number>(
+              filteredMedias.map(({ ratio }) => ratio / maxRatio),
             );
+            if (baseRatio > 1) {
+              Array.from(ratios).forEach((ratio) => {
+                ratios.add(ratio / baseRatio);
+              });
+            }
+            attrs[dstAttr] = prepareSrcset(Array.from(ratios).sort(), {
+              url,
+              query,
+            });
             if (sizesAttrName && typeof attrs[sizesAttrName] !== 'string') {
               attrs[sizesAttrName] = prepareSizes({
                 url,
-                query: { exclude, ...query },
+                query: { exclude, baseRatio, ...query },
               });
             }
           } else {
-            filteredMedias.forEach(({ alias, factor }) => {
+            filteredMedias.forEach(({ alias, ratio }) => {
               attrs[`${dstAttr}-${alias}`] = prepareSrc({
                 url,
                 query,
                 type,
-                factor: factor / maxFactor,
+                ratio: ratio / maxRatio,
               });
             });
           }
@@ -167,7 +181,7 @@ function createPlugin({
                   url,
                   query,
                   type,
-                  factor: filteredMedias.map(({ factor }) => factor).join('_'),
+                  ratio: filteredMedias.map(({ ratio }) => ratio).join('_'),
                 });
           }
         }),

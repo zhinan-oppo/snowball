@@ -4,9 +4,9 @@ export default {
       type: 'array' as 'array',
       items: {
         type: 'object' as 'object',
-        required: ['factor'],
+        required: ['ratio'],
         properties: {
-          factor: {
+          ratio: {
             type: 'number' as 'number',
             min: 1e-3,
             max: 1,
@@ -36,6 +36,10 @@ export default {
       description:
         'By default, responsive-image-loader generates JS modules that use the ES modules syntax.',
       type: 'boolean' as 'boolean',
+    },
+    baseRatio: {
+      type: 'number' as 'number',
+      min: 0,
     },
     medias: {
       description: 'Breakpoint settings',

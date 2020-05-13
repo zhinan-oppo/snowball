@@ -8,7 +8,7 @@ import { getMediaQuery, Media } from '@zhinan-oppo/shared';
 import schema from './options.schema';
 
 type Medias = Array<{
-  factor: number;
+  ratio: number;
   width?: { min?: number; max?: number };
   orientation?: Media['orientation'];
   alias?: string;
@@ -16,6 +16,7 @@ type Medias = Array<{
 
 interface Options {
   esModule?: boolean;
+  baseRatio?: number;
   medias: Medias | { default: Medias; [name: string]: Medias };
 }
 
@@ -27,40 +28,51 @@ export default function(this: loader.LoaderContext) {
     this.cacheable(true);
   }
 
-  const { medias: rawMedias, ...restOptions } = getOptions(this) as Options;
+  const {
+    medias: rawMedias,
+    baseRatio: defaultBaseRatio = 1,
+    ...restOptions
+  } = getOptions(this) as Options;
   const options = {
     ...restOptions,
+    baseRatio: defaultBaseRatio,
     medias: rawMedias instanceof Array ? { default: rawMedias } : rawMedias,
   };
   const query = (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
-  options.esModule =
-    typeof query.esModule === 'boolean' ? query.esModule : options.esModule;
+  if (typeof query.esModule === 'boolean') {
+    options.esModule = query.esModule;
+  }
+  if (typeof query.baseRatio === 'number') {
+    options.baseRatio = query.baseRatio;
+  }
   validate(schema, options, {
     name: LOADER_NAME,
     baseDataPath: 'options',
   });
 
-  const { esModule = true, medias } = options;
+  const { esModule = true, medias, baseRatio } = options;
   const media: string = query.media || 'default';
   if (!medias[media]) {
     throw new Error(`Invalid query options: {media:${media}}`);
   }
   const exclude: string[] = query.exclude instanceof Array ? query.exclude : [];
   const { width: oriWidth } = imageSize(this.resourcePath) || {};
-  const maxFactor = medias[media].reduce(
-    (max, { factor }) => Math.max(max, factor),
+  const maxRatio = medias[media].reduce(
+    (max, { ratio }) => Math.max(max, ratio),
     0,
   );
   const code =
     typeof oriWidth === 'number'
       ? medias[media]
           .filter(
-            ({ alias, factor }) =>
-              factor > 0 && !(alias && exclude.includes(alias)),
+            ({ alias, ratio }) =>
+              ratio > 0 && !(alias && exclude.includes(alias)),
           )
           .map((media) => {
-            const { factor, width, orientation } = media;
-            const w = `${Math.round(oriWidth * (factor / maxFactor))}px`;
+            const { ratio, width, orientation } = media;
+            const w = `${Math.round(
+              (oriWidth / baseRatio) * (ratio / maxRatio),
+            )}px`;
             const query = getMediaQuery({ width, orientation });
             return query ? `${query} ${w}` : w;
           })

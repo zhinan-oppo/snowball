@@ -7,7 +7,7 @@ import { compilation, loader, Logger } from 'webpack';
 import schema from './options.schema';
 
 interface Options {
-  factor?: number;
+  ratio?: number;
   name?: string;
   type?: 'src' | 'srcset';
   esModule?: boolean;
@@ -27,7 +27,7 @@ async function scaleAndEmitImage(
   source: Buffer | string,
   {
     name = '[contenthash].[ext]',
-    factor = 1,
+    ratio = 1,
     output,
     outputOptions,
   }: Options & { outputOptions?: object } = {},
@@ -50,7 +50,7 @@ async function scaleAndEmitImage(
   if (!oriWidth || !format) {
     throw new Error('Unsupported image');
   }
-  logger.log({ format, width: oriWidth, factor, outputOptions });
+  logger.log({ format, width: oriWidth, ratio, outputOptions });
 
   if (output && format && output[format]) {
     outputOptions = Object.assign({}, output[format], outputOptions);
@@ -58,7 +58,7 @@ async function scaleAndEmitImage(
   img.toFormat(format, outputOptions);
   const { name: oriName, ext, dir } = parsePath(url);
 
-  const width = Math.round(oriWidth * factor);
+  const width = Math.round(oriWidth * ratio);
   const resized = await img.resize({ width }).toBuffer();
   const filename = posix.join(dir, `${oriName}_${width}${ext}`);
   loader.emitFile(filename, resized, undefined);
@@ -83,13 +83,13 @@ export default function(this: loader.LoaderContext) {
 
   const options = (getOptions(this) as Options) || {};
   const {
-    factor: factorStr = options.factor,
+    ratio: ratioStr = options.ratio,
     name = options.name,
     type = options.type,
     esModule = options.esModule,
     ...queries
   } = (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
-  const factor = parseFloat(factorStr);
+  const ratio = parseFloat(ratioStr);
   validate(schema, options, {
     name: LOADER_NAME,
     baseDataPath: 'options',
@@ -98,7 +98,7 @@ export default function(this: loader.LoaderContext) {
   scaleAndEmitImage(
     this,
     this.resourcePath,
-    { factor, name, type, outputOptions: queries },
+    { ratio, name, type, outputOptions: queries },
     logger,
   )
     .then(({ filename, width }) => {

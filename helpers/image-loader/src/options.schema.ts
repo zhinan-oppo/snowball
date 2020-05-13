@@ -1,7 +1,7 @@
 export default {
   definitions: {
     Factor: {
-      description: 'The factor to scale images',
+      description: 'The ratio to scale images',
       type: 'number' as 'number',
       min: 1e-3,
       max: 1,
@@ -20,7 +20,7 @@ export default {
         'By default, image-loader generates JS modules that use the ES modules syntax.',
       type: 'boolean' as 'boolean',
     },
-    factor: {
+    ratio: {
       $ref: '#/definitions/Factor',
     },
     type: {
