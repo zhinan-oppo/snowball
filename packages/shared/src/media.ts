@@ -36,3 +36,32 @@ export function matchMedia(medias: Media[], windowWidth = getWindowWidth()) {
     }
   }
 }
+
+function queryAnd(a?: string, b?: string) {
+  return a && b ? `${a} and ${b}` : a || b || '';
+}
+
+export function getMediaQuery(
+  {
+    width,
+    orientation,
+  }: {
+    width?: { min?: number; max?: number };
+    orientation?: Media['orientation'];
+  },
+  { orientation: oriented = true } = {},
+) {
+  const orientationQuery =
+    (oriented && orientation && `(orientation: ${orientation})`) || undefined;
+  if (!width) {
+    return orientationQuery || '';
+  }
+  const { min, max } = width;
+  return queryAnd(
+    orientationQuery,
+    queryAnd(
+      (typeof min === 'number' && `(min-width: ${min}px)`) || undefined,
+      (typeof max === 'number' && `(max-width: ${max}px)`) || undefined,
+    ),
+  );
+}

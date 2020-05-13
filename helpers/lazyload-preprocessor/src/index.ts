@@ -133,10 +133,14 @@ function createPlugin({
               factor > 0 &&
               !(exclude instanceof Array && exclude.includes(alias)),
           );
+          const maxFactor = filteredMedias.reduce(
+            (max, { factor }) => Math.max(max, factor),
+            0,
+          );
 
           if (type === 'srcset') {
             attrs[dstAttr] = prepareSrcset(
-              filteredMedias.map(({ factor }) => factor),
+              filteredMedias.map(({ factor }) => factor / maxFactor),
               { url, query },
             );
             if (sizesAttrName && typeof attrs[sizesAttrName] !== 'string') {
@@ -149,9 +153,9 @@ function createPlugin({
             filteredMedias.forEach(({ alias, factor }) => {
               attrs[`${dstAttr}-${alias}`] = prepareSrc({
                 url,
-                factor,
                 query,
                 type,
+                factor: factor / maxFactor,
               });
             });
           }

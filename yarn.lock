@@ -2016,9 +2016,9 @@
   integrity sha1-0pHGpOl5ibXGHZrPOWrk/hM6cY0=
 
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
-  version "2.1.0"
+  version "2.1.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-2.1.0-6caa0c89-2d6a-4871-b830-9d867bddd2db-1589178613371/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-2.1.1-5fbae41e-9809-461f-b0f2-622c803167e4-1589342240935/node_modules/@zhinan-oppo/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "2.0.0"
@@ -2031,22 +2031,23 @@
     sharp "^0.25.2"
 
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
-  version "2.0.1"
+  version "2.2.1"
   dependencies:
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-2.2.1-d2df95c0-e7a8-4e0d-9cff-9e240e9dc0e0-1589342240991/node_modules/packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
 
 "@zhinan-oppo/lazyload-preprocessor@file:helpers/lazyload-preprocessor":
-  version "2.0.3"
+  version "2.2.1"
   dependencies:
     loader-utils "^1.0.0"
     postman "^0.2.0"
 
 "@zhinan-oppo/lazyload@file:packages/lazyload":
-  version "2.1.0"
+  version "2.1.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-2.1.0-bc2e9dec-21ba-4fb2-b2c7-61e4b6b5ea3e-1589178613453/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-2.1.1-32dc9675-c25b-47af-bdd4-e2c536e9cc8b-1589342240996/node_modules/@zhinan-oppo/shared"
     vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
@@ -2055,12 +2056,12 @@
     lodash "^4.17.15"
 
 "@zhinan-oppo/shared@file:packages/shared":
-  version "2.1.0"
+  version "2.1.1"
 
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "2.0.0"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-2.0.0-d2a9bf24-9e4e-42b6-9a37-42b937511329-1589178613466/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-2.0.0-6935a216-c80e-4549-b3dd-510a4620f5c1-1589342241011/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "2.0.0"

@@ -3,12 +3,15 @@ import { getOptions, parseQuery } from 'loader-utils';
 import validate from 'schema-utils';
 import { loader } from 'webpack';
 
+import { getMediaQuery, Media } from '@zhinan-oppo/shared';
+
 import schema from './options.schema';
 
 type Medias = Array<{
   factor: number;
-  alias?: string;
   width?: { min?: number; max?: number };
+  orientation?: Media['orientation'];
+  alias?: string;
 }>;
 
 interface Options {
@@ -44,6 +47,10 @@ export default function(this: loader.LoaderContext) {
   }
   const exclude: string[] = query.exclude instanceof Array ? query.exclude : [];
   const { width: oriWidth } = imageSize(this.resourcePath) || {};
+  const maxFactor = medias[media].reduce(
+    (max, { factor }) => Math.max(max, factor),
+    0,
+  );
   const code =
     typeof oriWidth === 'number'
       ? medias[media]
@@ -51,16 +58,11 @@ export default function(this: loader.LoaderContext) {
             ({ alias, factor }) =>
               factor > 0 && !(alias && exclude.includes(alias)),
           )
-          .map(({ factor, width }) => {
-            const w = `${Math.round(oriWidth * factor)}px`;
-            const { min, max } = width || {};
-            return min && max
-              ? `((min-width: ${min}px) and (max-width: ${max}px)) ${w}`
-              : min
-              ? `(min-width: ${min}px) ${w}`
-              : max
-              ? `(max-width: ${max}px) ${w}`
-              : w.toString();
+          .map((media) => {
+            const { factor, width, orientation } = media;
+            const w = `${Math.round(oriWidth * (factor / maxFactor))}px`;
+            const query = getMediaQuery({ width, orientation });
+            return query ? `${query} ${w}` : w;
           })
           .join(', ')
       : '';
