@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/image-sizes-loader",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "Load image sizes",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
