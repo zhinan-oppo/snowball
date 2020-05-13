@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/lazyload-preprocessor",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Lazy load preprocessor",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
