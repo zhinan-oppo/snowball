@@ -157,7 +157,11 @@ function createPlugin({
               url,
               query,
             });
-            if (sizesAttrName && typeof attrs[sizesAttrName] !== 'string') {
+            if (
+              sizesAttrName &&
+              typeof attrs[sizesAttrName] !== 'string' &&
+              typeof attrs.sizes !== 'string'
+            ) {
               attrs[sizesAttrName] = prepareSizes({
                 url,
                 query: { exclude, baseRatio, ...query },
