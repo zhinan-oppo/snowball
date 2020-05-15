@@ -50,11 +50,18 @@ async function scaleAndEmitImage(
   if (!oriWidth || !format) {
     throw new Error('Unsupported image');
   }
-  logger.log({ format, width: oriWidth, ratio, outputOptions });
 
   if (output && format && output[format]) {
     outputOptions = Object.assign({}, output[format], outputOptions);
   }
+  logger.log({
+    source: typeof source === 'string' ? source : 'Buffer',
+    format,
+    width: oriWidth,
+    ratio,
+    outputOptions,
+  });
+
   img.toFormat(format, outputOptions);
   const { name: oriName, ext, dir } = parsePath(url);
 
@@ -90,15 +97,25 @@ export default function(this: loader.LoaderContext) {
     ...queries
   } = (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
   const ratio = parseFloat(ratioStr);
-  validate(schema, options, {
-    name: LOADER_NAME,
-    baseDataPath: 'options',
-  });
+  validate(
+    schema,
+    {
+      ratio,
+      name,
+      type,
+      esModule,
+      output: options.output,
+    },
+    {
+      name: LOADER_NAME,
+      baseDataPath: 'options',
+    },
+  );
 
   scaleAndEmitImage(
     this,
     this.resourcePath,
-    { ratio, name, type, outputOptions: queries },
+    { ratio, name, type, outputOptions: queries, output: options.output },
     logger,
   )
     .then(({ filename, width }) => {
