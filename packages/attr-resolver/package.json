@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/attr-resolver",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Resolve element attributes by media queries",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
