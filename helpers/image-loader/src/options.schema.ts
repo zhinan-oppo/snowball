@@ -1,9 +1,9 @@
 export default {
   definitions: {
-    Factor: {
+    Ratio: {
       description: 'The ratio to scale images',
       type: 'number' as 'number',
-      min: 1e-3,
+      min: 0,
       max: 1,
     },
   },
@@ -20,45 +20,26 @@ export default {
         'By default, image-loader generates JS modules that use the ES modules syntax.',
       type: 'boolean' as 'boolean',
     },
-    ratio: {
-      $ref: '#/definitions/Factor',
+    ratios: {
+      type: 'array' as 'array',
+      minLength: 1,
+      items: {
+        $ref: '#/definitions/Ratio',
+      },
     },
     type: {
       enum: ['src', 'srcset'],
     },
-    output: {
-      type: 'object' as 'object',
-      additionalProperties: true,
-      properties: {
-        jpeg: {
-          type: 'object' as 'object',
-          additionalProperties: true,
-          properties: {
-            quality: {
-              type: 'number' as 'number',
-              min: 1,
-              max: 100,
-            },
-            progressive: {
-              type: 'boolean' as 'boolean',
-            },
-          },
-        },
-        png: {
-          type: 'object' as 'object',
-          additionalProperties: true,
-          properties: {
-            quality: {
-              type: 'number' as 'number',
-              min: 1,
-              max: 100,
-            },
-            progressive: {
-              type: 'boolean' as 'boolean',
-            },
-          },
-        },
-      },
+    quality: {
+      type: 'number' as 'number',
+      min: 50,
+      max: 100,
+    },
+    progressive: {
+      type: 'boolean' as 'boolean',
+    },
+    outputPath: {
+      type: 'string' as 'string',
     },
   },
 };

@@ -8,7 +8,7 @@ export default {
         properties: {
           ratio: {
             type: 'number' as 'number',
-            min: 1e-3,
+            min: 0,
             max: 1,
           },
           width: {

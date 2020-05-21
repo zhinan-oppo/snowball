@@ -1,3 +1,6 @@
+import imagemin from 'imagemin';
+import jpeg from 'imagemin-mozjpeg';
+import png from 'imagemin-pngquant';
 import { getOptions, interpolateName, parseQuery } from 'loader-utils';
 import { parse as parsePath, posix } from 'path';
 import validate from 'schema-utils';
@@ -7,36 +10,21 @@ import { compilation, loader, Logger } from 'webpack';
 import schema from './options.schema';
 
 interface Options {
-  ratio?: number;
+  ratios?: number[];
   name?: string;
   type?: 'src' | 'srcset';
   esModule?: boolean;
-  output?: {
-    jpeg?: object;
-    png?: object;
-    webp?: object;
-    gif?: object;
-    svg?: object;
-  };
+  quality?: number;
+  progressive?: boolean;
 }
 
 const LOADER_NAME = 'ImageLoader';
 
-async function scaleAndEmitImage(
-  loader: loader.LoaderContext,
+async function resize(
   source: Buffer | string,
-  {
-    name = '[contenthash].[ext]',
-    ratio = 1,
-    output,
-    outputOptions,
-  }: Options & { outputOptions?: object } = {},
+  ratios = [1],
   logger: typeof console | Logger = console,
 ) {
-  const url = interpolateName(loader, name, {
-    context: loader.rootContext,
-    content: source,
-  });
   const img = sharp(source);
   const meta = await img.metadata();
   const oriWidth = meta.width;
@@ -50,61 +38,79 @@ async function scaleAndEmitImage(
   if (!oriWidth || !format) {
     throw new Error('Unsupported image');
   }
-
-  if (output && format && output[format]) {
-    outputOptions = Object.assign({}, output[format], outputOptions);
-  }
   logger.log({
     source: typeof source === 'string' ? source : 'Buffer',
     format,
     width: oriWidth,
-    ratio,
-    outputOptions,
+    ratios,
   });
 
-  img.toFormat(format, outputOptions);
-  const { name: oriName, ext, dir } = parsePath(url);
+  return {
+    format,
+    images: ratios
+      .filter((ratio) => ratio > 0 && ratio <= 1)
+      .map(async (ratio) => {
+        const width = Math.round(oriWidth * ratio);
+        const content = await img.resize({ width }).toBuffer();
+        return { content, format, width, ratio };
+      }),
+  };
+}
 
-  const width = Math.round(oriWidth * ratio);
-  const resized = await img.resize({ width }).toBuffer();
-  const filename = posix.join(dir, `${oriName}_${width}${ext}`);
-  loader.emitFile(filename, resized, undefined);
-  logger.log(`${filename} emitted`);
-
-  return { filename, width };
+function emitFiles(
+  loader: loader.LoaderContext,
+  files: Array<{ filename: string; content: Buffer }>,
+) {
+  files.forEach(({ filename, content }) => {
+    loader.emitFile(filename, content, undefined);
+  });
 }
 
 export const raw = true;
-export default function(this: loader.LoaderContext) {
+export default async function(
+  this: loader.LoaderContext,
+  source?: Buffer,
+  result?: string,
+  ...files: Array<{ filename: string; content: Buffer }>
+) {
+  /**
+   * 通过重复 loader 使得 cache-loader 可以缓存 emitFile 的文件
+   */
+  if (!source) {
+    emitFiles(this, files);
+    return result;
+  }
+
   if (this.cacheable) {
     this.cacheable(true);
   }
 
-  const callback = this.async();
+  const callback = this.async() as Function;
   if (!callback) {
     throw new Error('async() failed');
   }
+
   const logger = (this._compilation as compilation.Compilation).getLogger(
     LOADER_NAME,
   );
 
   const options = (getOptions(this) as Options) || {};
   const {
-    ratio: ratioStr = options.ratio,
+    ratios = options.ratios,
     name = options.name,
     type = options.type,
     esModule = options.esModule,
-    ...queries
+    quality = options.quality || 100,
+    progressive = options.progressive || true,
   } = (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
-  const ratio = parseFloat(ratioStr);
+
   validate(
     schema,
     {
-      ratio,
+      ratios,
       name,
       type,
       esModule,
-      output: options.output,
     },
     {
       name: LOADER_NAME,
@@ -112,25 +118,55 @@ export default function(this: loader.LoaderContext) {
     },
   );
 
-  scaleAndEmitImage(
-    this,
-    this.resourcePath,
-    { ratio, name, type, outputOptions: queries, output: options.output },
-    logger,
-  )
-    .then(({ filename, width }) => {
-      let code = `__webpack_public_path__ + ${JSON.stringify(filename)}`;
-      if (type === 'srcset') {
-        code += ` + ' ${width}w'`;
-      }
+  const url = interpolateName(this, name, {
+    content: source,
+    context: this.rootContext,
+  });
+  const { name: oriName, ext, dir } = parsePath(url);
 
-      callback(
-        null,
-        esModule ? `export default ${code}` : `module.exports = ${code}`,
-      );
-    })
-    .catch((e) => {
-      logger.error(e);
-      callback(e);
-    });
+  try {
+    const { format, images } = await resize(source, ratios, logger);
+    const plugins =
+      format === 'png'
+        ? [png({ quality: [0.5, quality / 100], strip: true })]
+        : format === 'jpeg'
+        ? [jpeg({ quality, progressive })]
+        : undefined;
+    const files = await Promise.all(
+      images.map(async (p) => {
+        const { content, width, ratio } = await p;
+        const filename = posix.join(
+          dir,
+          `${oriName}/${width}@${ratio.toString().replace(/^0\./, 'd')}${ext}`,
+        );
+        let resBuffer = content;
+        if (plugins) {
+          resBuffer = await imagemin.buffer(content, { plugins });
+        }
+        return { filename, width, content: resBuffer };
+      }),
+    );
+    const res =
+      (esModule ? 'export default ' : 'module.exports = ') +
+      files
+        .map(({ filename, width }) => {
+          let code = `__webpack_public_path__ + ${JSON.stringify(filename)}`;
+          if (type === 'srcset') {
+            code += ` + ' ${width}w'`;
+          }
+          return code;
+        })
+        .join(' + ", " + ');
+
+    if (this.loaderIndex === 0) {
+      /** 没有使用缓存，直接 emitFile */
+      emitFiles(this, files);
+      return callback(undefined, res);
+    }
+
+    callback(undefined, undefined, res, ...(files as any));
+  } catch (e) {
+    logger.error(e);
+    callback(e);
+  }
 }

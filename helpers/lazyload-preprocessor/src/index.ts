@@ -1,12 +1,13 @@
 import { getOptions, parseQuery } from 'loader-utils';
 import posthtml, { PostHTML } from 'posthtml';
 import webpack from 'webpack';
+import { fixNumber } from './util';
 
 type SourceType = 'src' | 'srcset';
 
 interface TransformSrcOptions {
   url: string;
-  ratio: number | string;
+  ratios: number[];
   query: Record<string, any>;
   type: SourceType;
 }
@@ -61,7 +62,7 @@ function _prepareSrc(
   callback: PluginOptions['transformSrcRequest'],
   { query, ...options }: TransformSrcOptions,
 ) {
-  query = { ...query, type: options.type, ratio: options.ratio };
+  query = { ...query, type: options.type, ratios: options.ratios };
   const res = callback
     ? callback({
         ...options,
@@ -105,11 +106,8 @@ function createPlugin({
 
   const prepareSrcset = (
     ratios: number[],
-    options: Omit<TransformSrcOptions, 'type' | 'ratio'>,
-  ) =>
-    ratios
-      .map((ratio) => prepareSrc({ ...options, type: 'srcset', ratio }))
-      .join(', ');
+    options: Omit<TransformSrcOptions, 'type' | 'ratios'>,
+  ) => prepareSrc({ ...options, ratios, type: 'srcset' });
 
   const prepareSizes = (options: TransformSizesOptions) =>
     _prepareSizes(transformSizesRequest, options);
@@ -146,11 +144,11 @@ function createPlugin({
           if (type === 'srcset') {
             const baseRatio: number = query.baseRatio || defaultBaseRatio;
             const ratios = new Set<number>(
-              filteredMedias.map(({ ratio }) => ratio / maxRatio),
+              filteredMedias.map(({ ratio }) => fixNumber(ratio / maxRatio)),
             );
             if (baseRatio > 1) {
               Array.from(ratios).forEach((ratio) => {
-                ratios.add(ratio / baseRatio);
+                ratios.add(fixNumber(ratio / baseRatio));
               });
             }
             attrs[dstAttr] = prepareSrcset(Array.from(ratios).sort(), {
@@ -173,7 +171,7 @@ function createPlugin({
                 url,
                 query,
                 type,
-                ratio: ratio / maxRatio,
+                ratios: [ratio / maxRatio],
               });
             });
           }
@@ -185,7 +183,7 @@ function createPlugin({
                   url,
                   query,
                   type,
-                  ratio: filteredMedias.map(({ ratio }) => ratio).join('_'),
+                  ratios: filteredMedias.map(({ ratio }) => ratio),
                 });
           }
         }),
