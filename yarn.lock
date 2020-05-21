@@ -2016,38 +2016,38 @@
   integrity sha1-0pHGpOl5ibXGHZrPOWrk/hM6cY0=
 
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
-  version "2.1.1"
+  version "2.3.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-2.1.1-5fbae41e-9809-461f-b0f2-622c803167e4-1589342240935/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-2.3.0-2e3bbc1f-559e-4430-9041-58a2bc8e8a9b-1590029140181/node_modules/@zhinan-oppo/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "2.0.0"
 
 "@zhinan-oppo/image-loader@file:helpers/image-loader":
-  version "2.0.0"
+  version "2.4.1"
   dependencies:
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
     sharp "^0.25.2"
 
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
-  version "2.2.1"
+  version "2.4.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-2.2.1-d2df95c0-e7a8-4e0d-9cff-9e240e9dc0e0-1589342240991/node_modules/packages/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-2.4.0-641d212b-f46d-4343-b49b-9ebf7977a134-1590029140234/node_modules/packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
 
 "@zhinan-oppo/lazyload-preprocessor@file:helpers/lazyload-preprocessor":
-  version "2.2.1"
+  version "2.5.0"
   dependencies:
     loader-utils "^1.0.0"
     postman "^0.2.0"
 
 "@zhinan-oppo/lazyload@file:packages/lazyload":
-  version "2.1.1"
+  version "2.3.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-2.1.1-32dc9675-c25b-47af-bdd4-e2c536e9cc8b-1589342240996/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-2.3.0-68617291-3993-4de6-8f92-26ea49ec32f6-1590029140239/node_modules/@zhinan-oppo/shared"
     vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
@@ -2056,12 +2056,12 @@
     lodash "^4.17.15"
 
 "@zhinan-oppo/shared@file:packages/shared":
-  version "2.1.1"
+  version "2.3.0"
 
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "2.0.0"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-2.0.0-6935a216-c80e-4549-b3dd-510a4620f5c1-1589342241011/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-2.0.0-07502b8d-85f9-45a7-bfcd-2e73c0dc9b5f-1590029140247/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "2.0.0"
@@ -8518,21 +8518,21 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rollup-plugin-typescript2@^0.27.0:
-  version "0.27.0"
-  resolved "https://registry.npmjs.org/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.27.0.tgz#95ff96f9e07d5000a9d2df4d76b548f9a1f83511"
-  integrity sha512-SRKG/Canve3cxBsqhY1apIBznqnX9X/WU3Lrq3XSwmTmFqccj3+//logLXFEmp+PYFNllSVng+f4zjqRTPKNkA==
+rollup-plugin-typescript2@^0.27.1:
+  version "0.27.1"
+  resolved "https://registry.npmjs.org/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.27.1.tgz#4f27193408a8f040139eed3e3db7b0c7f3668200"
+  integrity sha512-RJl77Bbj1EunAQDC3dK/O2HWuSUX3oJbRGzyLoS5o9W4Hs1Nix3Gavqj1Lzs5Y6Ff4H2xXfmZ1WWUQCYocSbzQ==
   dependencies:
     "@rollup/pluginutils" "^3.0.8"
     find-cache-dir "^3.3.1"
     fs-extra "8.1.0"
     resolve "1.15.1"
-    tslib "1.11.1"
+    tslib "1.11.2"
 
-rollup@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/rollup/-/rollup-2.1.0.tgz#552e248e397a06b9c6db878c0564ca4ee06729c9"
-  integrity sha512-gfE1455AEazVVTJoeQtcOq/U6GSxwoj4XPSWVsuWmgIxj7sBQNLDOSA82PbdMe+cP8ql8fR1jogPFe8Wg8g4SQ==
+rollup@^2.10.5:
+  version "2.10.5"
+  resolved "https://registry.npmjs.org/rollup/-/rollup-2.10.5.tgz#a2e6735fbcbd64453f8aa5d7b5ec1b421974f92c"
+  integrity sha512-05WRM/tjmPYwhOBvm/G9Qwa/HnAqn0TK0XxLDLQzoM4XdSmKjPBvhBl+U+Q/C6VJsucljyTQjGkZD503mjbPQg==
   optionalDependencies:
     fsevents "~2.1.2"
 
@@ -9531,7 +9531,12 @@ trim-off-newlines@^1.0.0:
   resolved "https://registry.npm.taobao.org/trim-off-newlines/download/trim-off-newlines-1.0.1.tgz#9f9ba9d9efa8764c387698bcbfeb2c848f11adb3"
   integrity sha1-n5up2e+odkw4dpi8v+sshI8RrbM=
 
-tslib@1.11.1, tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0:
+tslib@1.11.2:
+  version "1.11.2"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-1.11.2.tgz#9c79d83272c9a7aaf166f73915c9667ecdde3cc9"
+  integrity sha512-tTSkux6IGPnUGUd1XAZHcpu85MOkIl5zX49pO+jfsie3eP0B6pyhOlLXm3cAC6T7s+euSDDUUV+Acop5WmtkVg==
+
+tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.11.1"
   resolved "https://registry.npm.taobao.org/tslib/download/tslib-1.11.1.tgz#eb15d128827fbee2841549e171f45ed338ac7e35"
   integrity sha1-6xXRKIJ/vuKEFUnhcfRe0zisfjU=
@@ -9587,10 +9592,10 @@ typedarray@^0.0.6:
   resolved "https://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.8.3:
-  version "3.8.3"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
-  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
+typescript@^3.9.3:
+  version "3.9.3"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-3.9.3.tgz#d3ac8883a97c26139e42df5e93eeece33d610b8a"
+  integrity sha512-D/wqnB2xzNFIcoBG9FG8cXRDjiqSTbG2wd8DMZeQyJlP1vfTkIxH4GKveWaEBYySKIg+USu+E+EDIR47SqnaMQ==
 
 uglify-js@^2.6.1:
   version "2.8.29"

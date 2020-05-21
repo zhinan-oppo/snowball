@@ -30,11 +30,11 @@
     "prettier": "^1.19.1",
     "pug": "^2.0.4",
     "rimraf": "^3.0.2",
-    "rollup": "^2.1.0",
-    "rollup-plugin-typescript2": "^0.27.0",
+    "rollup": "^2.10.5",
+    "rollup-plugin-typescript2": "^0.27.1",
     "schema-utils": "^2.6.6",
     "stylus": "^0.54.7",
-    "typescript": "^3.8.3",
+    "typescript": "^3.9.3",
     "webpack": "^4.43.0"
   },
   "dependencies": {

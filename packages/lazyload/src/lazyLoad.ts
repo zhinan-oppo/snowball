@@ -3,13 +3,15 @@ import Lazy from 'vanilla-lazyload';
 import { Media, matchMedia } from '@zhinan-oppo/shared';
 
 interface Options {
-  container?: HTMLElement;
   elements?: string | NodeListOf<HTMLElement>;
   medias: Media[];
 
+  container?: HTMLElement;
   src: string;
   srcset: string;
   poster: string;
+  threshold?: number;
+  thresholds?: string;
   delay?: number;
   classes?: {
     loaded?: string;
@@ -27,7 +29,8 @@ function toVanillaOptions(
     srcset,
     delay,
     classes = {},
-  }: Pick<Options, 'src' | 'poster' | 'srcset' | 'delay' | 'classes'>,
+    ...rest
+  }: Omit<Options, 'elements' | 'medias'>,
   media?: Media,
 ) {
   if (media) {
@@ -37,6 +40,7 @@ function toVanillaOptions(
     poster = postfix(poster);
   }
   return {
+    ...rest,
     data_src: src,
     data_srcset: srcset,
     data_poster: poster,
