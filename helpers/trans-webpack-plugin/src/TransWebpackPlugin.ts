@@ -8,6 +8,7 @@ import { isDuplicatedOrFail, renderContent, writeToFile } from './utils';
 interface Options {
   namespace?: string;
   dryRun: boolean;
+  clean: boolean;
   keyAttrName: string;
   nsAttrName: string;
   keyAttrAlias: Record<string, string>;
@@ -26,6 +27,7 @@ export class TransWebpackPlugin implements webpack.Plugin {
     keyAttrName = 't-key',
     nsAttrName = 't-ns',
     dryRun = false,
+    clean = true,
     wrapKey = (key) => `@lang('${key}')`,
     keyAttrAlias = { img: 'src', video: 'src' },
   }: Partial<Options> = {}) {
@@ -33,6 +35,7 @@ export class TransWebpackPlugin implements webpack.Plugin {
       keyAttrName,
       nsAttrName,
       dryRun,
+      clean,
       wrapKey,
       outputPath,
       keyAttrAlias,
@@ -207,7 +210,7 @@ export class TransWebpackPlugin implements webpack.Plugin {
       };
     }
 
-    const { keyAttrName, nsAttrName, keyAttrAlias } = this.options;
+    const { keyAttrName, nsAttrName, keyAttrAlias, clean } = this.options;
     const reg = new RegExp(`^${keyAttrName}:(.*)$`);
 
     if (tag && keyAttrAlias[tag] && attrs[keyAttrName]) {
@@ -220,15 +223,23 @@ export class TransWebpackPlugin implements webpack.Plugin {
     const attrsNormal: Record<string, string | void> = {};
     Object.keys(attrs).forEach((attr) => {
       if (attr === keyAttrName || attr === nsAttrName) {
+        if (clean) {
+          attrs[attr] = undefined;
+        }
         return;
       }
       const value = attrs[attr];
       const matches = reg.exec(attr);
       if (!matches) {
         attrsNormal[attr] = value;
-      } else if (matches[1] && value) {
-        const name = matches[1];
-        attrKeys.push({ name, key: value, value: attrs[name] || '' });
+      } else {
+        if (matches[1] && value) {
+          const name = matches[1];
+          attrKeys.push({ name, key: value, value: attrs[name] || '' });
+        }
+        if (clean) {
+          attrs[attr] = undefined;
+        }
       }
     });
 
