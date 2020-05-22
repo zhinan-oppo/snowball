@@ -2,7 +2,6 @@ import imagemin from 'imagemin';
 import jpeg from 'imagemin-mozjpeg';
 import png from 'imagemin-pngquant';
 import { getOptions, interpolateName, parseQuery } from 'loader-utils';
-import { parse as parsePath, posix } from 'path';
 import validate from 'schema-utils';
 import sharp from 'sharp';
 import { compilation, loader, Logger } from 'webpack';
@@ -44,6 +43,9 @@ async function resize(
     width: oriWidth,
     ratios,
   });
+  if (format === 'jpeg') {
+    img.jpeg({ quality: 100 });
+  }
 
   return {
     format,
@@ -118,31 +120,30 @@ export default async function(
     },
   );
 
-  const url = interpolateName(this, name, {
-    content: source,
-    context: this.rootContext,
-  });
-  const { name: oriName, ext, dir } = parsePath(url);
-
   try {
     const { format, images } = await resize(source, ratios, logger);
     const plugins =
-      format === 'png'
-        ? [png({ quality: [0.5, quality / 100], strip: true })]
-        : format === 'jpeg'
-        ? [jpeg({ quality, progressive })]
+      quality < 100 && ['png', 'jpeg'].includes(format)
+        ? format === 'png'
+          ? [png({ quality: [0.5, quality / 100], strip: true })]
+          : [jpeg({ quality, progressive })]
         : undefined;
     const files = await Promise.all(
       images.map(async (p) => {
         const { content, width, ratio } = await p;
-        const filename = posix.join(
-          dir,
-          `${oriName}/${width}@${ratio.toString().replace(/^0\./, 'd')}${ext}`,
+        const filename = interpolateName(
+          this,
+          name
+            .replace('[width]', width)
+            .replace('[ratio]', ratio.toString().replace('0.', 'd')),
+          {
+            content,
+            context: this.rootContext,
+          },
         );
-        let resBuffer = content;
-        if (plugins) {
-          resBuffer = await imagemin.buffer(content, { plugins });
-        }
+        const resBuffer = !plugins
+          ? content
+          : await imagemin.buffer(content, { plugins });
         return { filename, width, content: resBuffer };
       }),
     );
