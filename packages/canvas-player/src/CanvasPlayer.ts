@@ -3,6 +3,8 @@ import { ImageSequence } from './ImageSequence';
 export interface CanvasPlayerOptions {
   fitImageSize?: boolean;
   posterFrame?: false | 'first' | 'last' | number;
+  alpha?: boolean;
+  backgroundColor?: string;
 }
 
 interface SeekOptions {
@@ -28,9 +30,20 @@ export interface PlayOptions {
 export class CanvasPlayer {
   static DEBUG = false;
 
+  static createWithURLs(
+    canvas: HTMLCanvasElement,
+    urls: string[],
+    options: CanvasPlayerOptions = {},
+  ) {
+    return new CanvasPlayer(
+      canvas,
+      ImageSequence.createFromURLs(urls),
+      options,
+    );
+  }
+
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
-  private readonly sequence: ImageSequence;
 
   private frameRequest?: number = undefined;
   private sizeInitialized: boolean;
@@ -42,21 +55,29 @@ export class CanvasPlayer {
 
   constructor(
     canvas: HTMLCanvasElement,
-    imageURLs: string[],
-    { fitImageSize = true, posterFrame = 'first' }: CanvasPlayerOptions = {},
+    private readonly sequence: ImageSequence,
+    {
+      fitImageSize = true,
+      posterFrame = 'first',
+      alpha = false,
+      backgroundColor = 'black',
+    }: CanvasPlayerOptions = {},
   ) {
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha });
     if (!ctx) {
       throw new Error('CanvasRenderingContext2D unavailable');
     }
     this.canvas = canvas;
     this.ctx = ctx;
-    this.sequence = new ImageSequence(imageURLs);
 
     this.sizeInitialized = !fitImageSize;
     this.last = -1;
     this.cur = -1;
 
+    if (!alpha) {
+      ctx.fillStyle = backgroundColor;
+      this.clear();
+    }
     if (posterFrame !== false) {
       this.seek(
         posterFrame === 'first'
@@ -108,9 +129,7 @@ export class CanvasPlayer {
     this.playInterval = window.setInterval(() => {
       if (waiting) {
         if (CanvasPlayer.DEBUG) {
-          console.log(
-            `Waiting to play: ${this.sequence.getImagePathAt(this.cur)}`,
-          );
+          console.log('Waiting to play:', this.sequence.getImageAt(this.cur));
         }
         return;
       }
@@ -172,9 +191,8 @@ export class CanvasPlayer {
     const waitingAt = this.cur;
     if (CanvasPlayer.DEBUG) {
       console.warn(
-        `Try to draw the ${waitingAt}th image unloaded: ${this.sequence.getImagePathAt(
-          waitingAt,
-        )}`,
+        `Try to draw the ${waitingAt}th image unloaded:`,
+        this.sequence.getImageAt(waitingAt),
       );
     }
 
@@ -196,7 +214,22 @@ export class CanvasPlayer {
         this.canvas.height = image.height;
         this.sizeInitialized = true;
       }
-      this.ctx.drawImage(image, 0, 0, image.width, image.height);
+
+      this.ctx.drawImage(
+        image,
+        0,
+        0,
+        image.width,
+        image.height,
+        0,
+        0,
+        this.canvas.width,
+        this.canvas.height,
+      );
     });
+  }
+
+  private clear() {
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }

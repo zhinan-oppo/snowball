@@ -1,3 +1,4 @@
+export { ImageSequence } from './ImageSequence';
 export {
   CanvasPlayer,
   CanvasPlayerOptions,
