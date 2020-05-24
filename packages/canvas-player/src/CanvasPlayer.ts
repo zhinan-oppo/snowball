@@ -129,7 +129,10 @@ export class CanvasPlayer {
     this.playInterval = window.setInterval(() => {
       if (waiting) {
         if (CanvasPlayer.DEBUG) {
-          console.log('Waiting to play:', this.sequence.getImageAt(this.cur));
+          console.log(
+            `Waiting to play ${this.cur}th:`,
+            this.sequence.getImageAt(this.cur),
+          );
         }
         return;
       }

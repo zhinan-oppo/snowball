@@ -1,9 +1,13 @@
 export class ImageSequence {
   static createFromURLs(urls: string[]) {
+    const promises: Array<Promise<HTMLImageElement> | undefined> = urls.map(
+      () => undefined,
+    );
     return new ImageSequence(
       urls.map(() => new window.Image()),
       (img, i) =>
-        new Promise((resolve, reject) => {
+        promises[i] ||
+        (promises[i] = new Promise((resolve, reject) => {
           if (i >= 0 && i < urls.length) {
             img.addEventListener('load', () => resolve(img));
             img.addEventListener('error', (e) => reject(e));
@@ -11,7 +15,7 @@ export class ImageSequence {
           } else {
             reject(new Error(`Out of range [0, ${urls.length}): ${i}`));
           }
-        }),
+        })),
     );
   }
 
@@ -32,6 +36,16 @@ export class ImageSequence {
   ) {
     this.length = images.length;
     this.imagesLoaded = images.map(() => undefined);
+    this.imagePromises = images.map(
+      (image, i) =>
+        new Promise((resolve, reject) => {
+          image.addEventListener('load', () => {
+            this.imagesLoaded[i] = image;
+            resolve(image);
+          });
+          image.addEventListener('error', reject);
+        }),
+    );
   }
 
   async load(): Promise<HTMLImageElement[]>;
@@ -48,20 +62,9 @@ export class ImageSequence {
   }
 
   private loadAt(i: number) {
-    if (!this.imagePromises[i]) {
-      const image = this.images[i];
-      this.imagePromises[i] = this.imageLoader
-        ? this.imageLoader(image, i).then((img) => {
-            this.imagesLoaded[i] = img;
-            return img;
-          })
-        : new Promise((resolve, reject) => {
-            image.addEventListener('load', () => {
-              this.imagesLoaded[i] = image;
-              resolve(image);
-            });
-            image.addEventListener('error', reject);
-          });
+    const image = this.images[i];
+    if (this.imageLoader) {
+      this.imageLoader(image, i);
     }
     return this.imagePromises[i];
   }
