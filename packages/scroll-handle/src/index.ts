@@ -16,18 +16,13 @@ type Handler = (
   distance: number,
   totalDistance: number,
 ) => void | 'done';
-type AlwaysHandler = (
-  dom: Element,
-  distance: number,
-  totalDistance: number,
-) => void;
 
 export interface ScrollHandlers {
   onStateChange?: (dom: Element, newState: State, oldState: State) => void;
   before?: Handler;
   inView?: Handler;
   after?: Handler;
-  always?: AlwaysHandler;
+  always?: Handler;
 }
 
 interface PlacementToTop {
@@ -132,7 +127,9 @@ export function scrollHandle(
       }
     }
     if (handlers.always) {
-      handlers.always(element, distance, totalDistance);
+      if (handlers.always(element, distance, totalDistance) === 'done') {
+        handlers.always = undefined;
+      }
     }
   };
 
