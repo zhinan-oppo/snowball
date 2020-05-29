@@ -5,6 +5,7 @@ export interface CanvasPlayerOptions {
   posterFrame?: false | 'first' | 'last' | number;
   alpha?: boolean;
   backgroundColor?: string;
+  shouldClear?: boolean;
 }
 
 interface SeekOptions {
@@ -44,6 +45,8 @@ export class CanvasPlayer {
 
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
+  private readonly alpha: boolean;
+  private readonly shouldClear: boolean;
 
   private frameRequest?: number = undefined;
   private sizeInitialized: boolean;
@@ -61,6 +64,7 @@ export class CanvasPlayer {
       posterFrame = 'first',
       alpha = false,
       backgroundColor = 'black',
+      shouldClear = false,
     }: CanvasPlayerOptions = {},
   ) {
     const ctx = canvas.getContext('2d', { alpha });
@@ -69,6 +73,8 @@ export class CanvasPlayer {
     }
     this.canvas = canvas;
     this.ctx = ctx;
+    this.alpha = alpha;
+    this.shouldClear = shouldClear;
 
     this.sizeInitialized = !fitImageSize;
     this.last = -1;
@@ -126,7 +132,7 @@ export class CanvasPlayer {
     let direction = mode === PlayMode.Reverse ? -1 : 1;
 
     let waiting = false;
-    this.playInterval = window.setInterval(() => {
+    const play = () => {
       if (waiting) {
         if (CanvasPlayer.DEBUG) {
           console.log(
@@ -175,7 +181,8 @@ export class CanvasPlayer {
           }
           break;
       }
-    }, 1000 / fps);
+    };
+    this.playInterval = window.setInterval(play, 1000 / fps);
   }
 
   private async drawCurrentFrame() {
@@ -218,6 +225,9 @@ export class CanvasPlayer {
         this.sizeInitialized = true;
       }
 
+      if (this.shouldClear) {
+        this.clear();
+      }
       this.ctx.drawImage(
         image,
         0,
@@ -233,6 +243,10 @@ export class CanvasPlayer {
   }
 
   private clear() {
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.alpha) {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    } else {
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
   }
 }
