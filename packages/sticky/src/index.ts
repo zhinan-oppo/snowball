@@ -140,11 +140,8 @@ export function initStickyElement(
   };
   const initialStyles = window.getComputedStyle(element);
   const initialPosition = initialStyles.position;
-  const containerStyles = window.getComputedStyle(container);
   element.setAttribute(CONFIGS.addedFlagAttr, CONFIGS.addedFlagAttr);
-  if (isStatic(containerStyles.position)) {
-    container.style.position = 'relative';
-  }
+
   _init();
   const reset = () => {
     element.style.position = initialPosition;
