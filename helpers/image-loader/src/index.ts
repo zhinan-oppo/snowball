@@ -14,6 +14,7 @@ interface Options {
   type?: 'src' | 'srcset';
   esModule?: boolean;
   quality?: number;
+  qualityMin?: number;
   progressive?: boolean;
 }
 
@@ -52,20 +53,11 @@ async function resize(
     images: ratios
       .filter((ratio) => ratio > 0 && ratio <= 1)
       .map(async (ratio) => {
-        const width = Math.round(oriWidth * ratio);
+        const width = Math.ceil(oriWidth * ratio);
         const content = await img.resize({ width }).toBuffer();
         return { content, format, width, ratio };
       }),
   };
-}
-
-function emitFiles(
-  loader: loader.LoaderContext,
-  files: Array<{ filename: string; content: Buffer }>,
-) {
-  files.forEach(({ filename, content }) => {
-    loader.emitFile(filename, content, undefined);
-  });
 }
 
 export const raw = true;
@@ -75,6 +67,20 @@ export default async function(
   result?: string,
   ...files: Array<{ filename: string; content: Buffer }>
 ) {
+  const logger = (this._compilation as compilation.Compilation).getLogger(
+    LOADER_NAME,
+  );
+
+  const emitFiles = (
+    loader: loader.LoaderContext,
+    files: Array<{ filename: string; content: Buffer }>,
+  ) => {
+    files.forEach(({ filename, content }) => {
+      loader.emitFile(filename, content, undefined);
+      logger.status(`file emitted: ${filename}`);
+    });
+  };
+
   /**
    * 通过重复 loader 使得 cache-loader 可以缓存 emitFile 的文件
    */
@@ -92,10 +98,6 @@ export default async function(
     throw new Error('async() failed');
   }
 
-  const logger = (this._compilation as compilation.Compilation).getLogger(
-    LOADER_NAME,
-  );
-
   const options = (getOptions(this) as Options) || {};
   const {
     ratios = options.ratios,
@@ -104,6 +106,7 @@ export default async function(
     esModule = options.esModule,
     quality = options.quality || 100,
     progressive = options.progressive || true,
+    qualityMin = options.qualityMin || 70,
   } = (this.resourceQuery && parseQuery(this.resourceQuery)) || {};
 
   validate(
@@ -125,7 +128,7 @@ export default async function(
     const plugins =
       quality < 100 && ['png', 'jpeg'].includes(format)
         ? format === 'png'
-          ? [png({ quality: [0.5, quality / 100], strip: true })]
+          ? [png({ quality: [qualityMin / 100, quality / 100], strip: true })]
           : [jpeg({ quality, progressive })]
         : undefined;
     const files = await Promise.all(

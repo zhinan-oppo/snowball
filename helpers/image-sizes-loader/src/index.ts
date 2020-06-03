@@ -70,7 +70,7 @@ export default function(this: loader.LoaderContext) {
           )
           .map((media) => {
             const { ratio, width, orientation } = media;
-            const w = `${Math.round(
+            const w = `${Math.ceil(
               (oriWidth / baseRatio) * (ratio / maxRatio),
             )}px`;
             const query = getMediaQuery({ width, orientation });

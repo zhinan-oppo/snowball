@@ -35,6 +35,11 @@ export default {
       min: 50,
       max: 100,
     },
+    qualityMin: {
+      type: 'number' as 'number',
+      min: 50,
+      max: 100,
+    },
     progressive: {
       type: 'boolean' as 'boolean',
     },
