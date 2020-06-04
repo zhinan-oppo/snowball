@@ -129,11 +129,11 @@ export default async function(
   );
 
   let resFiles: any[] = [];
+  const fs = (this.fs || stdFS) as typeof stdFS;
   /**
    * FIXME
    */
-  if (cacheDir) {
-    const fs = (this.fs || stdFS) as typeof stdFS;
+  if (cacheDir && stdFS.existsSync(cacheDir)) {
     const filename = interpolateName(this, '[path]/[name].[ext]', {
       context: context || this.rootContext,
     });
@@ -175,6 +175,7 @@ export default async function(
         logger.warn(`not found: ${nameWithRatio}`);
       }),
     );
+    resFiles = resFiles.filter(Boolean);
   } else {
     try {
       const { format, images } = await resize(source, ratios, logger);
