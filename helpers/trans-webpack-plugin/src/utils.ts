@@ -3,9 +3,7 @@ import mkdirp from 'mkdirp';
 import { dirname } from 'path';
 import { PostHTML } from 'posthtml';
 import render from 'posthtml-render';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const promisify = require('util.promisify');
+import promisify from 'util.promisify';
 
 const writeFileAsync = promisify(writeFile) as (
   path: string,

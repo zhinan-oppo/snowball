@@ -4,7 +4,8 @@
     "baseUrl": "./src",
     "outDir": "./lib",
     "paths": {
-      "posthtml-render": ["../../@types/posthtml-render.d.ts"]
+      "posthtml-render": ["../../@types/posthtml-render.d.ts"],
+      "util.promisify": ["../../@types/util.promisify.d.ts"]
     }
   },
   "include": ["./src"]

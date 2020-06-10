@@ -43,7 +43,16 @@ export default {
     progressive: {
       type: 'boolean' as 'boolean',
     },
-    outputPath: {
+    output: {
+      type: 'string' as 'string',
+    },
+    input: {
+      type: 'string' as 'string',
+    },
+    errorInputNotFound: {
+      type: 'boolean' as 'boolean',
+    },
+    context: {
       type: 'string' as 'string',
     },
   },
