@@ -158,7 +158,7 @@ export default class PackCommand extends Command {
     return new Promise((resolve, reject) => {
       let progress = { total: 0, processed: 0 };
       stream.on('close', () => {
-        this.log(`finished: ${outputPath}`);
+        this.log(`🎁 ${outputPath}`);
         resolve();
       });
       archiver.on('warning', (error) => {
