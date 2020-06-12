@@ -1,0 +1,59 @@
+{
+  "name": "@zhinan-oppo/snowball-cli",
+  "description": "Snowball command line tools",
+  "version": "3.5.0",
+  "author": "xsfour @xsfour",
+  "bin": {
+    "snowball": "./bin/run"
+  },
+  "bugs": "https://github.com/zhinan-oppo/snowball/issues",
+  "dependencies": {
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/parser": "^3.8.5",
+    "@oclif/plugin-help": "^3",
+    "archiver": "^4.0.1",
+    "semver": "^7.3.2",
+    "standard-version": "^8.0.0",
+    "tslib": "^1",
+    "yaml": "^1.10.0"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/zhinan-oppo/snowball",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "snowball",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "zhinan-oppo/snowball",
+  "scripts": {
+    "postpack": "rimraf oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
+    "build": "tsc -b",
+    "prebuild": "npm run clean",
+    "clean": "rimraf -f lib",
+    "test": "echo NO TESTS",
+    "_version": "oclif-dev readme && git add README.md"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "types": "lib/index.d.ts"
+}
