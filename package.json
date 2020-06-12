@@ -43,7 +43,7 @@
     "schema-utils": "^2.6.6",
     "stylus": "^0.54.7",
     "ts-node": "^8",
-    "typescript": "^3.3",
+    "typescript": "^3.9",
     "webpack": "^4.43.0"
   },
   "dependencies": {

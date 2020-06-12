@@ -2224,7 +2224,7 @@
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
   version "3.0.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.0.0-08dde209-1344-4fa8-a580-58f2dea989e7-1591935690934/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.0.0-0ac88b4d-4ca9-466e-8a43-ccdf6389ab6f-1591943938459/node_modules/@zhinan-oppo/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "3.4.0"
@@ -2244,7 +2244,7 @@
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
   version "3.4.2"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.4.2-c2256170-8506-4619-b1ca-cc444201ee38-1591935691084/node_modules/packages/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.4.2-2dcc2715-f2e5-46bf-8ac3-ee8e1a354891-1591943938607/node_modules/packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
@@ -2258,7 +2258,7 @@
 "@zhinan-oppo/lazyload@file:packages/lazyload":
   version "3.0.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-3.0.0-172e86ed-a8bc-4080-aa23-7da109313e66-1591935691093/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-3.0.0-d8b6213e-652b-4cc3-a4b8-f09e2280a8b6-1591943938616/node_modules/@zhinan-oppo/shared"
     vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
@@ -2270,7 +2270,7 @@
   version "3.0.0"
 
 "@zhinan-oppo/snowball-cli@file:helpers/cli":
-  version "3.5.0"
+  version "3.6.0-alpha.0"
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
@@ -2285,7 +2285,7 @@
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "3.4.1"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.4.1-b0ec9a70-cf61-4bf3-99ed-3a5e77686ce8-1591935691212/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.4.1-05429215-1a16-4e2b-ad68-16d88528b0e1-1591943938712/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "3.5.0"
@@ -11682,7 +11682,7 @@ typedarray@^0.0.6:
   resolved "https://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.3:
+typescript@^3.9:
   version "3.9.5"
   resolved "https://registry.npmjs.org/typescript/-/typescript-3.9.5.tgz#586f0dba300cde8be52dd1ac4f7e1009c1b13f36"
   integrity sha512-hSAifV3k+i6lEoCJ2k6R2Z/rp/H3+8sdmcn5NrS3/3kE7+RyZXm9aqvxWqjEXHAd8b0pShatpcdMTvEdvAJltQ==

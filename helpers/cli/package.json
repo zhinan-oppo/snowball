@@ -1,7 +1,7 @@
 {
   "name": "@zhinan-oppo/snowball-cli",
   "description": "Snowball command line tools",
-  "version": "3.5.0",
+  "version": "3.6.0-alpha.0",
   "author": "xsfour @xsfour",
   "bin": {
     "snowball": "./bin/run"
@@ -42,18 +42,22 @@
   },
   "repository": "zhinan-oppo/snowball",
   "scripts": {
-    "postpack": "rimraf oclif.manifest.json",
-    "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
+    "postpack": "yarn run rimraf oclif.manifest.json",
+    "prepack": "yarn run build && yarn run oclif-dev manifest && yarn run oclif-dev readme",
     "build": "tsc -b",
-    "prebuild": "npm run clean",
-    "clean": "rimraf -f lib",
+    "prebuild": "yarn run clean",
+    "clean": "yarn run rimraf -f lib oclif.manifest.json",
     "test": "echo NO TESTS",
-    "_version": "oclif-dev readme && git add README.md"
+    "version": "yarn run oclif-dev readme && git add README.md",
+    "oclif-dev": "../../node_modules/.bin/oclif-dev",
+    "rimraf": "../../node_modules/.bin/rimraf"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "devDependencies": {
+    "typescript": "^3.9"
+  }
 }
