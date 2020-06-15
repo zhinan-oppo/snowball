@@ -19,7 +19,7 @@
   "author": "xsfour",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.15"
+    "@zhinan-oppo/shared": "file:../shared"
   },
   "publishConfig": {
     "access": "public",
