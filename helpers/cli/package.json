@@ -44,7 +44,7 @@
   "scripts": {
     "postpack": "yarn run rimraf oclif.manifest.json",
     "prepack": "yarn run build && yarn run oclif-dev manifest && yarn run oclif-dev readme",
-    "build": "tsc -b",
+    "build": "rollup -c=./rollup.config.js",
     "prebuild": "yarn run clean",
     "clean": "yarn run rimraf -f lib oclif.manifest.json",
     "test": "echo NO TESTS",
