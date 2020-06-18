@@ -13,7 +13,12 @@ interface Options {
   nsAttrName: string;
   keyAttrAlias: Record<string, string>;
   wrapKey: (key: string) => string;
-  outputPath?: string;
+  /**
+   * `string`: write translation files to this path
+   * `undefined`(default): write translations files to `compiler.outputPath`
+   * `false`: don't write translation files
+   */
+  outputPath?: string | false;
   mergedFilename?: string;
 }
 
@@ -44,7 +49,7 @@ export class TransWebpackPlugin implements webpack.Plugin {
     };
   }
 
-  apply(compiler: webpack.Compiler) {
+  apply(compiler: webpack.Compiler): void {
     const { outputPath, dryRun, mergedFilename } = this.options;
     const translationsByFilename = new Map<string, Map<string, string>>();
 
@@ -59,10 +64,13 @@ export class TransWebpackPlugin implements webpack.Plugin {
           ({ html, outputName, plugin }) => {
             const { name } = path.parse(outputName);
             const outputFilename = `${name}.trans.json`;
-            const fullPath = path.resolve(
-              outputPath || compilation.compiler.outputPath,
-              outputFilename,
-            );
+            const fullPath =
+              outputPath !== false
+                ? path.resolve(
+                    outputPath || compilation.compiler.outputPath,
+                    outputFilename,
+                  )
+                : undefined;
 
             return new Promise((resolve, reject) => {
               this.transformTransAttrs(html)
@@ -71,11 +79,12 @@ export class TransWebpackPlugin implements webpack.Plugin {
                   logger.log(translations);
 
                   translationsByFilename.set(outputFilename, translations);
-                  const fileWritten = dryRun
-                    ? Promise.resolve()
-                    : writeToFile(fullPath, translations).then(() => {
-                        logger.info(`Translations written to ${fullPath}`);
-                      });
+                  const fileWritten =
+                    dryRun || !fullPath
+                      ? Promise.resolve()
+                      : writeToFile(fullPath, translations).then(() => {
+                          logger.info(`Translations written to ${fullPath}`);
+                        });
                   fileWritten
                     .then(() => {
                       resolve({
@@ -92,40 +101,43 @@ export class TransWebpackPlugin implements webpack.Plugin {
         );
       },
     );
-    const logger = compiler.getInfrastructureLogger(TransWebpackPlugin.name);
-    compiler.hooks.done.tapPromise(TransWebpackPlugin.name, (stats) => {
-      if (!mergedFilename) {
-        return Promise.resolve(stats);
-      }
-      const fullPath = path.resolve(
-        outputPath || compiler.outputPath,
-        mergedFilename,
-      );
-      return new Promise((resolve, reject) => {
-        const translations = new Map<string, string>();
-        translationsByFilename.forEach((trans) => {
-          trans.forEach((value, key) => {
-            try {
-              if (!isDuplicatedOrFail(translations, key, value)) {
-                translations.set(key, value);
-              }
-            } catch (e) {
-              reject(e);
-            }
-          });
-        });
-        if (dryRun) {
-          return resolve(stats);
-        }
 
-        writeToFile(fullPath, translations)
-          .then(() => {
-            logger.info(`Translation files are merged into ${fullPath}`);
-            resolve(stats);
-          })
-          .catch(reject);
+    if (outputPath !== false) {
+      const logger = compiler.getInfrastructureLogger(TransWebpackPlugin.name);
+      compiler.hooks.done.tapPromise(TransWebpackPlugin.name, (stats) => {
+        if (!mergedFilename) {
+          return Promise.resolve(stats);
+        }
+        const fullPath = path.resolve(
+          outputPath || compiler.outputPath,
+          mergedFilename,
+        );
+        return new Promise((resolve, reject) => {
+          const translations = new Map<string, string>();
+          translationsByFilename.forEach((trans) => {
+            trans.forEach((value, key) => {
+              try {
+                if (!isDuplicatedOrFail(translations, key, value)) {
+                  translations.set(key, value);
+                }
+              } catch (e) {
+                reject(e);
+              }
+            });
+          });
+          if (dryRun) {
+            return resolve(stats);
+          }
+
+          writeToFile(fullPath, translations)
+            .then(() => {
+              logger.info(`Translation files are merged into ${fullPath}`);
+              resolve(stats);
+            })
+            .catch(reject);
+        });
       });
-    });
+    }
   }
 
   private transformTransAttrs(html: string) {
@@ -147,7 +159,7 @@ export class TransWebpackPlugin implements webpack.Plugin {
       }
 
       attrKeys.forEach(({ key: _key, value, name }) => {
-        const key = `${prefix}${_key}`;
+        const key = `${prefix}${_key || value}`;
         if (!isDuplicatedOrFail(translations, key, value)) {
           translations.set(key, value);
         }
@@ -157,14 +169,14 @@ export class TransWebpackPlugin implements webpack.Plugin {
         node.attrs = attrs;
       }
 
-      if (key) {
-        const contentKey = `${prefix}${key}`;
+      if (typeof key === 'string') {
         const content = renderContent(node.content);
+        const contentKey = `${prefix}${key || content}`;
         if (!isDuplicatedOrFail(translations, contentKey, content)) {
           translations.set(contentKey, content);
         }
         if (!dryRun) {
-          node.content = [this.getWrappedKey(`${prefix}${key}`)];
+          node.content = [this.getWrappedKey(contentKey)];
         }
       } else if (node.content) {
         node.content = node.content.map((item) => {
@@ -233,7 +245,7 @@ export class TransWebpackPlugin implements webpack.Plugin {
       if (!matches) {
         attrsNormal[attr] = value;
       } else {
-        if (matches[1] && value) {
+        if (matches[1] && typeof value === 'string') {
           const name = matches[1];
           attrKeys.push({ name, key: value, value: attrs[name] || '' });
         }
