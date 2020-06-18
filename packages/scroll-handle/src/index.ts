@@ -1,179 +1,126 @@
-import { getWindowHeight } from './windowSize';
+import {
+  Handler as StdHandler,
+  Handlers as StdHandlers,
+  Options,
+  ScrollListener,
+  State,
+} from './ScrollListener';
 
-const PERCENTS = {
-  bottom: 1,
-  center: 0.5,
-  top: 0,
-  nextPage: 2,
-  prevPage: -1,
-};
+export { windowSize } from './windowSize';
+export { ScrollListener, StdHandler, StdHandlers };
 
-type PercentToTopAlias = keyof typeof PERCENTS;
-type PercentToTop = PercentToTopAlias | number;
-type State = 'before' | 'inView' | 'after';
-type Handler = (
-  dom: Element,
-  distance: number,
-  totalDistance: number,
-  startY: number,
-) => void | 'done';
-
-export interface ScrollHandlers {
-  onStateChange?: (dom: Element, newState: State, oldState: State) => void;
-  before?: Handler;
-  inView?: Handler;
-  after?: Handler;
-  always?: Handler;
-}
-
-interface PlacementToTop {
-  percent: PercentToTop;
+type Handler<T extends Element> = (params: {
+  target: T;
   distance: number;
-}
-interface ScrollHandleOptions {
-  handlers?: ScrollHandlers;
-  start?: Partial<PlacementToTop> | PercentToTop;
-  end?: Partial<PlacementToTop> | PercentToTop;
-  addListener?: boolean | 'impassive';
-  container?: Window | Element;
+  total: number;
+}) => void | 'done';
+
+interface Handlers<T extends Element> {
+  onStateChange(params: {
+    target: T;
+    state: State;
+    oldState: State;
+  }): void | 'done';
+  before: Handler<T>;
+  inView: Handler<T>;
+  after: Handler<T>;
+  always: Handler<T>;
 }
 
-function getPercentFromAlias(alias: PercentToTop): number {
-  if (typeof alias === 'number') {
-    return alias;
+function wrapHandler<T extends Element>(handler?: Handler<T>) {
+  if (!handler) {
+    return undefined;
   }
-  return PERCENTS[alias] || 0;
+  return ({
+    target,
+    targetRect,
+    boundaryYInView,
+  }: Parameters<StdHandler<T>>[0]) => {
+    const { start, end } = boundaryYInView;
+    const total = start - end + targetRect.height;
+    const distance = start - targetRect.top;
+    return handler({ target, distance, total });
+  };
 }
 
-export function addScrollListener(
-  element: Element,
+export function addScrollListener<T extends Element>(
+  element: T,
   {
-    handlers = {},
-    start: _start = {
-      percent: 'bottom',
-      distance: 0,
+    handlers,
+    ...options
+  }: Partial<
+    Omit<Options<T>, 'handlers'> & { handlers: Partial<Handlers<T>> }
+  > = {},
+): ScrollListener<T> {
+  return new ScrollListener(element, {
+    ...options,
+    handlers: handlers && {
+      onStateChange: handlers.onStateChange,
+      before: wrapHandler<T>(handlers.before),
+      inView: wrapHandler<T>(handlers.inView),
+      after: wrapHandler<T>(handlers.after),
+      always: wrapHandler<T>(handlers.always),
     },
-    end: _end = {
-      percent: 'top',
-      distance: 0,
-    },
-    addListener = true,
-    container = window,
-  }: ScrollHandleOptions,
-) {
-  if (!(element instanceof window.HTMLElement)) {
-    const e = new TypeError(`HTMLElement needed`);
-    console.error(e);
-    return {
-      removeEventListener: () => undefined,
-      getRangeY: () => [],
-    };
-  }
-  const start =
-    typeof _start === 'string' || typeof _start === 'number'
-      ? {
-          percent: getPercentFromAlias(_start),
-          distance: 0,
-        }
-      : {
-          percent: getPercentFromAlias(_start.percent || 'bottom'),
-          distance: _start.distance || 0,
-        };
-  const end =
-    typeof _end === 'string' || typeof _end === 'number'
-      ? {
-          percent: getPercentFromAlias(_end),
-          distance: 0,
-        }
-      : {
-          percent: getPercentFromAlias(_end.percent || 'top'),
-          distance: _end.distance || 0,
-        };
-  const getRangeY = () => {
-    const containerHeight =
-      container === window
-        ? getWindowHeight()
-        : (container as Element).getBoundingClientRect().height;
-    const startY = start.percent * containerHeight + start.distance;
-    const endY = end.percent * containerHeight + end.distance;
-    return [startY, endY];
-  };
-
-  let state: State = 'before';
-  const changeState = (newState: State): void => {
-    if (newState !== state) {
-      if (handlers.onStateChange) {
-        handlers.onStateChange(element, newState, state);
-      }
-      state = newState;
-    }
-  };
-  // FIXME: container 大小位置相关的属性需要判断是否是 windows
-  const handle = (): void => {
-    const domRect = element.getBoundingClientRect();
-    const top = domRect.top;
-    const bottom = domRect.bottom;
-    const height = domRect.height;
-    const [startY, endY] = getRangeY();
-    const distance = startY - top;
-    const totalDistance = startY - endY + height;
-    if (top > startY) {
-      changeState('before');
-      if (handlers.before) {
-        if (
-          handlers.before(element, distance, totalDistance, startY) === 'done'
-        ) {
-          handlers.before = undefined;
-        }
-      }
-    } else if (bottom >= endY) {
-      changeState('inView');
-      if (handlers.inView) {
-        if (
-          handlers.inView(element, distance, totalDistance, startY) === 'done'
-        ) {
-          handlers.inView = undefined;
-        }
-      }
-    } else {
-      changeState('after');
-      if (handlers.after) {
-        if (
-          handlers.after(element, distance, totalDistance, startY) === 'done'
-        ) {
-          handlers.after = undefined;
-        }
-      }
-    }
-    if (handlers.always) {
-      if (
-        handlers.always(element, distance, totalDistance, startY) === 'done'
-      ) {
-        handlers.always = undefined;
-      }
-    }
-  };
-
-  const handler = (): void => {
-    window.requestAnimationFrame(handle);
-  };
-  const removeScrollHandler = addListener
-    ? (): void => container.removeEventListener('scroll', handler)
-    : () => undefined;
-  if (addListener) {
-    container.addEventListener('scroll', handler, {
-      passive: addListener !== 'impassive',
-      capture: false,
-    });
-  }
-
-  window.setTimeout(() => handle(), 0);
-  return { removeScrollHandler, getRangeY };
+  });
 }
 
-export function scrollHandle(element: Element, options: ScrollHandleOptions) {
-  const { removeScrollHandler } = addScrollListener(element, options);
-  return removeScrollHandler;
+type ScrollHandler<T extends Element> = (
+  element: T,
+  dist: number,
+  total: number,
+) => void | 'done';
+export interface ScrollHandlers<T extends Element> {
+  onStateChange(element: T, state: State, oldState: State): 'done' | void;
+  before: ScrollHandler<T>;
+  inView: ScrollHandler<T>;
+  after: ScrollHandler<T>;
+  always: ScrollHandler<T>;
+}
+function wrapScrollHandler<T extends Element>(handler?: ScrollHandler<T>) {
+  if (!handler) {
+    return undefined;
+  }
+  return ({
+    target,
+    targetRect,
+    boundaryYInView,
+  }: Parameters<StdHandler<T>>[0]) => {
+    const { start, end } = boundaryYInView;
+    const total = start - end + targetRect.height;
+    const distance = start - targetRect.top;
+    return handler(target, distance, total);
+  };
+}
+
+/**
+ * @deprecated use `addScrollListener` instead
+ */
+export function scrollHandle<T extends Element>(
+  element: T,
+  {
+    handlers,
+    ...options
+  }: Partial<
+    Omit<Options, 'handlers'> & { handlers: Partial<ScrollHandlers<T>> }
+  > = {},
+): () => void {
+  const onStateChange = handlers && handlers.onStateChange;
+  const listener = new ScrollListener(element, {
+    ...options,
+    handlers: handlers && {
+      onStateChange:
+        onStateChange &&
+        (({ target, state, oldState }) =>
+          onStateChange(target, state, oldState)),
+      before: wrapScrollHandler<T>(handlers.before),
+      inView: wrapScrollHandler<T>(handlers.inView),
+      after: wrapScrollHandler<T>(handlers.after),
+      always: wrapScrollHandler<T>(handlers.always),
+    },
+  });
+  return () => {
+    listener.destroy();
+  };
 }
 
 export default scrollHandle;

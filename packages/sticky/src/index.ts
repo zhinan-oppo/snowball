@@ -1,4 +1,12 @@
-import { scrollHandle, ScrollHandlers } from '@zhinan-oppo/scroll-handle';
+import {
+  scrollHandle,
+  ScrollHandlers as StdHandlers,
+  windowSize,
+} from '@zhinan-oppo/scroll-handle';
+
+declare const __DEBUG__: boolean;
+
+type ScrollHandlers = StdHandlers<HTMLElement>;
 
 type ChangeableStyles =
   | 'left'
@@ -22,35 +30,50 @@ function setStyles(
     'margin',
     'width',
     'height',
-  ] as ChangeableStyles[]).forEach(k => {
+  ] as ChangeableStyles[]).forEach((k) => {
     element.style[k] = styles[k] || '';
   });
 }
 
-export interface StickyOption {
+export interface StickyOptions {
   container?: HTMLElement;
-  scrollHandlers?: ScrollHandlers;
+  scrollHandlers?: Partial<ScrollHandlers>;
+  passive?: boolean;
+  top?: number;
+}
+
+export interface StickyMarkupOptions {
+  root?: ParentNode;
+  topAttr?: string;
+  passiveAttr?: string;
+  defaults?: {
+    passive?: boolean;
+    top?: number;
+  };
 }
 
 const CONFIGS = {
-  debug: false,
   addedFlagAttr: 'z-sticky-added',
+  topAttr: 'data-top',
+  passiveAttr: 'data-passive',
 };
 type Configs = typeof CONFIGS;
-export function configure<T extends keyof Configs>(key: T, value: Configs[T]) {
+export function configure<T extends keyof Configs>(
+  key: T,
+  value: Configs[T],
+): void {
   CONFIGS[key] = value;
-}
-
-function isStatic(position: string) {
-  return (
-    position !== 'relative' && position !== 'absolute' && position !== 'fixed'
-  );
 }
 
 export function initStickyElement(
   element: HTMLElement,
-  { container: _container, scrollHandlers = {} }: StickyOption = {},
-) {
+  {
+    container: _container,
+    scrollHandlers = {},
+    passive = false,
+    top: topOffset = 0,
+  }: StickyOptions = {},
+): { destroy: () => void; reset: () => void } {
   let container: HTMLElement;
   if (!_container) {
     const parent = element.parentElement;
@@ -66,7 +89,7 @@ export function initStickyElement(
   const _init = () => {
     const elementRect = element.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
-    if (CONFIGS.debug) {
+    if (__DEBUG__) {
       // eslint-disable-next-line no-console
       console.debug({
         elementRect,
@@ -77,7 +100,7 @@ export function initStickyElement(
     }
 
     const bottomToContainerTop = elementRect.bottom - containerRect.top;
-    const top = `${elementRect.top - containerRect.top}px`;
+    const top = `${topOffset + elementRect.top - containerRect.top}px`;
     const left = `${elementRect.left}px`;
     const width = `${elementRect.width}px`;
     const height = `${elementRect.height}px`;
@@ -86,8 +109,8 @@ export function initStickyElement(
       removeHandle();
     }
     removeHandle = scrollHandle(container, {
-      start: 'top',
-      end: { distance: bottomToContainerTop },
+      start: { percent: 'top', distance: topOffset },
+      end: { percent: 'top', distance: bottomToContainerTop + topOffset },
       handlers: {
         before: scrollHandlers.before,
         inView: scrollHandlers.inView,
@@ -108,8 +131,10 @@ export function initStickyElement(
               break;
             case 'after':
               setStyles(element, {
-                left: `${element.getBoundingClientRect().left -
-                  container.getBoundingClientRect().left}px`,
+                left: `${
+                  element.getBoundingClientRect().left -
+                  container.getBoundingClientRect().left
+                }px`,
                 top: 'auto',
                 bottom: '0',
                 position: 'absolute',
@@ -121,7 +146,7 @@ export function initStickyElement(
             default:
               setStyles(element);
           }
-          if (CONFIGS.debug) {
+          if (__DEBUG__) {
             const position =
               state === 'inView'
                 ? 'fixed'
@@ -148,6 +173,9 @@ export function initStickyElement(
     setStyles(element);
     _init();
   };
+  if (!passive) {
+    windowSize.addWidthListener(reset);
+  }
 
   const destroy = (): void => {
     if (removeHandle) {
@@ -159,11 +187,25 @@ export function initStickyElement(
   return { destroy, reset };
 }
 
-export function initBySelector(selector: string, root = window.document) {
+export function initBySelector(
+  selector: string,
+  {
+    root = window.document,
+    passiveAttr = CONFIGS.passiveAttr,
+    topAttr = CONFIGS.topAttr,
+    defaults = {},
+  }: StickyMarkupOptions = {},
+): { destroy: () => void; reset: () => void } {
+  const { passive = false, top = 0 } = defaults;
   const controllers: Array<ReturnType<typeof initStickyElement>> = [];
-  root.querySelectorAll<HTMLElement>(selector).forEach(element => {
+  root.querySelectorAll<HTMLElement>(selector).forEach((element) => {
     if (!element.hasAttribute(CONFIGS.addedFlagAttr)) {
-      controllers.push(initStickyElement(element));
+      controllers.push(
+        initStickyElement(element, {
+          passive: element.hasAttribute(passiveAttr) || passive,
+          top: parseFloat(element.getAttribute(topAttr) || '') || top,
+        }),
+      );
     }
   });
   const destroy = () => {
