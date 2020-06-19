@@ -10,7 +10,7 @@ const writeFileAsync = promisify(writeFile) as (
   data: string,
 ) => Promise<void>;
 
-export function renderContent(content?: Array<string | PostHTML.Node>) {
+export function renderContent(content?: Array<string | PostHTML.Node>): string {
   if (!content) {
     return '';
   }
@@ -24,7 +24,7 @@ export function isDuplicatedOrFail(
   data: Map<string, string>,
   key: string,
   content: string,
-) {
+): boolean {
   const old = data.get(key);
   if (!old) {
     return false;
@@ -37,7 +37,10 @@ export function isDuplicatedOrFail(
   return true;
 }
 
-export function writeToFile(path: string, data: Map<string, string>) {
+export function writeToFile(
+  path: string,
+  data: Map<string, string>,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const dir = dirname(path);
     mkdirp(dir).then(() => {
@@ -50,4 +53,8 @@ export function writeToFile(path: string, data: Map<string, string>) {
         .catch(reject);
     });
   });
+}
+
+export function terseAttributeValue(attr: string, value: string): string {
+  return value === attr ? '' : value;
 }
