@@ -19,7 +19,7 @@ $ npm install -g @zhinan-oppo/snowball-cli
 $ snowball COMMAND
 running command...
 $ snowball (-v|--version|version)
-@zhinan-oppo/snowball-cli/3.6.0 darwin-x64 node-v12.16.1
+@zhinan-oppo/snowball-cli/3.7.0 darwin-x64 node-v12.16.1
 $ snowball --help [COMMAND]
 USAGE
   $ snowball COMMAND
@@ -70,5 +70,5 @@ EXAMPLE
   $ snowball pack --config snowball.config.js --output dist --no-version v1.1.0
 ```
 
-_See code: [src/commands/pack.ts](https://github.com/zhinan-oppo/snowball/blob/v3.6.0/src/commands/pack.ts)_
+_See code: [src/commands/pack.ts](https://github.com/zhinan-oppo/snowball/blob/v3.7.0/src/commands/pack.ts)_
 <!-- commandsstop -->
