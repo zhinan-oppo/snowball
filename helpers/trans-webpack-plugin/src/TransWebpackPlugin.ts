@@ -230,13 +230,20 @@ export class TransWebpackPlugin implements webpack.Plugin {
     const { keyAttrName, nsAttrName, keyAttrAlias, clean } = this.options;
     const reg = new RegExp(`^${keyAttrName}:(.*)$`);
 
-    const { [keyAttrName]: keyAttrValue, [nsAttrName]: ns } = attrs;
-    if (tag && keyAttrAlias[tag] && typeof keyAttrValue === 'string') {
-      const name = `${keyAttrName}:${keyAttrAlias[tag]}`;
-      attrs[name] = terseAttributeValue(keyAttrName, keyAttrValue);
-      attrs[keyAttrName] = undefined;
+    if (tag && keyAttrAlias[tag] && typeof attrs[keyAttrName] === 'string') {
+      const valueAttr = `${keyAttrName}:${keyAttrAlias[tag]}`;
+      const keyValue = attrs[keyAttrName];
+      // alias key do not overwrite the specified key
+      if (
+        typeof attrs[valueAttr] !== 'string' &&
+        typeof keyValue === 'string'
+      ) {
+        attrs[valueAttr] = terseAttributeValue(keyAttrName, keyValue);
+        attrs[keyAttrName] = undefined;
+      }
     }
 
+    const { [keyAttrName]: keyAttrValue, [nsAttrName]: ns } = attrs;
     const attrKeys: Array<{ name: string; key: string; value: string }> = [];
     const attrsNormal: Record<string, string | void> = {};
     Object.keys(attrs).forEach((attr) => {
