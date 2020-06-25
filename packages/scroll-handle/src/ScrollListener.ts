@@ -284,13 +284,16 @@ export class ScrollListener<T extends Element = Element> {
             x: targetRect.x,
             width: targetRect.width,
             height: targetRect.height,
-            y: state === 'before' ? boundaryYInView.start : boundaryYInView.end,
+            y:
+              state === 'before'
+                ? boundaryYInView.start
+                : boundaryYInView.end - targetRect.height,
           });
-          if (state === 'before') {
+          if (state === 'after') {
             this.handle('inView', boundaryRect);
           }
           this.state = state;
-          if (state === 'after') {
+          if (state === 'before') {
             this.handle('inView', boundaryRect);
           }
         } else {
