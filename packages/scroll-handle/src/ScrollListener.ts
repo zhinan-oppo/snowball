@@ -117,9 +117,9 @@ export class ScrollListener<T extends Element = Element> {
     this.placementsActive = {
       start:
         (_before && resolvePlacement(_before, 'bottom')) ||
-        resolvePlacement(1.5),
+        resolvePlacement('150%'),
       end:
-        (_after && resolvePlacement(_after, 'top')) || resolvePlacement(-0.5),
+        (_after && resolvePlacement(_after, 'top')) || resolvePlacement('-50%'),
     };
 
     this.init();
@@ -189,7 +189,7 @@ export class ScrollListener<T extends Element = Element> {
 
     const { root, rootMargin } = this;
     if (__DEBUG__) {
-      console.log({
+      console.log('init scroll listener', {
         root,
         rootMargin,
         target: this.target,

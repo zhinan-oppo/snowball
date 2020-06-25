@@ -58,14 +58,14 @@ export function resolveCSSPlacement(str: string | number): ResolvedPlacement {
 }
 
 export function resolvePlacement(
-  placement: Partial<PlacementToTop> | PercentToTop | 'string',
+  placement: Partial<PlacementToTop> | PercentToTop | string,
   defaultAlias: keyof typeof PERCENTS = 'top',
 ): ResolvedPlacement {
   return typeof placement === 'string' || typeof placement === 'number'
     ? resolveCSSPlacement(placement)
     : {
-        percent: getPercentFromAlias(placement.percent || defaultAlias),
-        distance: placement.distance || 0,
-        targetPercent: getPercentFromAlias(placement.targetPercent || 0),
+        percent: getPercentFromAlias(placement.percent ?? defaultAlias),
+        distance: placement.distance ?? 0,
+        targetPercent: getPercentFromAlias(placement.targetPercent ?? 0),
       };
 }

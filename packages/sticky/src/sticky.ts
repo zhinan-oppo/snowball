@@ -99,6 +99,9 @@ export function initStickyElement(
       targetPercent: topPlacement.targetPercent,
       distance: topPlacement.distance + elementRect.height,
     };
+    if (__DEBUG__) {
+      console.debug('init sticky', { element, start, end });
+    }
 
     const supportedSticky = !CONFIGS.forceFixed && getSupportedKeyword();
     if (supportedSticky) {
