@@ -212,14 +212,14 @@ export function initBySelector(
     defaults = {},
   }: StickyMarkupOptions = {},
 ): { destroy: () => void; reset: () => void } {
-  const { passive = false, top = 0 } = defaults;
+  const { passive = false, top = '0' } = defaults;
   const controllers: Array<ReturnType<typeof initStickyElement>> = [];
   root.querySelectorAll<HTMLElement>(selector).forEach((element) => {
     if (!element.hasAttribute(CONFIGS.addedFlagAttr)) {
       controllers.push(
         initStickyElement(element, {
           passive: element.hasAttribute(passiveAttr) || passive,
-          top: parseFloat(element.getAttribute(topAttr) || '') || top,
+          top: element.getAttribute(topAttr) || top,
         }),
       );
     }

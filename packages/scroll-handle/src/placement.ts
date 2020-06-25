@@ -53,7 +53,8 @@ export function resolveCSSPlacement(str: string | number): ResolvedPlacement {
     }
     return { percent: 0, distance: parseFloat(matches[1]), targetPercent: 0 };
   }
-  throw new SyntaxError(`Invalid placement string: ${JSON.stringify(str)}`);
+  console.error(`Invalid sticky top: ${JSON.stringify(str)}`);
+  return { percent: 0, distance: 0, targetPercent: 0 };
 }
 
 export function resolvePlacement(
