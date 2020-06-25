@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/sticky",
-  "version": "3.9.2",
+  "version": "3.9.3",
   "description": "A library to handle sticky position",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
