@@ -306,8 +306,12 @@ export class ScrollListener<T extends Element = Element> {
     if (__DEBUG__) {
       console.log('active', this.target);
     }
-    this.root.addEventListener('scroll', this.handleScroll, { passive: true });
-    this.handleScroll();
+    if (Object.keys(this.handlers).length > 0) {
+      this.root.addEventListener('scroll', this.handleScroll, {
+        passive: true,
+      });
+      this.handleScroll();
+    }
   }
 
   private onInactive() {

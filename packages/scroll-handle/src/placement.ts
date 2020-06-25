@@ -31,16 +31,37 @@ export function getPercentFromAlias(alias: PercentToTop): number {
   return PERCENTS[alias] || 0;
 }
 
+export function resolveCSSPlacement(str: string | number): ResolvedPlacement {
+  if (typeof str === 'number') {
+    return { percent: 0, distance: str, targetPercent: 0 };
+  }
+  if (Object.keys(PERCENTS).includes(str)) {
+    return {
+      percent: PERCENTS[str as keyof typeof PERCENTS],
+      distance: 0,
+      targetPercent: 0,
+    };
+  }
+  const matches = str.match(/(-?\d+(\.\d*)?)(%|px)?/i);
+  if (matches) {
+    if (matches[2] === '%') {
+      return {
+        percent: parseFloat(matches[1]) / 100,
+        distance: 0,
+        targetPercent: 0,
+      };
+    }
+    return { percent: 0, distance: parseFloat(matches[1]), targetPercent: 0 };
+  }
+  throw new SyntaxError(`Invalid placement string: ${JSON.stringify(str)}`);
+}
+
 export function resolvePlacement(
-  placement: Partial<PlacementToTop> | PercentToTop,
+  placement: Partial<PlacementToTop> | PercentToTop | 'string',
   defaultAlias: keyof typeof PERCENTS = 'top',
 ): ResolvedPlacement {
   return typeof placement === 'string' || typeof placement === 'number'
-    ? {
-        percent: getPercentFromAlias(placement),
-        distance: 0,
-        targetPercent: 0,
-      }
+    ? resolveCSSPlacement(placement)
     : {
         percent: getPercentFromAlias(placement.percent || defaultAlias),
         distance: placement.distance || 0,

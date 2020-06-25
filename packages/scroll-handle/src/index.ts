@@ -7,15 +7,16 @@ import {
 } from './ScrollListener';
 
 export { windowSize } from './windowSize';
+export { resolveCSSPlacement } from './placement';
 export { ScrollListener, StdHandler, StdHandlers };
 
-type Handler<T extends Element> = (params: {
+export type Handler<T extends Element> = (params: {
   target: T;
   distance: number;
   total: number;
 }) => void | 'done';
 
-interface Handlers<T extends Element> {
+export interface Handlers<T extends Element> {
   onStateChange(params: {
     target: T;
     state: State;
