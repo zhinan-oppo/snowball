@@ -71,7 +71,6 @@ export default function (this: loader.LoaderContext): string {
               ratio > 0 && !(alias && exclude.includes(alias)),
           )
           .map(({ ratio, width, orientation, alias }) => {
-            console.log(alias, presets);
             const w =
               (alias && presets[alias]) ||
               `${Math.ceil((oriWidth / baseRatio) * ratio)}px`;
