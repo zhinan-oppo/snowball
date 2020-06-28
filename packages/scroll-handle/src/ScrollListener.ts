@@ -1,5 +1,6 @@
 import { Placement, ResolvedPlacement, resolvePlacement } from './placement';
 import { getWindowRect } from './windowSize';
+import { Rect, rectFrom } from './rect';
 
 declare const __DEBUG__: boolean;
 
@@ -15,11 +16,11 @@ interface HandlerParams<
   TRoot extends Element | Window = Element | Window
 > {
   target: T;
-  targetRect: DOMRectReadOnly;
+  targetRect: Rect;
   boundaryYActive: BoundaryY;
   boundaryYInView: BoundaryY;
   root: TRoot;
-  rootRect: DOMRectReadOnly;
+  rootRect: Rect;
 }
 
 export type Handler<
@@ -76,8 +77,8 @@ export class ScrollListener<T extends Element = Element> {
   private placementsInView: Placements;
 
   private placementsActive: Placements;
-  private _targetRect?: DOMRectReadOnly;
-  private _rootRect?: DOMRectReadOnly;
+  private _targetRect?: Rect;
+  private _rootRect?: Rect;
 
   private observer?: IntersectionObserver;
   private _state: State = 'before';
@@ -142,18 +143,18 @@ export class ScrollListener<T extends Element = Element> {
     this.onStateChange(state, oldState);
   }
 
-  private get targetRect(): DOMRectReadOnly {
+  private get targetRect(): Rect {
     if (!this._targetRect) {
       this._targetRect = this.target.getBoundingClientRect();
     }
     return this._targetRect;
   }
 
-  private get rootRect(): DOMRectReadOnly {
+  private get rootRect(): Rect {
     if (!this._rootRect) {
       this._rootRect =
         this.root === window
-          ? DOMRect.fromRect(getWindowRect())
+          ? rectFrom(getWindowRect())
           : (this.root as Element).getBoundingClientRect();
     }
     return this._rootRect;
@@ -222,7 +223,7 @@ export class ScrollListener<T extends Element = Element> {
 
   private handle(
     type: keyof Omit<Handlers<T>, 'onStateChange'>,
-    targetRect: DOMRectReadOnly = this.targetRect,
+    targetRect: Rect = this.targetRect,
   ) {
     const {
       target,
@@ -280,7 +281,7 @@ export class ScrollListener<T extends Element = Element> {
           : 'inView';
       if (state !== this.state) {
         if (this.options.forceInViewBoundary && state !== 'inView') {
-          const boundaryRect = DOMRect.fromRect({
+          const boundaryRect = rectFrom({
             x: targetRect.x,
             width: targetRect.width,
             height: targetRect.height,
