@@ -26,7 +26,10 @@ interface Options {
 type ImageInfo = { filename: string; content: Buffer; width: number };
 
 export class ImageLoader {
-  static async load(loaderContext: loader.LoaderContext, source: Buffer) {
+  static async load(
+    loaderContext: loader.LoaderContext,
+    source: Buffer,
+  ): Promise<string> {
     try {
       const loader = new ImageLoader(loaderContext);
       const files = await loader.resize(source);
@@ -119,10 +122,7 @@ export class ImageLoader {
               );
             }
 
-            const resized = await img
-              .clone()
-              .resize({ width })
-              .toBuffer();
+            const resized = await img.clone().resize({ width }).toBuffer();
             const compressed = !plugin
               ? resized
               : await imagemin.buffer(resized, { plugins: [plugin] });
