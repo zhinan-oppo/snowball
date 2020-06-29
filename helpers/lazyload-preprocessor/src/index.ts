@@ -172,6 +172,9 @@ function createPlugin({
                       sizePresets[alias] = value;
                     }
                   });
+                  if (shouldRemoveSrc) {
+                    attrs[attr] = undefined;
+                  }
                 }
               });
               attrs[sizesAttrName] = prepareSizes({
