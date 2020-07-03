@@ -130,8 +130,8 @@ export class ScrollListener<T extends Element = Element> {
     if (this.observer) {
       this.observer.disconnect();
       this.observer = undefined;
-      this.root.removeEventListener('scroll', this.handleScroll);
     }
+    this.root.removeEventListener('scroll', this.handleScroll);
   }
 
   private get state() {
