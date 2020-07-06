@@ -179,6 +179,7 @@ export function initStickyElement(
         before: scrollHandlers?.before,
         inView: scrollHandlers?.inView,
         after: scrollHandlers?.after,
+        always: scrollHandlers?.always,
       },
     });
   };
