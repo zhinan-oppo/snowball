@@ -11,7 +11,7 @@ import { formatRatio, readIfDirExists, writeFileUnder } from './utils';
 
 interface Options {
   ratios?: number[];
-  name?: string;
+  name?: string | ((path: string, query?: string) => string);
   type?: 'src' | 'srcset';
   esModule?: boolean;
   quality?: number;
@@ -141,14 +141,18 @@ export class ImageLoader {
             );
           }
 
-          const namePattern = name
-            .replace('[width]', width.toString())
-            .replace('[ratio]', formatRatio(ratio));
-          const filename = interpolateName(this.loader, namePattern, {
+          // interpolateName 的类型声明有误，name 应当可以是 function 的
+          const filename = interpolateName(this.loader, name as any, {
             content,
             context,
           });
-          return { filename, width, content };
+          return {
+            filename: filename
+              .replace('[width]', width.toString())
+              .replace('[ratio]', formatRatio(ratio)),
+            width,
+            content,
+          };
         }),
     );
   }
