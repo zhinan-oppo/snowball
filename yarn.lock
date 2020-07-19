@@ -2224,13 +2224,13 @@
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
   version "3.0.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.0.0-0ac88b4d-4ca9-466e-8a43-ccdf6389ab6f-1591943938459/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "3.4.0"
 
 "@zhinan-oppo/image-loader@file:helpers/image-loader":
-  version "3.5.0"
+  version "3.11.0"
   dependencies:
     imagemin "^7.0.1"
     imagemin-mozjpeg "^8.0.0"
@@ -2242,15 +2242,15 @@
     util.promisify "^1.0.1"
 
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
-  version "3.4.2"
+  version "3.10.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.4.2-2dcc2715-f2e5-46bf-8ac3-ee8e1a354891-1591943938607/node_modules/packages/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
 
 "@zhinan-oppo/lazyload-preprocessor@file:helpers/lazyload-preprocessor":
-  version "3.0.0"
+  version "3.10.2"
   dependencies:
     loader-utils "^1.0.0"
     postman "^0.2.0"
@@ -2258,19 +2258,19 @@
 "@zhinan-oppo/lazyload@file:packages/lazyload":
   version "3.0.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-3.0.0-d8b6213e-652b-4cc3-a4b8-f09e2280a8b6-1591943938616/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
     vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
-  version "3.3.0"
+  version "3.10.3"
   dependencies:
-    lodash "^4.17.15"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/shared@file:packages/shared":
   version "3.0.0"
 
 "@zhinan-oppo/snowball-cli@file:helpers/cli":
-  version "3.6.0-alpha.0"
+  version "3.7.1"
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
@@ -2283,12 +2283,12 @@
     yaml "^1.10.0"
 
 "@zhinan-oppo/sticky@file:packages/sticky":
-  version "3.4.1"
+  version "3.10.4"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.4.1-05429215-1a16-4e2b-ad68-16d88528b0e1-1591943938712/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:packages/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
-  version "3.5.0"
+  version "3.7.2"
   dependencies:
     mkdirp "^1.0.4"
     posthtml "^0.12.3"
@@ -7499,9 +7499,9 @@ lodash.uniq@^4.5.0:
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
 lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.2.1:
-  version "4.17.15"
-  resolved "https://registry.npm.taobao.org/lodash/download/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha1-tEf2ZwoEVbv+7dETku/zMOoJdUg=
+  version "4.17.19"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
+  integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
 
 log-symbols@^2.2.0:
   version "2.2.0"
