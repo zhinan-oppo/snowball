@@ -6,9 +6,7 @@ import {
   windowSize,
 } from '@zhinan-oppo/scroll-handle';
 
-import { getSupportedKeyword } from './util';
-
-declare const __DEBUG__: boolean;
+import { getSupportedKeyword, initPlaceholder } from './util';
 
 type ScrollHandlers = Handlers<HTMLElement>;
 
@@ -40,12 +38,28 @@ function setStyles(
 }
 
 export interface StickyOptions {
-  scrollHandlers?: Partial<ScrollHandlers>;
-  passive?: boolean;
   /**
-   * e.g. `'-1px'` `'10%'` `-1`(the same as `'-1px'`)
+   * 定住时到顶部的距离，可以是负数，默认为 '0px'
+   * 支持`%`和`px`: '10%', '-1px'
    */
   top?: number | string;
+
+  /**
+   * 传递给 ScrollListener 的回调函数
+   */
+  scrollHandlers?: Partial<ScrollHandlers>;
+
+  /**
+   * 在`position: sticky`支持的情况下也使用 fixed 模拟
+   */
+  forceFixed?: boolean;
+
+  /**
+   * 当使用 fixed 模拟 sticky 时有效
+   * 如果该值为`true`，则不在窗口宽度发生变化时重新计算元素的位置
+   * 默认为`false`
+   */
+  passive?: boolean;
 }
 
 export interface StickyMarkupOptions {
@@ -62,7 +76,6 @@ const CONFIGS = {
   addedFlagAttr: 'z-sticky-added',
   topAttr: 'data-top',
   passiveAttr: 'data-passive',
-  forceFixed: false,
 };
 type Configs = typeof CONFIGS;
 export function configure<T extends keyof Configs>(
@@ -72,9 +85,21 @@ export function configure<T extends keyof Configs>(
   CONFIGS[key] = value;
 }
 
+/**
+ * 使用 sticky 布局
+ * 当浏览器不支持`position: sticky`时，通过 js 模拟
+ *
+ * @param element 要使用 sticky 布局的元素
+ * @param options
+ */
 export function initStickyElement(
   element: HTMLElement,
-  { scrollHandlers, passive = false, top: topOffset = '0' }: StickyOptions = {},
+  {
+    scrollHandlers,
+    passive = false,
+    top: topOffset = '0',
+    forceFixed = false,
+  }: StickyOptions = {},
 ): { destroy: () => void; reset: () => void } {
   const container = element.parentElement;
   if (!container) {
@@ -83,8 +108,15 @@ export function initStickyElement(
   const topPlacement = resolveCSSPlacement(topOffset);
   const top = typeof topOffset === 'number' ? `${topOffset}px` : topOffset;
 
+  let initialPosition: string | undefined;
+  let placeholder: HTMLDivElement | undefined;
   let scrollListener: ScrollListener<HTMLElement> | undefined;
   const _init = () => {
+    if (placeholder) {
+      // 隐藏 placeholder 避免影响 element rect 的计算
+      placeholder.style.display = 'none';
+    }
+
     const elementRect = element.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
 
@@ -99,11 +131,9 @@ export function initStickyElement(
       targetPercent: topPlacement.targetPercent,
       distance: topPlacement.distance + elementRect.height,
     };
-    if (__DEBUG__) {
-      console.debug('init sticky', { element, start, end });
-    }
 
-    const supportedSticky = !CONFIGS.forceFixed && getSupportedKeyword();
+    // 支持原生的 sticky 时，使用原生 sticky
+    const supportedSticky = !forceFixed && getSupportedKeyword();
     if (supportedSticky) {
       element.style.position = supportedSticky;
       element.style.top = top;
@@ -120,9 +150,72 @@ export function initStickyElement(
       };
     }
 
+    /**
+     * 以下为使用 js 模拟 sticky 的过程
+     * 实际上该实现有许多限制，例如不能在该元素上使用 transform
+     *
+     * NOTE:
+     * 之前遇到过 margin collapse 引起的 sticky 位置不对的问题，
+     * 理论上可以通过给 container 添加一个足够小的 padding-top 来解决，
+     * 在使用时也可以避免这种情况，故没有做相应的操作
+     */
+
+    const elementStyles = window.getComputedStyle(element);
+    if (!initialPosition) {
+      initialPosition = elementStyles.position;
+    }
+
+    const leftToContainer = elementRect.left - containerRect.left;
     const left = `${elementRect.left}px`;
     const width = `${elementRect.width}px`;
     const height = `${elementRect.height}px`;
+
+    const setInView = () =>
+      setStyles(element, {
+        top,
+        left,
+        width,
+        height,
+        position: 'fixed',
+        bottom: 'auto',
+        transform: 'none',
+        margin: '0',
+      });
+    const setBefore = () => {
+      setStyles(element, {
+        width,
+        height,
+        left: `${leftToContainer}px`,
+        top: `${topToContainer}px`,
+        position: 'absolute',
+        margin: '0',
+        transform: 'none',
+      });
+    };
+    const setAfter = () => {
+      setStyles(element, {
+        left: `${leftToContainer}px`,
+        top: 'auto',
+        bottom: '0',
+        position: 'absolute',
+        transform: 'none',
+        margin: '0',
+      });
+    };
+
+    // 当 element 使用 static/relative 定位时添加 placeholder 占位
+    // 避免 element fixed 时对相邻的元素或父元素造成影响
+    if (initialPosition === 'static' || initialPosition === 'relative') {
+      if (!placeholder) {
+        placeholder = document.createElement('div');
+        initPlaceholder(placeholder, initialPosition, elementStyles);
+        container.insertBefore(placeholder, element);
+      } else {
+        initPlaceholder(placeholder, initialPosition, elementStyles);
+        placeholder.style.display = 'initial';
+      }
+      setBefore();
+    }
 
     if (scrollListener) {
       scrollListener.destroy();
@@ -134,43 +227,14 @@ export function initStickyElement(
         onStateChange: ({ target, state, oldState }): void => {
           switch (state) {
             case 'inView':
-              setStyles(element, {
-                top,
-                left,
-                width,
-                height,
-                position: 'fixed',
-                bottom: 'auto',
-                transform: 'none',
-                margin: '0',
-              });
+              setInView();
               break;
             case 'after':
-              setStyles(element, {
-                left: `${
-                  element.getBoundingClientRect().left -
-                  container.getBoundingClientRect().left
-                }px`,
-                top: 'auto',
-                bottom: '0',
-                position: 'absolute',
-                transform: 'none',
-                margin: '0',
-              });
+              setAfter();
               break;
             case 'before':
             default:
-              setStyles(element);
-          }
-          if (__DEBUG__) {
-            const position =
-              state === 'inView'
-                ? 'fixed'
-                : state === 'after'
-                ? 'absolute'
-                : '';
-            // eslint-disable-next-line no-console
-            console.debug(`sticky item: ${position}`, element);
+              setBefore();
           }
           if (scrollHandlers?.onStateChange) {
             scrollHandlers.onStateChange({ target, state, oldState });
@@ -183,13 +247,11 @@ export function initStickyElement(
       },
     });
   };
-  const initialStyles = window.getComputedStyle(element);
-  const initialPosition = initialStyles.position;
+
   element.setAttribute(CONFIGS.addedFlagAttr, CONFIGS.addedFlagAttr);
 
   _init();
   const reset = () => {
-    element.style.position = initialPosition;
     setStyles(element);
     _init();
   };
@@ -207,6 +269,11 @@ export function initStickyElement(
   return { destroy, reset };
 }
 
+/**
+ * `initStickyElement`的 markup 形式封装
+ * @param selector
+ * @param param1
+ */
 export function initBySelector(
   selector: string,
   {
