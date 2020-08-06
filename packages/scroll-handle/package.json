@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/scroll-handle",
-  "version": "3.11.1",
+  "version": "3.11.2",
   "description": "A library to handle scroll event of browser. Apply custom callback when scolling into elements like inView event.",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
