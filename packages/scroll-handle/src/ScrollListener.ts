@@ -32,14 +32,43 @@ export interface Handlers<
   T extends Element,
   TRoot extends Element | Window = Element | Window
 > {
+  /**
+   * 当 state 变化时触发
+   *
+   * 如果返回值为'done'，该 handler 会被移除，之后不再触发
+   */
   onStateChange?: (params: {
     target: T;
     state: State;
     oldState: State;
   }) => void | 'done';
+
+  /**
+   * 当 target 在`可视区域下方`时触发，`distance`的值始终小于`0`
+   *
+   * 如果返回值为'done'，该 handler 会被移除，之后不再触发
+   */
   before?: Handler<T, TRoot>;
+
+  /**
+   * 当 target 在`可视区域中`时触发，`distance`的值的范围为`[0, total]`
+   *
+   * 如果返回值为'done'，该 handler 会被移除，之后不再触发
+   */
   inView?: Handler<T, TRoot>;
+
+  /**
+   * 当 target 在`可视区域上方`时触发，`distance`的值始终大于`total`
+   *
+   * 如果返回值为'done'，该 handler 会被移除，之后不再触发
+   */
   after?: Handler<T, TRoot>;
+
+  /**
+   * 始终触发，包含了`before`、`inView`以及`after`过程
+   *
+   * 如果返回值为'done'，该 handler 会被移除，之后不再触发
+   */
   always?: Handler<T, TRoot>;
 }
 
@@ -53,17 +82,45 @@ export interface Options<
   TRoot extends Element | Window = Element | Window
 > {
   handlers: Handlers<T, TRoot>;
-  before?: Placement;
+
+  /**
+   * 可视区域开始的位置
+   */
   start: Placement;
+
+  /**
+   * 可视区域结束的位置
+   */
   end: Placement;
+
+  before?: Placement;
   after?: Placement;
   root: Window | Element;
+
   passive: boolean;
+
+  /**
+   * 当 state 从`inView`变为`before`或`after`时，是否以相应的边界条件触发`inView`回调
+   *
+   * 'inView' --> 'before': handlers.inView({ distance: 0, total })
+   * 'inView' --> 'after': handlers.inView({ distance: total, total })
+   */
   forceInViewBoundary: boolean;
+
+  /**
+   * 暂时不可用
+   */
   useIntersectionObserver: boolean;
 }
 
-export class ScrollListener<T extends Element = Element> {
+export class ScrollListener<T extends Element> {
+  static create<T extends Element>(
+    element: T,
+    options: Partial<Options<T>>,
+  ): ScrollListener<T> {
+    return new ScrollListener<T>(element, options);
+  }
+
   private readonly options: Pick<
     Options<T>,
     'passive' | 'forceInViewBoundary' | 'useIntersectionObserver'
@@ -123,7 +180,9 @@ export class ScrollListener<T extends Element = Element> {
         (_after && resolvePlacement(_after, 'top')) || resolvePlacement('-50%'),
     };
 
-    this.init();
+    window.requestAnimationFrame(() => {
+      this.init();
+    });
   }
 
   destroy(): void {
@@ -198,6 +257,10 @@ export class ScrollListener<T extends Element = Element> {
         placementsInView: this.placementsInView,
       });
     }
+
+    /**
+     * 试图通过 IntersectionObserver 减小时间实际激活的范围
+     */
     if (this.options.useIntersectionObserver && window.IntersectionObserver) {
       this.observer = new window.IntersectionObserver(
         ([entry]) => {
@@ -265,9 +328,12 @@ export class ScrollListener<T extends Element = Element> {
   private refresh() {
     this._targetRect = undefined;
     this._rootRect = undefined;
+    void this.rootRect;
+    void this.targetRect;
   }
 
   private readonly handleScroll = () => {
+    // 在回调的最早位置刷新 targetRect 和 rootRect，减少 forced reflow 出现
     this.refresh();
 
     window.requestAnimationFrame(() => {
