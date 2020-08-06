@@ -44,7 +44,6 @@ export function resolveCSSPlacement(str: string | number): ResolvedPlacement {
   }
   const matches = str.match(/(-?\d+(\.\d*)?)(%|px)?/i);
   if (matches) {
-    console.log(matches);
     if (matches[3] === '%') {
       return {
         percent: parseFloat(matches[1]) / 100,
