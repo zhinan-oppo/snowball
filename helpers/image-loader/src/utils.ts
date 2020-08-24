@@ -58,6 +58,16 @@ export async function writeFileUnder(
   return fileWrite(resolve(dir, filename), content);
 }
 
+function fixNumber(num: number): number {
+  return Math.round((num + Number.EPSILON) * 10000) / 10000;
+}
+
+/**
+ * TODO: 可以指定保留小数点后的位数
+ * @param ratio
+ */
 export function formatRatio(ratio: number): string {
-  return ratio.toString().replace(/(^0*)?\./, 'd');
+  return fixNumber(ratio)
+    .toString()
+    .replace(/(^0*)?\./, 'd');
 }
