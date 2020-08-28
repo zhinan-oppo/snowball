@@ -1,5 +1,5 @@
 export class ImageSequence {
-  static createFromURLs(urls: string[]) {
+  static createFromURLs(urls: string[]): ImageSequence {
     const promises: Array<Promise<HTMLImageElement> | undefined> = urls.map(
       () => undefined,
     );
@@ -50,14 +50,14 @@ export class ImageSequence {
 
   async load(): Promise<HTMLImageElement[]>;
   async load(i: number): Promise<HTMLImageElement>;
-  async load(i?: number) {
+  async load(i?: number): Promise<HTMLImageElement[] | HTMLImageElement> {
     if (i === undefined) {
       return Promise.all(this.images.map((_, i) => this.loadAt(i)));
     }
     return this.loadAt(i);
   }
 
-  getImageAt(i: number) {
+  getImageAt(i: number): HTMLImageElement | Promise<HTMLImageElement> {
     return this.imagesLoaded[i] || this.loadAt(i);
   }
 
