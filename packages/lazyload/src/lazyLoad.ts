@@ -3,6 +3,17 @@ import Lazy from 'vanilla-lazyload';
 import { Media, matchMedia } from '@zhinan-oppo/shared';
 
 interface Options {
+  /**
+   * 当 elements 不是指定的元素队列时，
+   * 只有在 root 中的元素才能被选择器选中
+   * 作为懒加载的元素
+   */
+  root?: Element | Document;
+
+  /**
+   * 当为 string 类型时，elements 作为选择器选择懒加载的元素
+   * 当为 NodeListOf<HTMLElement> 类型时，elements 即为懒加载的元素队列
+   */
   elements?: string | NodeListOf<HTMLElement>;
   medias: Media[];
 
@@ -21,7 +32,6 @@ interface Options {
   };
 }
 
-/* eslint-disable @typescript-eslint/camelcase */
 function toVanillaOptions(
   {
     src,
@@ -56,7 +66,7 @@ class LazyLoad {
   static load(
     element: HTMLElement,
     options: ReturnType<typeof toVanillaOptions>,
-  ) {
+  ): void {
     return Lazy.load(element, options);
   }
 
@@ -69,24 +79,24 @@ class LazyLoad {
     this.lazyload = this.getLazy();
   }
 
-  get media() {
+  get media(): Media | undefined {
     return this.mediaMatched;
   }
 
-  get loadingCount() {
+  get loadingCount(): number {
     return this.lazyload.loadingCount;
   }
 
-  get toLoadCount() {
+  get toLoadCount(): number {
     return this.lazyload.toLoadCount;
   }
 
-  load(elements: { forEach: NodeListOf<HTMLElement>['forEach'] }) {
+  load(elements: { forEach: NodeListOf<HTMLElement>['forEach'] }): void {
     const options = toVanillaOptions(this.options, this.matchMedia());
     elements.forEach((ele) => LazyLoad.load(ele, options));
   }
 
-  loadAll() {
+  loadAll(): void {
     this.lazyload.loadAll();
   }
 
@@ -94,7 +104,7 @@ class LazyLoad {
     return this.lazyload.update(elements);
   };
 
-  refresh(windowWidth?: number) {
+  refresh(windowWidth?: number): void {
     const media = this.matchMedia(windowWidth);
     if (!this.destroyed && media === this.media) {
       return;
@@ -104,7 +114,7 @@ class LazyLoad {
     this.destroyed = false;
   }
 
-  destroy() {
+  destroy(): void {
     this.lazyload.destroy();
     this.destroyed = true;
   }
@@ -116,19 +126,21 @@ class LazyLoad {
   private getLazy(media = this.matchMedia()) {
     this.mediaMatched = media;
 
-    const { elements } = this.options;
+    const {
+      elements: elementsOrSelector,
+      root = window.document,
+    } = this.options;
     const options = toVanillaOptions(this.options, media);
     const { data_src, data_srcset, data_poster } = options;
+    const defaultSelector = `[data-${data_src}],[data-${data_srcset}],[data-${data_poster}]`;
     return new Lazy(
       {
         ...options,
-        elements_selector:
-          typeof elements === 'string'
-            ? elements
-            : `[data-${data_src}],[data-${data_srcset}],[data-${data_poster}]`,
         callback_error: (...args) => console.error(args),
       },
-      elements instanceof window.NodeList ? elements : undefined,
+      !(elementsOrSelector instanceof window.NodeList)
+        ? root.querySelectorAll(elementsOrSelector || defaultSelector)
+        : elementsOrSelector,
     );
   }
 }
