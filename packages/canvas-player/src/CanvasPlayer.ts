@@ -1,13 +1,5 @@
 import { ImageSequence } from './ImageSequence';
 
-export interface CanvasPlayerOptions {
-  fitImageSize?: boolean;
-  posterFrame?: false | 'first' | 'last' | number;
-  alpha?: boolean;
-  backgroundColor?: string;
-  shouldClear?: boolean;
-}
-
 interface SeekOptions {
   draw?: boolean;
 }
@@ -30,6 +22,15 @@ export interface PlayOptions {
    * 播放延迟时间，单位毫秒
    */
   delay?: number;
+}
+
+export interface CanvasPlayerOptions {
+  fitImageSize?: boolean;
+  posterFrame?: false | 'first' | 'last' | number;
+  alpha?: boolean;
+  backgroundColor?: string;
+  shouldClear?: boolean;
+  defaultPlayOptions?: PlayOptions;
 }
 
 export class CanvasPlayer {
@@ -61,10 +62,6 @@ export class CanvasPlayer {
     options: Partial<PlayOptions>;
     interval?: number;
     delayedTimeout?: number;
-  } = {
-    cur: -1,
-    last: -1,
-    options: {},
   };
 
   constructor(
@@ -76,6 +73,7 @@ export class CanvasPlayer {
       alpha = false,
       backgroundColor = 'black',
       shouldClear = false,
+      defaultPlayOptions,
     }: CanvasPlayerOptions = {},
   ) {
     const ctx = canvas.getContext('2d', { alpha });
@@ -86,6 +84,11 @@ export class CanvasPlayer {
     this.ctx = ctx;
     this.alpha = alpha;
     this.shouldClear = shouldClear;
+    this.playingState = {
+      cur: -1,
+      last: -1,
+      options: defaultPlayOptions || {},
+    };
 
     this.sizeInitialized = !fitImageSize;
 
