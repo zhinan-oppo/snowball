@@ -31,8 +31,11 @@ declare module 'vanilla-lazyload' {
       element: HTMLElement,
       options?: Omit<ILazyLoadOptions, 'element_selectors'>,
     ): void;
-    constructor(options?: ILazyLoadOptions, elements?: NodeListOf<HTMLElement>);
-    update: (elements?: NodeListOf<HTMLElement>) => void;
+    constructor(
+      options?: ILazyLoadOptions,
+      elements?: NodeListOf<HTMLElement> | HTMLElement[],
+    );
+    update: (elements?: NodeListOf<HTMLElement> | HTMLElement[]) => void;
     destroy: () => void;
     /** @deprecated*/
     load: (element: HTMLElement, force?: boolean) => void;

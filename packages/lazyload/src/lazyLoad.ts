@@ -1,6 +1,6 @@
-import Lazy from 'vanilla-lazyload';
+import Lazy, { ILazyLoadOptions } from 'vanilla-lazyload';
 
-import { Media, matchMedia } from '@zhinan-oppo/shared';
+import { matchMedia, Media } from '@zhinan-oppo/shared';
 
 interface Options {
   /**
@@ -14,7 +14,7 @@ interface Options {
    * 当为 string 类型时，elements 作为选择器选择懒加载的元素
    * 当为 NodeListOf<HTMLElement> 类型时，elements 即为懒加载的元素队列
    */
-  elements?: string | NodeListOf<HTMLElement>;
+  elements?: string | NodeListOf<HTMLElement> | HTMLElement[];
   medias: Media[];
 
   container?: HTMLElement;
@@ -42,7 +42,7 @@ function toVanillaOptions(
     ...rest
   }: Omit<Options, 'elements' | 'medias'>,
   media?: Media,
-) {
+): Partial<ILazyLoadOptions> {
   if (media) {
     const { alias } = media;
     const postfix = (str: string) => `${str}-${alias}`;
@@ -65,9 +65,26 @@ function toVanillaOptions(
 class LazyLoad {
   static load(
     element: HTMLElement,
-    options: ReturnType<typeof toVanillaOptions>,
-  ): void {
-    return Lazy.load(element, options);
+    options: ILazyLoadOptions,
+  ): Promise<HTMLElement> {
+    return new Promise((resolve, reject) => {
+      const { callback_loaded, callback_error } = options;
+      Lazy.load(element, {
+        ...options,
+        callback_loaded: () => {
+          if (callback_loaded) {
+            callback_loaded(element);
+          }
+          resolve(element);
+        },
+        callback_error: (e) => {
+          if (callback_error) {
+            callback_error(e);
+          }
+          reject(e);
+        },
+      });
+    });
   }
 
   private lazyload: Lazy;
@@ -91,9 +108,25 @@ class LazyLoad {
     return this.lazyload.toLoadCount;
   }
 
-  load(elements: { forEach: NodeListOf<HTMLElement>['forEach'] }): void {
+  load(elements: {
+    forEach: NodeListOf<HTMLElement>['forEach'];
+  }): Promise<number> {
     const options = toVanillaOptions(this.options, this.matchMedia());
-    elements.forEach((ele) => LazyLoad.load(ele, options));
+    return new Promise((resolve) => {
+      let total = 0;
+      let cnt = 0;
+      elements.forEach((ele) => {
+        total += 1;
+        LazyLoad.load(ele, options)
+          .catch(() => undefined)
+          .finally(() => {
+            cnt += 1;
+            if (cnt === total) {
+              resolve(cnt);
+            }
+          });
+      });
+    });
   }
 
   loadAll(): void {
@@ -138,7 +171,8 @@ class LazyLoad {
         ...options,
         callback_error: (...args) => console.error(args),
       },
-      !(elementsOrSelector instanceof window.NodeList)
+      typeof elementsOrSelector === 'undefined' ||
+      typeof elementsOrSelector === 'string'
         ? root.querySelectorAll(elementsOrSelector || defaultSelector)
         : elementsOrSelector,
     );
