@@ -2237,13 +2237,13 @@
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
   version "3.0.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.0.0-8279eacf-82ad-4778-8a20-037400c44df9-1600275968387/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "3.15.0"
 
 "@zhinan-oppo/image-loader@file:helpers/image-loader":
-  version "3.12.0"
+  version "3.16.0"
   dependencies:
     imagemin "^7.0.1"
     imagemin-mozjpeg "^8.0.0"
@@ -2258,7 +2258,7 @@
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
   version "3.10.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.10.1-7b0bddee-38ad-4f4c-b826-b35868ba9ce4-1600275968500/node_modules/packages/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
@@ -2272,13 +2272,13 @@
 "@zhinan-oppo/lazyload@file:packages/lazyload":
   version "3.15.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-3.15.0-92733a5b-c7fc-4095-8bd0-ac4ac390532d-1600275968503/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
     vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
   version "3.15.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-scroll-handle-3.15.1-c65a8c6d-3732-4a18-abed-45ca24722c03-1600275968508/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/shared@file:packages/shared":
   version "3.0.0"
@@ -2299,7 +2299,7 @@
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "3.15.1"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.15.1-0d717b60-f60d-4b45-b220-57ada1ebe422-1600275968556/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:packages/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "3.7.2"
@@ -8174,9 +8174,9 @@ node-fetch-npm@^2.0.2:
     safe-buffer "^5.1.1"
 
 node-fetch@^2.3.0, node-fetch@^2.5.0:
-  version "2.6.0"
-  resolved "https://registry.npm.taobao.org/node-fetch/download/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
-  integrity sha1-5jNFY4bUqlWGP2dqerDaqP3ssP0=
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 node-forge@^0.7.1:
   version "0.7.6"
