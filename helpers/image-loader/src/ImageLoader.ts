@@ -1,5 +1,6 @@
 import imagemin from 'imagemin';
 import png from 'imagemin-pngquant';
+import svg from 'imagemin-svgo';
 import { getOptions, interpolateName, parseQuery } from 'loader-utils';
 import * as path from 'path';
 import validate from 'schema-utils';
@@ -63,7 +64,7 @@ export class ImageLoader {
     );
   }
 
-  private async resize(source: Buffer | string): Promise<ImageInfo[]> {
+  private async resize(source: Buffer): Promise<ImageInfo[]> {
     const {
       name = '[path][name]_[width]@[ratio]-[md5:contenthash:hex:6].[ext]',
       ratios = [1],
@@ -86,8 +87,27 @@ export class ImageLoader {
       | 'gif'
       | 'svg'
       | undefined;
-    if (!oriWidth || !format) {
+    if (!format || (format !== 'svg' && !oriWidth)) {
       throw new Error('Unsupported image');
+    }
+
+    if (format === 'svg') {
+      const content = await imagemin.buffer(source, {
+        plugins: [svg()],
+      });
+      const width = oriWidth || 1;
+      return [
+        {
+          content,
+          width,
+          filename: interpolateName(this.loader, name as any, {
+            content,
+            context,
+          })
+            .replace('[width]', width.toString())
+            .replace('[ratio]', formatRatio(1)),
+        },
+      ];
     }
 
     let plugin: any;
@@ -105,55 +125,56 @@ export class ImageLoader {
     const parsed = path.parse(filename);
     const inputDir = input && path.resolve(input, parsed.dir, parsed.name);
     const outputDir = output && path.resolve(output, parsed.dir, parsed.name);
+
+    const resizeAndCompress = async (ratio: number) => {
+      const width = Math.ceil((oriWidth as number) * ratio);
+      const ratioStr = formatRatio(ratio);
+
+      const tempName = `${ratioStr}${parsed.ext}`;
+      let content = await readIfDirExists(tempName, inputDir);
+
+      if (!content) {
+        if (errorInputNotFound) {
+          throw new Error(
+            `${tempName} not found under input directory: ${inputDir}`,
+          );
+        }
+
+        const resized = await img.clone().resize({ width }).toBuffer();
+        const compressed = !plugin
+          ? resized
+          : await imagemin.buffer(resized, { plugins: [plugin] });
+
+        if (outputDir && (!content || outputDir !== inputDir)) {
+          await writeFileUnder(outputDir, tempName, compressed);
+        }
+        content = compressed;
+      } else {
+        this.logger.log(
+          `Load the preprocessed image: ${path.resolve(
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            inputDir!,
+            tempName,
+          )}`,
+        );
+      }
+
+      // interpolateName 的类型声明有误，name 应当可以是 function 的
+      const filename = interpolateName(this.loader, name as any, {
+        content,
+        context,
+      });
+      return {
+        filename: filename
+          .replace('[width]', width.toString())
+          .replace('[ratio]', formatRatio(ratio)),
+        width,
+        content,
+      };
+    };
+
     return Promise.all(
-      ratios
-        .filter((ratio) => ratio > 0 && ratio <= 1)
-        .map(async (ratio) => {
-          const width = Math.ceil(oriWidth * ratio);
-          const ratioStr = formatRatio(ratio);
-
-          const tempName = `${ratioStr}${parsed.ext}`;
-          let content = await readIfDirExists(tempName, inputDir);
-
-          if (!content) {
-            if (errorInputNotFound) {
-              throw new Error(
-                `${tempName} not found under input directory: ${inputDir}`,
-              );
-            }
-
-            const resized = await img.clone().resize({ width }).toBuffer();
-            const compressed = !plugin
-              ? resized
-              : await imagemin.buffer(resized, { plugins: [plugin] });
-
-            if (outputDir && (!content || outputDir !== inputDir)) {
-              await writeFileUnder(outputDir, tempName, compressed);
-            }
-            content = compressed;
-          } else {
-            this.logger.log(
-              `Load the preprocessed image: ${path.resolve(
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                inputDir!,
-                tempName,
-              )}`,
-            );
-          }
-
-          // interpolateName 的类型声明有误，name 应当可以是 function 的
-          const filename = interpolateName(this.loader, name as any, {
-            content,
-            context,
-          });
-          return {
-            filename: filename
-              .replace('[width]', width.toString())
-              .replace('[ratio]', formatRatio(ratio)),
-            width,
-            content,
-          };
-        }),
+      ratios.filter((ratio) => ratio > 0 && ratio <= 1).map(resizeAndCompress),
     );
   }
 

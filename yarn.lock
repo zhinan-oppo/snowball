@@ -1890,6 +1890,14 @@
     "@types/imagemin" "*"
     "@types/node" "*"
 
+"@types/imagemin-svgo@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@types/imagemin-svgo/-/imagemin-svgo-7.0.0.tgz#c9ffe209ed7695c9ae4bebef083f47de2cd98c1e"
+  integrity sha512-Uq2T4hHE9PvBLB1lZM1+bZUzPc14XCKKWzQqJ47qe4/iuVHavYX4ig/gbBj8W3ZvRAJcQV3nagfoqFUzzdFD4g==
+  dependencies:
+    "@types/imagemin" "*"
+    "@types/svgo" "*"
+
 "@types/imagemin@*", "@types/imagemin@^7.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/@types/imagemin/-/imagemin-7.0.0.tgz#cb99d719190ebe421015213733d656fac1f8af2e"
@@ -1988,6 +1996,11 @@
   dependencies:
     "@types/conventional-changelog-config-spec" "*"
     "@types/node" "*"
+
+"@types/svgo@*":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@types/svgo/-/svgo-1.3.3.tgz#4684af265b4e1125c738f5aaafb302c723f4efe0"
+  integrity sha512-eDLVUvvTn+mol3NpP211DTH9JzSS6YKssRIhHNmXk5BiCl+gc4s+xQQjRFTSsGBohmka5qBsHX6qhL4x88Wkvg==
 
 "@types/tapable@*", "@types/tapable@^1.0.5":
   version "1.0.5"
@@ -2224,7 +2237,7 @@
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
   version "3.0.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.0.0-248c3ce7-226c-4e7c-8585-6ca80644758d-1600273222305/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.0.0-8279eacf-82ad-4778-8a20-037400c44df9-1600275968387/node_modules/@zhinan-oppo/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "3.15.0"
@@ -2235,6 +2248,7 @@
     imagemin "^7.0.1"
     imagemin-mozjpeg "^8.0.0"
     imagemin-pngquant "^8.0.0"
+    imagemin-svgo "^8.0.0"
     loader-utils "^1.0.0"
     mkdirp "^1.0.4"
     schema-utils "^2.6.6"
@@ -2244,7 +2258,7 @@
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
   version "3.10.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.10.1-b2a24c79-1981-498f-96e8-a7dd6517b252-1600273222416/node_modules/packages/shared"
+    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.10.1-7b0bddee-38ad-4f4c-b826-b35868ba9ce4-1600275968500/node_modules/packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
@@ -2258,13 +2272,13 @@
 "@zhinan-oppo/lazyload@file:packages/lazyload":
   version "3.15.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-3.15.0-4af025d0-1304-4ec6-a36e-4252348fe25f-1600273222419/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-3.15.0-92733a5b-c7fc-4095-8bd0-ac4ac390532d-1600275968503/node_modules/@zhinan-oppo/shared"
     vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
   version "3.15.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-scroll-handle-3.15.1-57ae9748-de62-45af-905c-3bbcb2dc3cfe-1600273222424/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-scroll-handle-3.15.1-c65a8c6d-3732-4a18-abed-45ca24722c03-1600275968508/node_modules/@zhinan-oppo/shared"
 
 "@zhinan-oppo/shared@file:packages/shared":
   version "3.0.0"
@@ -2285,7 +2299,7 @@
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "3.15.1"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.15.1-a8032f7e-1ce5-40fb-ba98-44d8fa611d36-1600273222484/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.15.1-0d717b60-f60d-4b45-b220-57ada1ebe422-1600275968556/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "3.7.2"
@@ -6313,10 +6327,10 @@ hsla-regex@^1.0.0:
   resolved "https://registry.npm.taobao.org/hsla-regex/download/hsla-regex-1.0.0.tgz#c1ce7a3168c8c6614033a4b5f7877f3b225f9c38"
   integrity sha1-wc56MWjIxmFAM6S194d/OyJfnDg=
 
-html-comment-regex@^1.1.0:
+html-comment-regex@^1.1.0, html-comment-regex@^1.1.2:
   version "1.1.2"
-  resolved "https://registry.npm.taobao.org/html-comment-regex/download/html-comment-regex-1.1.2.tgz#97d4688aeb5c81886a364faa0cad1dda14d433a7"
-  integrity sha1-l9RoiutcgYhqNk+qDK0d2hTUM6c=
+  resolved "https://registry.yarnpkg.com/html-comment-regex/-/html-comment-regex-1.1.2.tgz#97d4688aeb5c81886a364faa0cad1dda14d433a7"
+  integrity sha512-P+M65QY2JQ5Y0G9KKdlDpo0zK+/OHptU5AaBwUfAIDJZk1MYf32Frm84EcOytfJE0t5JvkAnKlmjsXDnWzCJmQ==
 
 html-encoding-sniffer@^1.0.2:
   version "1.0.2"
@@ -6519,6 +6533,14 @@ imagemin-pngquant@^8.0.0:
     is-stream "^2.0.0"
     ow "^0.13.2"
     pngquant-bin "^5.0.0"
+
+imagemin-svgo@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/imagemin-svgo/-/imagemin-svgo-8.0.0.tgz#34658069f9e4a537e455467b433830fffaeb3c6e"
+  integrity sha512-++fDnnxsLT+4rpt8babwiIbzapgBzeS2Kgcy+CwgBvgSRFltBFhX2WnpCziMtxhRCzqJcCE9EcHWZP/sj+G3rQ==
+  dependencies:
+    is-svg "^4.2.1"
+    svgo "^1.3.2"
 
 imagemin@^7.0.1:
   version "7.0.1"
@@ -6995,6 +7017,13 @@ is-svg@^3.0.0:
   integrity sha1-kyHb0pwhLlypnE+peUxxS8r6L3U=
   dependencies:
     html-comment-regex "^1.1.0"
+
+is-svg@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/is-svg/-/is-svg-4.2.1.tgz#095b496e345fec9211c2a7d5d021003e040d6f81"
+  integrity sha512-PHx3ANecKsKNl5y5+Jvt53Y4J7MfMpbNZkv384QNiswMKAWIbvcqbPz+sYbFKJI8Xv3be01GSFniPmoaP+Ai5A==
+  dependencies:
+    html-comment-regex "^1.1.2"
 
 is-symbol@^1.0.2:
   version "1.0.3"

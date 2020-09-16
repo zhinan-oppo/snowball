@@ -9,9 +9,9 @@
     "lib"
   ],
   "scripts": {
-    "watch": "npm run build -- -w",
+    "watch": "yarn run build -- -w",
     "build": "rollup -c=../../rollup.config.js",
-    "prebuild": "npm run clean",
+    "prebuild": "yarn run clean",
     "clean": "rimraf -f lib"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",
@@ -21,6 +21,7 @@
     "imagemin": "^7.0.1",
     "imagemin-mozjpeg": "^8.0.0",
     "imagemin-pngquant": "^8.0.0",
+    "imagemin-svgo": "^8.0.0",
     "loader-utils": "^1.0.0",
     "mkdirp": "^1.0.4",
     "schema-utils": "^2.6.6",
