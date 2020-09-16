@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/image-loader",
-  "version": "3.12.0",
+  "version": "3.16.0",
   "description": "Image loader",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
