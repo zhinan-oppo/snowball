@@ -380,6 +380,7 @@ export class ScrollListener<T extends Element> {
       this.root.addEventListener('scroll', this.handleScroll, {
         passive: true,
       });
+      window.addEventListener('resize', this.handleScroll, { passive: true });
       this.handleScroll();
     }
   }
