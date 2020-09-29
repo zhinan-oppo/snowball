@@ -55,5 +55,13 @@ export default {
     context: {
       type: 'string' as const,
     },
+    svgoPlugins: {
+      description: 'https://github.com/svg/svgo#what-it-can-do',
+      type: 'array' as const,
+      items: {
+        type: 'object' as const,
+        additionalProperties: true,
+      },
+    },
   },
 };

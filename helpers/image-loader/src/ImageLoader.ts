@@ -5,6 +5,7 @@ import { getOptions, interpolateName, parseQuery } from 'loader-utils';
 import * as path from 'path';
 import validate from 'schema-utils';
 import sharp from 'sharp';
+import SVGO from 'svgo';
 import { compilation, loader, Logger } from 'webpack';
 
 import schema from './options.schema';
@@ -22,6 +23,7 @@ interface Options {
   input?: string;
   errorInputNotFound?: boolean;
   context?: string;
+  svgoPlugins?: SVGO.PluginConfig[];
 }
 
 type ImageInfo = { filename: string; content: Buffer; width: number };
@@ -92,8 +94,12 @@ export class ImageLoader {
     }
 
     if (format === 'svg') {
+      const plugins = [
+        { removeViewBox: false },
+        ...(this.options.svgoPlugins || []),
+      ];
       const content = await imagemin.buffer(source, {
-        plugins: [svg()],
+        plugins: [svg({ plugins })],
       });
       const width = oriWidth || 1;
       return [
