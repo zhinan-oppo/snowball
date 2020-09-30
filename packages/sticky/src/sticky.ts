@@ -194,6 +194,8 @@ export function initStickyElement(
     };
     const setAfter = () => {
       setStyles(element, {
+        width,
+        height,
         left: `${leftToContainer}px`,
         top: 'auto',
         bottom: '0',
