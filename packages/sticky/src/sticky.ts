@@ -207,13 +207,17 @@ export function initStickyElement(
 
     // 当 element 使用 static/relative 定位时添加 placeholder 占位
     // 避免 element fixed 时对相邻的元素或父元素造成影响
-    if (initialPosition === 'static' || initialPosition === 'relative') {
+    if (
+      forceFixed ||
+      initialPosition === 'static' ||
+      initialPosition === 'relative'
+    ) {
       if (!placeholder) {
         placeholder = document.createElement('div');
-        initPlaceholder(placeholder, initialPosition, elementStyles);
+        initPlaceholder(placeholder, 'static', elementStyles);
         container.insertBefore(placeholder, element);
       } else {
-        initPlaceholder(placeholder, initialPosition, elementStyles);
+        initPlaceholder(placeholder, 'static', elementStyles);
         placeholder.style.display = 'initial';
       }
       setBefore();
