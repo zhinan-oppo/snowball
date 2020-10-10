@@ -148,6 +148,10 @@ export class CanvasPlayer {
     return !this.playing;
   }
 
+  get cur(): number {
+    return this.playingState.cur;
+  }
+
   /**
    * 暂停播放
    */
@@ -257,6 +261,27 @@ export class CanvasPlayer {
       }
     };
     playingState.interval = window.setInterval(() => play(), 1000 / fps);
+  }
+
+  async playTo(
+    i: number,
+    options: PlayOptions = this.playingState.options,
+  ): Promise<void> {
+    const { cur } = this.playingState;
+    if (i === cur || i < 0 || i >= this.sequence.length) {
+      return;
+    }
+    const mode = i > cur ? PlayMode.Normal : PlayMode.Reverse;
+    return this.play({
+      ...options,
+      mode,
+      onUpdated: ({ i: j }) => {
+        if (j === i) {
+          this.pause();
+        }
+        options.onUpdated?.({ i: j });
+      },
+    });
   }
 
   private async drawCurrentFrame() {
