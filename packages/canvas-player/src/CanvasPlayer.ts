@@ -148,8 +148,18 @@ export class CanvasPlayer {
     return !this.playing;
   }
 
+  /**
+   * 当前指向的帧索引
+   */
   get cur(): number {
     return this.playingState.cur;
+  }
+
+  /**
+   * 序列帧的长度
+   */
+  get seqLength(): number {
+    return this.sequence.length;
   }
 
   /**
