@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/canvas-player",
-  "version": "3.17.0",
+  "version": "3.18.0",
   "description": "Play image sequences with Canvas.",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
