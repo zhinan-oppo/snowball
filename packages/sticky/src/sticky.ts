@@ -133,6 +133,7 @@ export function initStickyElement(
     };
 
     // 支持原生的 sticky 时，使用原生 sticky
+    // TODO: 不修改 style
     const supportedSticky = !forceFixed && getSupportedKeyword();
     if (supportedSticky) {
       element.style.position = supportedSticky;
@@ -186,7 +187,7 @@ export function initStickyElement(
         width,
         height,
         left: `${leftToContainer}px`,
-        top: `${topToContainer}px`,
+        top: '0',
         position: 'absolute',
         margin: '0',
         transform: 'none',
