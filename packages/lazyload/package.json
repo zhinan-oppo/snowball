@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/lazyload",
-  "version": "3.18.2",
+  "version": "3.18.4",
   "description": "lazyload images and videos",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
