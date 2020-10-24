@@ -23,6 +23,6 @@
   },
   "dependencies": {
     "@zhinan-oppo/shared": "file:../shared",
-    "vanilla-lazyload": "^17.1.3"
+    "vanilla-lazyload": "^15.2.0"
   }
 }
