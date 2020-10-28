@@ -119,7 +119,7 @@ class LazyLoad {
         total += 1;
         LazyLoad.load(ele, options)
           .catch(() => undefined)
-          .finally(() => {
+          .then(() => {
             cnt += 1;
             if (cnt === total) {
               resolve(cnt);
