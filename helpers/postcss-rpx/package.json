@@ -1,0 +1,40 @@
+{
+  "name": "@zhinan-oppo/postcss-rpx",
+  "version": "3.18.5",
+  "description": "PostCSS 插件：将用`rpx`做单位的值在不同媒体查询条件下转换成相应的`px`值",
+  "keywords": [
+    "postcss",
+    "responsive",
+    "media query",
+    "custom unit"
+  ],
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "watch": "yarn run build -- -w",
+    "build": "rollup -c=../../rollup.config.js",
+    "prebuild": "yarn run clean",
+    "clean": "rimraf -f lib"
+  },
+  "author": "xsfour <xsfour@qq.com>",
+  "homepage": "https://github.com/zhinan-oppo/snowball",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhinan-oppo/snowball.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhinan-oppo/snowball/issues"
+  },
+  "peerDependencies": {
+    "postcss": "^8.1.7"
+  }
+}
