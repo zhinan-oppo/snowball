@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/postcss-rpx",
-  "version": "3.18.5",
+  "version": "3.18.6-alpha.0",
   "description": "PostCSS 插件：将用`rpx`做单位的值在不同媒体查询条件下转换成相应的`px`值",
   "keywords": [
     "postcss",
