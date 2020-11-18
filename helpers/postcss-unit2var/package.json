@@ -1,11 +1,11 @@
 {
   "name": "@zhinan-oppo/postcss-unit2var",
   "version": "3.18.6-alpha.0",
-  "description": "PostCSS 插件：将指定单位的值转换成通过 CSS var 定义好的`px`值。",
+  "description": "PostCSS 插件：将指定单位的值转换成 CSS var。",
   "keywords": [
     "postcss",
     "responsive",
-    "media",
+    "media query",
     "custom unit"
   ],
   "types": "lib/index.d.ts",

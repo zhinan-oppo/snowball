@@ -1,18 +1,4 @@
-import { Plugin } from 'postcss';
+import { createPlugin } from './Plugin';
 
-export interface Options {}
-
-function createPlugin(options: Options): Plugin {
-  return {
-    postcssPlugin: 'postcss-rpx',
-    Once(root) {
-      //
-    },
-    Declaration(decl) {
-      //
-    },
-  };
-}
-
-export default createPlugin;
 export const postcss = true;
+export default createPlugin;
