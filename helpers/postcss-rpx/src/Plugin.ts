@@ -106,8 +106,8 @@ class RPXPlugin {
         //     );
         //   }
         // });
+        root.walkRules((rule) => this.handleRule(rule));
       },
-      Rule: (rule) => this.handleRule(rule),
     };
   }
 
@@ -170,6 +170,7 @@ class RPXPlugin {
   }
 
   private transformDecls(rule: Rule, ratio: number, removeUnmatched = true) {
+    let found = false;
     const nodes: ChildNode[] = [];
     rule.each((child) => {
       if (child.type === 'decl' && this.unitMatcher.test(child.value)) {
@@ -182,11 +183,14 @@ class RPXPlugin {
             }),
           );
         }
+        found = true;
       } else if (!removeUnmatched) {
         nodes.push(child);
       }
     });
-    rule.nodes = nodes;
+    if (found || removeUnmatched) {
+      rule.nodes = nodes;
+    }
 
     return rule;
   }

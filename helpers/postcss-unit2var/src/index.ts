@@ -17,34 +17,36 @@ function createPlugin({
   );
   return {
     postcssPlugin: 'postcss-unit2var',
-    Declaration(decl, { postcss: { list } }) {
-      let found = false;
-      const replaced = list
-        .comma(decl.value)
-        .map((value) => {
-          return list
-            .space(value)
-            .map((v) => {
-              if (matcher.test(v)) {
-                found = true;
-                return v.replace(
-                  matcher,
-                  `${
-                    /^calc\(/i.test(v) ? '' : 'calc'
-                  }($1 * var(${to}, ${fallback}))`,
-                );
-              }
-              return v;
-            })
-            .join(' ');
-        })
-        .join(', ');
-      if (found) {
-        if (decl.parent) {
-          const override = decl.clone({ value: replaced });
-          decl.parent.insertAfter(decl, override);
+    Once(root, { postcss: { list } }) {
+      root.walkDecls((decl) => {
+        let found = false;
+        const replaced = list
+          .comma(decl.value)
+          .map((value) => {
+            return list
+              .space(value)
+              .map((v) => {
+                if (matcher.test(v)) {
+                  found = true;
+                  return v.replace(
+                    matcher,
+                    `${
+                      /^calc\(/i.test(v) ? '' : 'calc'
+                    }($1 * var(${to}, ${fallback}))`,
+                  );
+                }
+                return v;
+              })
+              .join(' ');
+          })
+          .join(', ');
+        if (found) {
+          if (decl.parent) {
+            const override = decl.clone({ value: replaced });
+            decl.parent.insertAfter(decl, override);
+          }
         }
-      }
+      });
     },
   };
 }
