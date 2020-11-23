@@ -34,6 +34,16 @@ function getParentNotAtMedia(
   return { parent, container: container as AtRule | Rule };
 }
 
+function matchAll(str: string, matcher: RegExp): string[][] {
+  const res: string[][] = [];
+  let matches = matcher.exec(str);
+  while (matches) {
+    res.push(matches);
+    matches = matcher.exec(str);
+  }
+  return res;
+}
+
 /**
  * TODO: 现在会有重复以及无效的遍历，待优化
  */
@@ -182,7 +192,7 @@ class RPXPlugin {
   }
 
   private transformDecl(decl: Declaration, ratio: number) {
-    Array.from(decl.value.matchAll(this.unitMatcher))
+    matchAll(decl.value, this.unitMatcher)
       .map(([match, valueStr]) => {
         return {
           match,
