@@ -21,6 +21,7 @@ interface Options {
   src: string;
   srcset: string;
   poster: string;
+  bg: string;
   threshold?: number;
   thresholds?: string;
   delay?: number;
@@ -37,6 +38,7 @@ function toVanillaOptions(
     src,
     poster,
     srcset,
+    bg,
     delay,
     classes = {},
     ...rest
@@ -48,12 +50,14 @@ function toVanillaOptions(
     const postfix = (str: string) => `${str}-${alias}`;
     src = postfix(src);
     poster = postfix(poster);
+    bg = postfix(bg);
   }
   return {
     ...rest,
     data_src: src,
     data_srcset: srcset,
     data_poster: poster,
+    data_bg: bg,
     load_delay: delay,
     class_loading: classes.loading,
     class_loaded: classes.loaded,
@@ -164,8 +168,8 @@ class LazyLoad {
       root = window.document,
     } = this.options;
     const options = toVanillaOptions(this.options, media);
-    const { data_src, data_srcset, data_poster } = options;
-    const defaultSelector = `[data-${data_src}],[data-${data_srcset}],[data-${data_poster}]`;
+    const { data_src, data_srcset, data_poster, data_bg } = options;
+    const defaultSelector = `[data-${data_src}],[data-${data_srcset}],[data-${data_poster}],[data-${data_bg}]`;
     return new Lazy(
       {
         ...options,
