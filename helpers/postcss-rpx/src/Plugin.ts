@@ -54,7 +54,7 @@ class RPXPlugin {
   private readonly optionPropPrefix: string;
   private readonly mediaMap: Record<string, Required<Media> | undefined>;
 
-  private rootRuleOptions: RuleOptions = { medias: [] };
+  private rootRuleOptions: RuleOptions;
 
   constructor(options: Options) {
     this.options = {
@@ -70,6 +70,7 @@ class RPXPlugin {
     this.options.medias.forEach((media) => {
       this.mediaMap[media.alias] = media;
     });
+    this.rootRuleOptions = { ...options.defaultRuleOptions };
   }
 
   get unitMatcher(): RegExp {
@@ -140,6 +141,7 @@ class RPXPlugin {
         };
       })
       .filter(({ ratio, query }) => ratio > 0 && query)
+      .reverse() // 使得 insertAfter 之后的顺序正常
       .forEach(({ ratio, query, alias }) => {
         const newRule = this.transformDecls(rule.clone(), ratio / baseRatio);
         if (newRule.nodes.length > 0) {

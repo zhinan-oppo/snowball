@@ -16,6 +16,7 @@ export interface Options extends RuleOptions {
   round?: (n: number) => number;
   medias: Array<Required<Media>>;
   clearOptionProps?: boolean;
+  defaultRuleOptions: RuleOptions;
 }
 
 const validRuleOptionProps: Array<{
