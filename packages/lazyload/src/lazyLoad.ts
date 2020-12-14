@@ -2,6 +2,8 @@ import Lazy, { ILazyLoadOptions } from 'vanilla-lazyload';
 
 import { matchMedia, Media } from '@zhinan-oppo/shared';
 
+type DataSrcType = 'data_src' | 'data_srcset' | 'data_bg' | 'data_poster';
+
 interface Options {
   /**
    * 当 elements 不是指定的元素队列时，
@@ -16,6 +18,27 @@ interface Options {
    */
   elements?: string | NodeListOf<HTMLElement> | HTMLElement[];
   medias: Media[];
+
+  /**
+   * 在元素加载前会执行的回调函数，回调的返回结果(不为`undefined`时)会用来替换相应的属性值。
+   * 以`移动端`的元素
+   * ```html
+   * <video data-src-360="abc-360.mp4" data-poster-360="abc.jpg" data-src-768="abc-768.mp4">
+   * ```
+   * 为例，会执行两次回调：
+   * ```javascript
+   * srcPreprocessor('abc-360.mp4', { name: 'data-src-360', type: 'data_src', element: video });
+   * srcPreprocessor('poster-360.jpg', { name: 'data-poster-360', type: 'data_poster', element: video });
+   * ```
+   */
+  srcPreprocessor?: (
+    src: string | undefined,
+    more: {
+      name: string;
+      type: DataSrcType;
+      element: HTMLElement;
+    },
+  ) => string | undefined;
 
   container?: HTMLElement;
   src: string;
@@ -120,6 +143,9 @@ class LazyLoad {
       let total = 0;
       let cnt = 0;
       elements.forEach((ele) => {
+        // 先执行预处理
+        this.preprocessElementSources(ele, options);
+
         total += 1;
         LazyLoad.load(ele, options)
           .catch(() => undefined)
@@ -174,12 +200,45 @@ class LazyLoad {
       {
         ...options,
         callback_error: (...args) => console.error(args),
+        callback_enter:
+          this.options.srcPreprocessor &&
+          ((element) => {
+            this.preprocessElementSources(element, options);
+          }),
       },
       typeof elementsOrSelector === 'undefined' ||
       typeof elementsOrSelector === 'string'
         ? root.querySelectorAll(elementsOrSelector || defaultSelector)
         : elementsOrSelector,
     );
+  }
+
+  private preprocessElementSources(
+    element: HTMLElement,
+    vanillaOptions: ReturnType<typeof toVanillaOptions>,
+  ) {
+    const { srcPreprocessor } = this.options;
+    if (!srcPreprocessor) {
+      return;
+    }
+
+    [
+      'data_src' as const,
+      'data_srcset' as const,
+      'data_poster' as const,
+      'data_bg' as const,
+    ].forEach((optKey) => {
+      const attr = vanillaOptions[optKey];
+      if (attr) {
+        const name = `data-${attr}`;
+        const value = element.getAttribute(name) || undefined;
+
+        const res = srcPreprocessor(value, { name, element, type: optKey });
+        if (typeof res === 'string' && res !== value) {
+          element.setAttribute(name, res);
+        }
+      }
+    });
   }
 }
 
