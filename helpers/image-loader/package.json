@@ -22,6 +22,7 @@
     "imagemin-mozjpeg": "^8.0.0",
     "imagemin-pngquant": "^8.0.0",
     "imagemin-svgo": "^8.0.0",
+    "imagemin-webp": "^6.0.0",
     "loader-utils": "^1.0.0",
     "mkdirp": "^1.0.4",
     "schema-utils": "^2.6.6",
@@ -31,5 +32,8 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@types/imagemin-webp": "^5.1.1"
   }
 }

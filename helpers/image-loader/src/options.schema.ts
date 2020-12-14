@@ -63,5 +63,14 @@ export default {
         additionalProperties: true,
       },
     },
+    webp: {
+      description: 'https://github.com/imagemin/imagemin-webp#options',
+      type: 'object' as const,
+      additionalProperties: true,
+    },
+    webpOnly: {
+      description: 'Output WebP images only.',
+      type: 'boolean' as const,
+    },
   },
 };
