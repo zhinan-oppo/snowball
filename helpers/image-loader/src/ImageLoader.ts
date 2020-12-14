@@ -126,6 +126,7 @@ export class ImageLoader {
       ];
     }
 
+    // FIXME: cache 文件名中的 quality 不准确——webp 和 jpg/png 的不一样
     const filename = interpolateName(
       this.loader,
       `[path][name].[ext]/[sha1:contenthash:hex:24]/${qualityMin}-${quality}.[ext]`,
@@ -163,7 +164,7 @@ export class ImageLoader {
         const resized = img.clone().resize({ width });
         const compressed = toWebP
           ? await imagemin.buffer(await resized.toBuffer(), {
-              plugins: [webp(webpOptions || { quality })],
+              plugins: [webp({ ...(webpOptions || {}), quality })],
             })
           : !pngPlugin
           ? await resized.jpeg({ quality, progressive }).toBuffer()
