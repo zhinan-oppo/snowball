@@ -33,7 +33,8 @@ scrollHandle(
   dom: string | Element,
   options: {
     forceInViewBoundary: boolean = 'false' // inView -> before/after 的时候是否触发 handlers.inView() 回调
-    passive: boolean = 'true' // 是否等待脚本处理完毕才触发下次默认事件
+    // scroll 的一个参数, 是否等待脚本处理完毕才触发下次默认事件, 了解更多: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+    passive: boolean = 'true'
 
     // 当 dom 的顶部进入到 viewport 的哪个位置(相对于 viewport 顶部)开始属于 inView 状态
     start: {
@@ -66,4 +67,35 @@ scrollHandle(
     }
   }
 ): () => void
+```
+
+## Examples
+
+```
+用法示例:
+scrollHandle(document.querySelector('#element'), {
+  start: 120,
+  handles: {
+    onStateChange({ state, oldState }) {
+      console.log({ state, oldState })
+    },
+    inView({ distance, total }) {
+      const progress = distance / total
+      console.log({ progress })
+    }
+  }
+})
+
+scrollHandle('#element', {
+  start: { percent: '0.4' },
+  handles: {
+    onStateChange({ state, oldState }) {
+      console.log({ state, oldState })
+    },
+    always({ distance, total }) {
+      const progress = distance / total
+      console.log({ progress })
+    }
+  }
+})
 ```
