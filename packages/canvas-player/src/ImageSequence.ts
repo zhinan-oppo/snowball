@@ -75,11 +75,13 @@ export class ImageSequence {
     const image = this.images[i];
 
     return (this.imagePromises[i] = new Promise(
-      (resolve: (value: HTMLImageElement) => void) => {
-        this.imageLoader(image, i).then((loaded) => {
-          this.imagesLoaded[i] = loaded;
-          resolve(loaded);
-        });
+      (resolve: (value: HTMLImageElement) => void, reject) => {
+        this.imageLoader(image, i)
+          .then((loaded) => {
+            this.imagesLoaded[i] = loaded;
+            resolve(loaded);
+          })
+          .catch(reject);
       },
     ));
   }
