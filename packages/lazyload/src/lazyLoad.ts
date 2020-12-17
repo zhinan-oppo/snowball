@@ -1,6 +1,8 @@
 import Lazy, { ILazyLoadOptions } from 'vanilla-lazyload';
 
 import { matchMedia, Media } from '@zhinan-oppo/shared';
+import { getDataAttrName, isImage, isVideo } from './utils';
+import { Exception } from './Exception';
 
 type DataSrcType = 'data_src' | 'data_srcset' | 'data_bg' | 'data_poster';
 
@@ -90,25 +92,48 @@ function toVanillaOptions(
 }
 
 class LazyLoad {
+  /**
+   * NOTE: options.callback_loaded 和 options.callback_error 会被覆盖，请使用返回的 Promise 结果
+   *
+   * @throws {Exception}
+   */
   static load(
     element: HTMLElement,
     options: ILazyLoadOptions,
+    srcPreprocessor?: Options['srcPreprocessor'],
   ): Promise<HTMLElement> {
     return new Promise((resolve, reject) => {
-      const { callback_loaded, callback_error } = options;
+      // 先执行预处理
+      this.preprocessElementSources(element, options, srcPreprocessor);
+
+      // 检查 Image 的 src/srcset 以及 Video 的 src 属性是否设置，未设置则直接认为加载失败
+      // TODO: 支持 Picture/Video + Source 的形式
+      if (
+        (isImage(element) &&
+          !element.getAttribute(getDataAttrName(options.data_src)) &&
+          !element.getAttribute(getDataAttrName(options.data_srcset))) ||
+        (isVideo(element) &&
+          !element.getAttribute(getDataAttrName(options.data_src)))
+      ) {
+        const error = new Exception(
+          `${options.data_src} or ${options.data_srcset} is necessary`,
+          element,
+        );
+        return reject(error);
+      }
+
       Lazy.load(element, {
         ...options,
         callback_loaded: () => {
-          if (callback_loaded) {
-            callback_loaded(element);
-          }
           resolve(element);
         },
-        callback_error: (e) => {
-          if (callback_error) {
-            callback_error(e);
-          }
-          reject(e);
+        callback_error: () => {
+          reject(
+            new Exception(
+              'vanilla-lazyload error: see console output for details',
+              element,
+            ),
+          );
         },
       });
     });
@@ -137,26 +162,13 @@ class LazyLoad {
 
   load(elements: {
     forEach: NodeListOf<HTMLElement>['forEach'];
-  }): Promise<number> {
+  }): Promise<HTMLElement>[] {
     const options = toVanillaOptions(this.options, this.matchMedia());
-    return new Promise((resolve) => {
-      let total = 0;
-      let cnt = 0;
-      elements.forEach((ele) => {
-        // 先执行预处理
-        this.preprocessElementSources(ele, options);
-
-        total += 1;
-        LazyLoad.load(ele, options)
-          .catch(() => undefined)
-          .then(() => {
-            cnt += 1;
-            if (cnt === total) {
-              resolve(cnt);
-            }
-          });
-      });
-    });
+    const promises: Promise<HTMLElement>[] = [];
+    elements.forEach((ele) =>
+      promises.push(LazyLoad.load(ele, options, this.options.srcPreprocessor)),
+    );
+    return promises;
   }
 
   loadAll(): void {
@@ -190,6 +202,7 @@ class LazyLoad {
     this.mediaMatched = media;
 
     const {
+      srcPreprocessor,
       elements: elementsOrSelector,
       root = window.document,
     } = this.options;
@@ -201,9 +214,13 @@ class LazyLoad {
         ...options,
         callback_error: (...args) => console.error(args),
         callback_enter:
-          this.options.srcPreprocessor &&
+          srcPreprocessor &&
           ((element) => {
-            this.preprocessElementSources(element, options);
+            LazyLoad.preprocessElementSources(
+              element,
+              options,
+              srcPreprocessor,
+            );
           }),
       },
       typeof elementsOrSelector === 'undefined' ||
@@ -213,15 +230,11 @@ class LazyLoad {
     );
   }
 
-  private preprocessElementSources(
+  private static preprocessElementSources(
     element: HTMLElement,
     vanillaOptions: ReturnType<typeof toVanillaOptions>,
+    callback?: Options['srcPreprocessor'],
   ) {
-    const { srcPreprocessor } = this.options;
-    if (!srcPreprocessor) {
-      return;
-    }
-
     [
       'data_src' as const,
       'data_srcset' as const,
@@ -233,7 +246,8 @@ class LazyLoad {
         const name = `data-${attr}`;
         const value = element.getAttribute(name) || undefined;
 
-        const res = srcPreprocessor(value, { name, element, type: optKey });
+        const res =
+          callback && callback(value, { name, element, type: optKey });
         if (typeof res === 'string' && res !== value) {
           element.setAttribute(name, res);
         }
