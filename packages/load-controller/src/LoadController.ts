@@ -15,6 +15,9 @@ export interface Loader {
 }
 
 export interface Options {
+  /**
+   * limit <= 0 时不限制同时加载的数量
+   */
   limit: number;
 }
 
@@ -29,6 +32,14 @@ export interface GroupContext {
   offset: number;
   base: number;
   start: number;
+  elementsRetrying: Array<HTMLElement | undefined>;
+}
+
+interface ElementRef {
+  element: HTMLElement;
+  belongsTo: GroupContext;
+  iInGroup: number;
+  retryOf?: number;
 }
 
 interface GroupController {
@@ -45,7 +56,7 @@ export class LoadController {
   };
 
   private readonly loadingContext: {
-    elements: HTMLElement[];
+    elements: ElementRef[];
     cur: Record<'high' | 'normal', number>;
   } = {
     elements: [],
@@ -92,6 +103,7 @@ export class LoadController {
       elementStates: elements.map(() => undefined),
       base: 0,
       offset: 0,
+      elementsRetrying: [],
     };
     this.queues.low.push(group);
 
@@ -104,7 +116,10 @@ export class LoadController {
 
   load(): void {
     const { loadingContext, options } = this;
-    while (loadingContext.elements.length < options.limit) {
+    while (
+      options.limit <= 0 || // limit <= 0 即不限制
+      loadingContext.elements.length < options.limit
+    ) {
       const group = this.getGroupToLoad();
       if (!group) {
         break;
@@ -127,7 +142,11 @@ export class LoadController {
     const element = elements[shift];
 
     const { loadingContext } = this;
-    loadingContext.elements.push(element);
+    loadingContext.elements.push({
+      element,
+      belongsTo: group,
+      iInGroup: shift,
+    });
 
     const onProgress = () => {
       if (group.onProgress) {
@@ -142,10 +161,14 @@ export class LoadController {
         });
       }
 
-      const i = loadingContext.elements.indexOf(element);
+      // 移出正在加载队列
+      const i = loadingContext.elements.findIndex(
+        ({ element: ref }) => ref === element,
+      );
       if (i >= 0) {
         loadingContext.elements.splice(i, 1);
       }
+
       // 检查是否可以加载其它资源
       this.load();
     };
@@ -215,6 +238,18 @@ export class LoadController {
     return group;
   }
 
+  /**
+   * NOTE: 现在只是简单地将 element 移出了加载队列使得其它 element 能够被加载
+   * TODO: 还需要处理 取消加载--重新加载
+   */
+  private cancelElementsInGroup(group: GroupContext) {
+    const notInGroup = this.loadingContext.elements.filter(
+      ({ belongsTo }) => belongsTo !== group,
+    );
+
+    this.loadingContext.elements = notInGroup;
+  }
+
   private setPriority(_group: GroupContext, priority: Priority) {
     if (priority === _group.priority) {
       return;
@@ -231,6 +266,8 @@ export class LoadController {
 
     if (priority !== 'low') {
       this.load();
+    } else {
+      this.cancelElementsInGroup(group);
     }
   }
 }
