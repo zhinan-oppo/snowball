@@ -170,7 +170,8 @@ export class LoadController {
       }
 
       // 检查是否可以加载其它资源
-      this.load();
+      // 需要用 setTimeout，否则可能会报 maximum call stack size exceeded
+      window.setTimeout(() => this.load());
     };
 
     this.loader.load(element, {
