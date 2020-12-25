@@ -39,6 +39,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "peerDependencies": {
-    "postcss": "^8.1.7"
+    "postcss": "^8.2.1"
   }
 }

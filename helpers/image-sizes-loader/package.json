@@ -9,9 +9,9 @@
     "lib"
   ],
   "scripts": {
-    "watch": "npm run build -- -w",
+    "watch": "yarn run build -- -w",
     "build": "rollup -c=../../rollup.config.js",
-    "prebuild": "npm run clean",
+    "prebuild": "yarn run clean",
     "clean": "rimraf -f lib"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",

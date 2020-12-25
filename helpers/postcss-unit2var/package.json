@@ -39,6 +39,6 @@
     "url": "https://github.com/zhinan-oppo/snowball/issues"
   },
   "peerDependencies": {
-    "postcss": "^8.1.7"
+    "postcss": "^8.2.1"
   }
 }
