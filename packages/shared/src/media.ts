@@ -1,4 +1,4 @@
-import { getWindowWidth } from './windowSize';
+import { WindowSize } from './windowSize';
 
 export interface Media {
   width: { min: number } | { max: number };
@@ -14,11 +14,12 @@ export function isMaxWidth(width: Media['width']): width is { max: number } {
   return !isMinWidth(width);
 }
 
-export function matchMedia(medias: Media[], windowWidth = getWindowWidth()) {
-  const windowOrientation = window.matchMedia(`(orientation: landscape)`)
-    .matches
-    ? 'landscape'
-    : 'portrait';
+export function matchMedia(
+  medias: Media[],
+  { width: windowWidth, height: windowHeight } = WindowSize.getSize(),
+): Media | undefined {
+  const windowOrientation =
+    windowWidth > windowHeight ? 'landscape' : 'portrait';
   for (let i = 0; i < medias.length; i += 1) {
     const media = medias[i];
     const { width, orientation } = media;
