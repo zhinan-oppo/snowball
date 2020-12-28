@@ -126,7 +126,6 @@ export class ImageLoader {
       ];
     }
 
-    // FIXME: cache 文件名中的 quality 不准确——webp 和 jpg/png 的不一样
     const filename = interpolateName(
       this.loader,
       `[path][name].[ext]/[sha1:contenthash:hex:24]/${qualityMin}-${quality}.[ext]`,
@@ -210,7 +209,7 @@ export class ImageLoader {
       ratios
         .filter((ratio) => ratio > 0 && ratio <= 1)
         .map(async (ratio) => {
-          // TODO: 重复执行了 resize 操作，应该可以优化
+          // TODO: 重复执行了 resize 操作，应该可以优化——使用 srcset
           const imageWebP = await resizeAndCompress(ratio, { toWebP: true });
           images.push(imageWebP);
 
@@ -219,8 +218,14 @@ export class ImageLoader {
               toWebP: false,
               filename: imageWebP.filename.replace(/\.webp$/i, ''),
             });
-            image.noCode = true;
             images.push(image);
+
+            if (image.content.byteLength < imageWebP.content.byteLength) {
+              image.noCode = false;
+              imageWebP.noCode = true;
+            } else {
+              image.noCode = true;
+            }
           }
         }),
     );
