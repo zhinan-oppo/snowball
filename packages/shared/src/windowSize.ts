@@ -14,7 +14,7 @@ export function getWindowWidth(): number {
   );
 }
 
-interface Size {
+export interface Size {
   width: number;
   height: number;
 }
@@ -25,6 +25,7 @@ interface Listeners {
 }
 type LengthListener = (n?: number, o?: number) => void;
 type SizeListener = (nSize: Partial<Size>, oSize: Partial<Size>) => void;
+type Remover = () => void;
 
 function removeElementFrom<T>(arr: T[]) {
   return (ele: T) => {
@@ -36,6 +37,31 @@ function removeElementFrom<T>(arr: T[]) {
 }
 
 export class WindowSize {
+  static readonly singleton = new WindowSize();
+
+  static getWidth(): number {
+    return this.singleton.width;
+  }
+
+  static getHeight(): number {
+    return this.singleton.height;
+  }
+
+  static getSize(): Size {
+    return {
+      width: this.singleton.width,
+      height: this.singleton.height,
+    };
+  }
+
+  static addWidthListener(callback: LengthListener): Remover {
+    return this.singleton.addWidthListener(callback);
+  }
+
+  static addHeightListener(callback: LengthListener): Remover {
+    return this.singleton.addHeightListener(callback);
+  }
+
   private readonly size: Partial<Size> = Object.create(null);
   private readonly listeners: Listeners = {
     width: [],
@@ -75,26 +101,26 @@ export class WindowSize {
     window.addEventListener('resize', this.onResize);
   }
 
-  destroy() {
+  destroy(): void {
     window.removeEventListener('resize', this.onResize);
   }
 
-  get height() {
+  get height(): number {
     const { size } = this;
     return size.height || (size.height = getWindowHeight()) || 0;
   }
 
-  get width() {
+  get width(): number {
     const { size } = this;
     return size.width || (size.width = getWindowWidth()) || 0;
   }
 
-  addWidthListener(callback: LengthListener) {
+  addWidthListener(callback: LengthListener): Remover {
     this.listeners.width.push(callback);
     return () => this.removeWidthHandler(callback);
   }
 
-  addHeightListener(callback: LengthListener) {
+  addHeightListener(callback: LengthListener): Remover {
     this.listeners.height.push(callback);
     return () => this.removeHeightHandler(callback);
   }
@@ -102,7 +128,7 @@ export class WindowSize {
    * 当 width 或 height 变化时被调用
    * @param {(size: Size, oldSize: Size) => void} callback
    */
-  addSizeListener(callback: SizeListener) {
+  addSizeListener(callback: SizeListener): Remover {
     this.listeners.size.push(callback);
     return () => this.removeSizeHandler(callback);
   }

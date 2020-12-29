@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.build.json",
+  "compilerOptions": {
+    "target": "es2015",
+    "baseUrl": "./src",
+    "outDir": "./lib",
+    "paths": {
+      "util.promisify": ["../../@types/util.promisify.d.ts"]
+    }
+  },
+  "include": ["./src"]
+}

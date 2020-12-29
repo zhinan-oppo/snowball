@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/image-sizes-loader",
-  "version": "3.4.2",
+  "version": "3.22.0",
   "description": "Load image sizes",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -9,9 +9,9 @@
     "lib"
   ],
   "scripts": {
-    "watch": "npm run build -- -w",
+    "watch": "yarn run build -- -w",
     "build": "rollup -c=../../rollup.config.js",
-    "prebuild": "npm run clean",
+    "prebuild": "yarn run clean",
     "clean": "rimraf -f lib"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",

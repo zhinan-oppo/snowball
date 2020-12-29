@@ -26,14 +26,17 @@ export function mkdirpSync(dir: string): void {
   mkdirSync(dir);
 }
 
-export function fileExistsIn(filename: string, dir?: string) {
+export function fileExistsIn(filename: string, dir?: string): boolean {
   if (!dir) {
     return false;
   }
   return fileExists(resolve(dir, filename));
 }
 
-export async function readIfDirExists(filename: string, dir?: string) {
+export async function readIfDirExists(
+  filename: string,
+  dir?: string,
+): Promise<Buffer | undefined> {
   if (!dir) {
     return undefined;
   }
@@ -48,13 +51,23 @@ export async function writeFileUnder(
   dir: string,
   filename: string,
   content: Buffer,
-) {
+): Promise<void> {
   if (!fileExists(dir)) {
     mkdirpSync(dir);
   }
   return fileWrite(resolve(dir, filename), content);
 }
 
-export function formatRatio(ratio: number) {
-  return ratio.toString().replace(/^\d*\./, 'd');
+function fixNumber(num: number): number {
+  return Math.round((num + Number.EPSILON) * 10000) / 10000;
+}
+
+/**
+ * TODO: 可以指定保留小数点后的位数
+ * @param ratio
+ */
+export function formatRatio(ratio: number): string {
+  return fixNumber(ratio)
+    .toString()
+    .replace(/(^0*)?\./, 'd');
 }

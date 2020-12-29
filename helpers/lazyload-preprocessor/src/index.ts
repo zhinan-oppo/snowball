@@ -141,16 +141,18 @@ function createPlugin({
             0,
           );
 
+          const baseRatio: number = query.baseRatio || defaultBaseRatio;
           if (type === 'srcset') {
-            const baseRatio: number = query.baseRatio || defaultBaseRatio;
             const ratios = new Set<number>(
-              filteredMedias.map(({ ratio }) => fixNumber(ratio / maxRatio)),
+              filteredMedias.map(({ ratio }) => fixNumber(ratio / baseRatio)),
             );
-            if (baseRatio > 1) {
-              Array.from(ratios).forEach((ratio) => {
-                ratios.add(fixNumber(ratio / baseRatio));
-              });
+            for (let scale = baseRatio; scale > maxRatio; scale -= 1) {
+              ratios.add(fixNumber(scale / baseRatio));
             }
+            Array.from(ratios).forEach((ratio) => {
+              ratios.add(fixNumber(ratio / 2));
+            });
+
             attrs[dstAttr] = prepareSrcset(Array.from(ratios).sort(), {
               url,
               query,
@@ -160,9 +162,24 @@ function createPlugin({
               typeof attrs[sizesAttrName] !== 'string' &&
               typeof attrs.sizes !== 'string'
             ) {
+              const sizePresets: { [alias: string]: string } = {};
+              Object.keys(attrs).forEach((attr) => {
+                const value = attrs[attr];
+                const matches = attr.match(/^@sizes:(\S+)/);
+                if (matches && matches[1] && value) {
+                  matches[1].split('.').forEach((alias) => {
+                    if (alias) {
+                      sizePresets[alias] = value;
+                    }
+                  });
+                  if (shouldRemoveSrc) {
+                    attrs[attr] = undefined;
+                  }
+                }
+              });
               attrs[sizesAttrName] = prepareSizes({
                 url,
-                query: { exclude, baseRatio, ...query },
+                query: { exclude, baseRatio, presets: sizePresets, ...query },
               });
             }
           } else {
@@ -171,7 +188,7 @@ function createPlugin({
                 url,
                 query,
                 type,
-                ratios: [ratio / maxRatio],
+                ratios: [ratio / baseRatio],
               });
             });
           }
@@ -214,12 +231,12 @@ export function createProcessor(
     ...options
   }: Record<SrcAttrName, Partial<Omit<PluginOptions, 'srcAttrName'>>>,
   { mode = 'production' }: Partial<Options> = {},
-) {
+): (html: string, loader: webpack.loader.LoaderContext) => Promise<string> {
   const conf = Object.entries(options).map(([srcAttrName, item]) => ({
     ...item,
     srcAttrName,
   }));
-  return async (html: string, loader: webpack.loader.LoaderContext) => {
+  return async (html, loader) => {
     const { root } = getOptions(loader);
     const { html: htmlProcessed } = await posthtml(
       conf.map((options) =>

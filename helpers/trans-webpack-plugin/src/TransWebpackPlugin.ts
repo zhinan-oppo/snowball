@@ -3,7 +3,12 @@ import * as path from 'path';
 import posthtml, { PostHTML } from 'posthtml';
 import webpack from 'webpack';
 
-import { isDuplicatedOrFail, renderContent, writeToFile } from './utils';
+import {
+  isDuplicatedOrFail,
+  renderContent,
+  writeToFile,
+  terseAttributeValue,
+} from './utils';
 
 interface Options {
   namespace?: string;
@@ -225,12 +230,20 @@ export class TransWebpackPlugin implements webpack.Plugin {
     const { keyAttrName, nsAttrName, keyAttrAlias, clean } = this.options;
     const reg = new RegExp(`^${keyAttrName}:(.*)$`);
 
-    if (tag && keyAttrAlias[tag] && attrs[keyAttrName]) {
-      const name = `${keyAttrName}:${keyAttrAlias[tag]}`;
-      attrs[name] = attrs[keyAttrName];
-      attrs[keyAttrName] = undefined;
+    if (tag && keyAttrAlias[tag] && typeof attrs[keyAttrName] === 'string') {
+      const valueAttr = `${keyAttrName}:${keyAttrAlias[tag]}`;
+      const keyValue = attrs[keyAttrName];
+      // alias key do not overwrite the specified key
+      if (
+        typeof attrs[valueAttr] !== 'string' &&
+        typeof keyValue === 'string'
+      ) {
+        attrs[valueAttr] = terseAttributeValue(keyAttrName, keyValue);
+        attrs[keyAttrName] = undefined;
+      }
     }
-    const { [keyAttrName]: key, [nsAttrName]: ns } = attrs;
+
+    const { [keyAttrName]: keyAttrValue, [nsAttrName]: ns } = attrs;
     const attrKeys: Array<{ name: string; key: string; value: string }> = [];
     const attrsNormal: Record<string, string | void> = {};
     Object.keys(attrs).forEach((attr) => {
@@ -240,14 +253,18 @@ export class TransWebpackPlugin implements webpack.Plugin {
         }
         return;
       }
-      const value = attrs[attr];
       const matches = reg.exec(attr);
       if (!matches) {
-        attrsNormal[attr] = value;
+        attrsNormal[attr] = attrs[attr];
       } else {
-        if (matches[1] && typeof value === 'string') {
-          const name = matches[1];
-          attrKeys.push({ name, key: value, value: attrs[name] || '' });
+        const keyValue = attrs[attr];
+        if (matches[1] && typeof keyValue === 'string') {
+          const valueAttr = matches[1];
+          attrKeys.push({
+            name: valueAttr,
+            key: terseAttributeValue(attr, keyValue),
+            value: attrs[valueAttr] || '',
+          });
         }
         if (clean) {
           attrs[attr] = undefined;
@@ -257,8 +274,11 @@ export class TransWebpackPlugin implements webpack.Plugin {
 
     return {
       ns,
-      key,
       attrKeys,
+      key:
+        typeof keyAttrValue === 'string'
+          ? terseAttributeValue(keyAttrName, keyAttrValue)
+          : undefined,
       attrs: attrsNormal,
     };
   }

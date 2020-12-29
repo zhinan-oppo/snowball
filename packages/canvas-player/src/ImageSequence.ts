@@ -1,5 +1,10 @@
+type ImageLoader = (
+  image: HTMLImageElement,
+  i: number,
+) => Promise<HTMLImageElement>;
+
 export class ImageSequence {
-  static createFromURLs(urls: string[]) {
+  static createFromURLs(urls: string[]): ImageSequence {
     const promises: Array<Promise<HTMLImageElement> | undefined> = urls.map(
       () => undefined,
     );
@@ -21,51 +26,63 @@ export class ImageSequence {
 
   readonly length: number;
 
-  private readonly imagePromises: Promise<HTMLImageElement>[] = [];
+  private readonly imagePromises: Promise<HTMLImageElement | undefined>[] = [];
   private readonly imagesLoaded: Array<HTMLImageElement | undefined>;
+  private readonly imageLoader: ImageLoader;
 
   /**
    * @param images sorted images
    */
   constructor(
     private readonly images: HTMLImageElement[],
-    private readonly imageLoader?: (
-      image: HTMLImageElement,
-      i: number,
-    ) => Promise<HTMLImageElement>,
+    loader?: ImageLoader,
   ) {
     this.length = images.length;
     this.imagesLoaded = images.map(() => undefined);
-    this.imagePromises = images.map(
-      (image, i) =>
-        new Promise((resolve, reject) => {
-          image.addEventListener('load', () => {
-            this.imagesLoaded[i] = image;
-            resolve(image);
-          });
-          image.addEventListener('error', reject);
-        }),
-    );
+
+    this.imageLoader =
+      loader ||
+      ((image) => {
+        return new Promise(
+          (resolve: (value: HTMLImageElement) => void, reject) => {
+            image.addEventListener('load', () => {
+              resolve(image);
+            });
+            image.addEventListener('error', reject);
+          },
+        );
+      });
   }
 
   async load(): Promise<HTMLImageElement[]>;
   async load(i: number): Promise<HTMLImageElement>;
-  async load(i?: number) {
+  async load(i?: number): Promise<HTMLImageElement[] | HTMLImageElement> {
     if (i === undefined) {
       return Promise.all(this.images.map((_, i) => this.loadAt(i)));
     }
     return this.loadAt(i);
   }
 
-  getImageAt(i: number) {
+  getImageAt(i: number): HTMLImageElement | Promise<HTMLImageElement> {
     return this.imagesLoaded[i] || this.loadAt(i);
   }
 
   private loadAt(i: number) {
-    const image = this.images[i];
-    if (this.imageLoader) {
-      this.imageLoader(image, i);
+    if (this.imagePromises[i]) {
+      return this.imagePromises[i] as Promise<HTMLImageElement>;
     }
-    return this.imagePromises[i];
+
+    const image = this.images[i];
+
+    return (this.imagePromises[i] = new Promise(
+      (resolve: (value: HTMLImageElement) => void, reject) => {
+        this.imageLoader(image, i)
+          .then((loaded) => {
+            this.imagesLoaded[i] = loaded;
+            resolve(loaded);
+          })
+          .catch(reject);
+      },
+    ));
   }
 }

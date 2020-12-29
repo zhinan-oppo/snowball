@@ -3,6 +3,7 @@
     "helpers/*",
     "packages/*"
   ],
-  "version": "3.6.0",
-  "npmClient": "yarn"
+  "version": "3.23.0",
+  "npmClient": "yarn",
+  "useWorkspaces": true
 }

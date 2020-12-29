@@ -1,7 +1,7 @@
 {
-  "name": "@zhinan-oppo/shared",
+  "name": "@zhinan-oppo/load-controller",
   "version": "3.22.0",
-  "description": "Utilities",
+  "description": "资源加载控制器。",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
