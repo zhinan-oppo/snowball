@@ -1,9 +1,9 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "baseUrl": "./packages",
+    "baseUrl": ".",
     "paths": {
-      "@zhinan-oppo/*": ["*/src"]
+      "@zhinan-oppo/*": ["packages/*/src"]
     }
   },
   "exclude": ["node_modules"]

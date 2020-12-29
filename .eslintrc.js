@@ -20,5 +20,13 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'no-useless-escape': 'warn',
   },
+  overrides: [
+    {
+      files: '*.js',
+      parser: 'espree',
+      parserOptions: { ecmaVersion: '2015' },
+    },
+  ],
 };

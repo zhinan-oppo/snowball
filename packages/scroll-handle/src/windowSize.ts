@@ -1,39 +1,16 @@
-import debounce from 'lodash/debounce';
+import { WindowSize } from '@zhinan-oppo/shared';
 
-const size = Object.create(null);
+export const windowSize = WindowSize.singleton;
 
-function _getWindowHeight(): number {
-  size.height =
-    window.innerHeight ||
-    document.documentElement.clientHeight ||
-    document.body.clientHeight;
-  return size.height;
-}
-
-function _getWindowWidth(): number {
-  size.width =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth;
-  return size.width;
-}
-
-const onResize = debounce(() => {
-  _getWindowWidth();
-  _getWindowHeight();
-}, 500);
-window.addEventListener('resize', onResize);
-
-/**
- * @returns {number}
- */
 export function getWindowHeight(): number {
-  return size.height || _getWindowHeight() || 0;
+  return WindowSize.getHeight();
 }
 
-/**
- * @returns {number}
- */
-export function getWindowWidth(): number {
-  return size.width || _getWindowWidth() || 0;
+export function getWindowRect(): DOMRectInit {
+  return {
+    x: 0,
+    y: 0,
+    width: WindowSize.getWidth(),
+    height: WindowSize.getHeight(),
+  };
 }

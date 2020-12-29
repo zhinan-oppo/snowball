@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/lazyload",
-  "version": "1.4.0",
+  "version": "3.22.0",
   "description": "lazyload images and videos",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -9,19 +9,20 @@
     "lib"
   ],
   "scripts": {
-    "watch": "npm run build -- -w",
+    "watch": "yarn run build -- -w",
     "build": "rollup -c=../../rollup.config.js",
-    "prebuild": "npm run clean",
+    "prebuild": "yarn run clean",
     "clean": "rimraf -f lib"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
   "license": "MIT",
-  "dependencies": {
-    "@zhinan-oppo/scroll-handle": "^1.4.0"
-  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@zhinan-oppo/shared": "file:../shared",
+    "vanilla-lazyload": "^15.2.0"
   }
 }
