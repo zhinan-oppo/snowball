@@ -1,55 +1,88 @@
+type ImageLoader = (
+  image: HTMLImageElement,
+  i: number,
+) => Promise<HTMLImageElement>;
+
 export class ImageSequence {
+  static createFromURLs(urls: string[]): ImageSequence {
+    const promises: Array<Promise<HTMLImageElement> | undefined> = urls.map(
+      () => undefined,
+    );
+    return new ImageSequence(
+      urls.map(() => new window.Image()),
+      (img, i) =>
+        promises[i] ||
+        (promises[i] = new Promise((resolve, reject) => {
+          if (i >= 0 && i < urls.length) {
+            img.addEventListener('load', () => resolve(img));
+            img.addEventListener('error', (e) => reject(e));
+            img.src = urls[i];
+          } else {
+            reject(new Error(`Out of range [0, ${urls.length}): ${i}`));
+          }
+        })),
+    );
+  }
+
   readonly length: number;
 
-  private readonly urls: string[];
-
-  private readonly imagePromises: Promise<HTMLImageElement>[] = [];
-  private readonly images: Array<HTMLImageElement | undefined>;
+  private readonly imagePromises: Promise<HTMLImageElement | undefined>[] = [];
+  private readonly imagesLoaded: Array<HTMLImageElement | undefined>;
+  private readonly imageLoader: ImageLoader;
 
   /**
-   *
-   * @param urls ordered image URLs
+   * @param images sorted images
    */
-  constructor(urls: string[]) {
-    this.urls = urls;
-    this.length = this.urls.length;
-    this.images = this.urls.map(() => undefined);
+  constructor(
+    private readonly images: HTMLImageElement[],
+    loader?: ImageLoader,
+  ) {
+    this.length = images.length;
+    this.imagesLoaded = images.map(() => undefined);
+
+    this.imageLoader =
+      loader ||
+      ((image) => {
+        return new Promise(
+          (resolve: (value: HTMLImageElement) => void, reject) => {
+            image.addEventListener('load', () => {
+              resolve(image);
+            });
+            image.addEventListener('error', reject);
+          },
+        );
+      });
   }
 
   async load(): Promise<HTMLImageElement[]>;
   async load(i: number): Promise<HTMLImageElement>;
-  async load(i?: number) {
+  async load(i?: number): Promise<HTMLImageElement[] | HTMLImageElement> {
     if (i === undefined) {
-      return Promise.all(this.urls.map((_, i) => this.loadAt(i)));
+      return Promise.all(this.images.map((_, i) => this.loadAt(i)));
     }
     return this.loadAt(i);
   }
 
-  getImageAt(i: number) {
-    return this.images[i] || this.loadAt(i);
-  }
-
-  getImagePathAt(i: number): string | undefined {
-    return this.urls[i];
+  getImageAt(i: number): HTMLImageElement | Promise<HTMLImageElement> {
+    return this.imagesLoaded[i] || this.loadAt(i);
   }
 
   private loadAt(i: number) {
-    if (i >= 0 && i < this.length) {
-      if (!this.imagePromises[i]) {
-        this.imagePromises[i] = new Promise((resolve, reject) => {
-          const image = new window.Image();
-          image.src = this.urls[i];
-          image.onload = () => {
-            this.images[i] = image;
-            resolve(image);
-          };
-          image.onerror = e => reject(e);
-        });
-      }
-      return this.imagePromises[i];
+    if (this.imagePromises[i]) {
+      return this.imagePromises[i] as Promise<HTMLImageElement>;
     }
-    return Promise.reject(
-      new Error(`${i} is out of range: [0, ${this.length})`),
-    );
+
+    const image = this.images[i];
+
+    return (this.imagePromises[i] = new Promise(
+      (resolve: (value: HTMLImageElement) => void, reject) => {
+        this.imageLoader(image, i)
+          .then((loaded) => {
+            this.imagesLoaded[i] = loaded;
+            resolve(loaded);
+          })
+          .catch(reject);
+      },
+    ));
   }
 }

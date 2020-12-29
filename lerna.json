@@ -1,7 +1,9 @@
 {
   "packages": [
+    "helpers/*",
     "packages/*"
   ],
-  "version": "1.4.0",
-  "npmClient": "yarn"
+  "version": "3.23.0",
+  "npmClient": "yarn",
+  "useWorkspaces": true
 }

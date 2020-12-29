@@ -1,0 +1,24 @@
+{
+  "cSpell.words": [
+    "cacheable",
+    "espree",
+    "globby",
+    "infile",
+    "lazyload",
+    "oclif",
+    "oppo",
+    "posthtml",
+    "postpack",
+    "posttest",
+    "prebuild",
+    "quotepath",
+    "shrinkwrap",
+    "snowballrc",
+    "toplevel",
+    "tslib",
+    "zhinan"
+  ],
+  "[typescript]": {
+    "editor.formatOnSave": true
+  }
+}

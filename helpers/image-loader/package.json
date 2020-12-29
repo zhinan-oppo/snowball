@@ -1,0 +1,39 @@
+{
+  "name": "@zhinan-oppo/image-loader",
+  "version": "3.23.0",
+  "description": "Image loader",
+  "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "watch": "yarn run build -- -w",
+    "build": "rollup -c=../../rollup.config.js",
+    "prebuild": "yarn run clean",
+    "clean": "rimraf -f lib"
+  },
+  "repository": "https://github.com/zhinan-oppo/snowball",
+  "author": "xsfour",
+  "license": "MIT",
+  "dependencies": {
+    "imagemin": "^7.0.1",
+    "imagemin-mozjpeg": "^8.0.0",
+    "imagemin-pngquant": "^8.0.0",
+    "imagemin-svgo": "^8.0.0",
+    "imagemin-webp": "^6.0.0",
+    "loader-utils": "^1.0.0",
+    "mkdirp": "^1.0.4",
+    "schema-utils": "^2.6.6",
+    "sharp": "^0.25.2",
+    "util.promisify": "^1.0.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@types/imagemin-webp": "^5.1.1"
+  }
+}
