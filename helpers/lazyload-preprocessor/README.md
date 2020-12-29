@@ -1,3 +1,0 @@
-# Responsive Image Loader
-
-## TBD

@@ -1,6 +1,6 @@
 {
   "name": "@zhinan-oppo/sticky",
-  "version": "3.22.0",
+  "version": "1.4.0",
   "description": "A library to handle sticky position",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -9,16 +9,16 @@
     "lib"
   ],
   "scripts": {
-    "watch": "yarn run build -- -w",
+    "watch": "npm run build -- -w",
     "build": "rollup -c=../../rollup.config.js",
-    "prebuild": "yarn run clean",
+    "prebuild": "npm run clean",
     "clean": "rimraf -f lib"
   },
   "repository": "https://github.com/zhinan-oppo/snowball",
   "author": "xsfour",
   "license": "MIT",
   "dependencies": {
-    "@zhinan-oppo/scroll-handle": "file:../scroll-handle"
+    "@zhinan-oppo/scroll-handle": "^1.4.0"
   },
   "publishConfig": {
     "access": "public",
