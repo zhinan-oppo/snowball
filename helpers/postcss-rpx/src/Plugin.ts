@@ -113,6 +113,11 @@ class RPXPlugin {
   }
 
   private handleRule(rule: Rule) {
+    const declsToTransform = this.extractDeclsToTransform(rule);
+    if (declsToTransform.length < 1) {
+      return;
+    }
+
     const {
       medias: [baseMedia, ...medias],
     } = mergeOptionsByDecls({
@@ -131,7 +136,7 @@ class RPXPlugin {
      * 转换 rule.declarations 中的 rpx，
      * 并包进新建的 AtMediaRule 中
      */
-    medias
+    [baseMedia, ...medias]
       .map(({ alias, ratio, query }) => {
         const media = this.mediaMap[alias];
         return {
@@ -143,58 +148,81 @@ class RPXPlugin {
       .filter(({ ratio, query }) => ratio > 0 && query)
       .reverse() // 使得 insertAfter 之后的顺序正常
       .forEach(({ ratio, query, alias }) => {
-        const newRule = this.transformDecls(rule.clone(), ratio / baseRatio);
-        if (newRule.nodes.length > 0) {
+        const nodes = this.transformDecls(declsToTransform, ratio / baseRatio);
+        if (nodes.length > 0) {
+          const newRule = new Rule({
+            nodes,
+            source: rule.source,
+            selector: rule.selector,
+            selectors: [...rule.selectors],
+          });
           const newAtMediaRule = new AtRule({
             name: 'media',
             params: query,
             source: rule.source,
           });
-          // if (!this.options.clearOptionProps) {
-          //   newAtMediaRule.append(
-          //     new Comment({
-          //       source: newRule.source,
-          //       text: alias,
-          //     }),
-          //   );
-          // }
+          if (!this.options.clearOptionProps) {
+            newAtMediaRule.append(
+              new Comment({
+                source: rule.source,
+                text: `@${alias} ratio: ${ratio / baseRatio}`,
+                raws: {
+                  before: '\n  ',
+                  left: ' ',
+                  right: ' ',
+                },
+              }),
+            );
+          }
           newAtMediaRule.append(newRule);
 
           const { parent, container } = getParentNotAtMedia(rule);
           parent.insertAfter(container, newAtMediaRule);
         }
       });
-
-    /**
-     * 最后转换当前 rule 中的 rpx
-     */
-    this.transformDecls(rule, 1, false);
   }
 
-  private transformDecls(rule: Rule, ratio: number, removeUnmatched = true) {
-    let found = false;
-    const nodes: ChildNode[] = [];
+  private extractDeclsToTransform(rule: Rule) {
+    const decls: Declaration[] = [];
     rule.each((child) => {
       if (child.type === 'decl' && this.unitMatcher.test(child.value)) {
-        nodes.push(this.transformDecl(child, ratio));
+        // 记录
+        decls.push(child);
+
         if (!this.options.clearOptionProps) {
-          nodes.push(
+          rule.insertBefore(
+            child,
             new Comment({
-              source: rule.source,
-              text: `ratio: ${ratio}`,
+              source: child.source,
+              text: `${child.prop}: ${child.value}`,
+              raws: {
+                before: '\n\t',
+                left: ' ',
+                right: ' ',
+              },
             }),
           );
         }
-        found = true;
-      } else if (!removeUnmatched) {
-        nodes.push(child);
+
+        // 移除
+        rule.removeChild(child);
       }
     });
-    if (found || removeUnmatched) {
-      rule.nodes = nodes;
-    }
+    return decls;
+  }
 
-    return rule;
+  private transformDecls(decls: Declaration[], ratio: number) {
+    const nodes: ChildNode[] = [];
+
+    decls.forEach((decl) => {
+      decl = decl.clone();
+
+      if (this.unitMatcher.test(decl.value)) {
+        nodes.push(this.transformDecl(decl, ratio));
+      }
+    });
+
+    return nodes;
   }
 
   private transformDecl(decl: Declaration, ratio: number) {
