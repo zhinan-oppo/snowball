@@ -50,6 +50,11 @@ export interface StickyOptions {
   scrollHandlers?: Partial<ScrollHandlers>;
 
   /**
+   * scrollHandlers alias
+   */
+  handlers?: Partial<ScrollHandlers>;
+
+  /**
    * 在`position: sticky`支持的情况下也使用 fixed 模拟
    */
   forceFixed?: boolean;
@@ -95,7 +100,8 @@ export function configure<T extends keyof Configs>(
 export function initStickyElement(
   element: HTMLElement,
   {
-    scrollHandlers,
+    handlers,
+    scrollHandlers = handlers,
     passive = false,
     top: topOffset = '0',
     forceFixed = false,
