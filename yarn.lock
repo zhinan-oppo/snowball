@@ -1905,6 +1905,13 @@
     "@types/imagemin" "*"
     "@types/svgo" "*"
 
+"@types/imagemin-webp@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.npm.taobao.org/@types/imagemin-webp/download/@types/imagemin-webp-5.1.1.tgz#f20eadcd3afba5d2ee81e9a69f4f3fe3f8e50b32"
+  integrity sha1-8g6tzTr7pdLugemmn08/4/jlCzI=
+  dependencies:
+    "@types/imagemin" "*"
+
 "@types/imagemin@*", "@types/imagemin@^7.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/@types/imagemin/-/imagemin-7.0.0.tgz#cb99d719190ebe421015213733d656fac1f8af2e"
@@ -2244,7 +2251,7 @@
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
   version "3.22.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:packages/shared"
+    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.22.0-0291ad7b-1672-41ac-b583-f96c2d73fbe5-1615952046093/node_modules/@zhinan-oppo/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "3.22.0"
@@ -2266,7 +2273,7 @@
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
   version "3.22.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:packages/shared"
+    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.22.0-6a7f9449-e935-4aab-be90-9e45ea3f7044-1615952046213/node_modules/packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
@@ -2280,7 +2287,7 @@
 "@zhinan-oppo/lazyload@file:packages/lazyload":
   version "3.22.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:packages/shared"
+    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-3.22.0-ed4b7160-174f-4f5a-a974-c34b988e80d2-1615952046215/node_modules/@zhinan-oppo/shared"
     vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/postcss-rpx@file:helpers/postcss-rpx":
@@ -2292,7 +2299,7 @@
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
   version "3.24.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:packages/shared"
+    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-scroll-handle-3.24.0-d075fdbf-f1ed-43a7-a229-f7e68b75eefb-1615952046223/node_modules/@zhinan-oppo/shared"
 
 "@zhinan-oppo/shared@file:packages/shared":
   version "3.22.0"
@@ -2311,9 +2318,9 @@
     yaml "^1.10.0"
 
 "@zhinan-oppo/sticky@file:packages/sticky":
-  version "3.24.0"
+  version "3.25.0"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:packages/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.25.0-a0af8d97-2be6-4c02-a82a-bf6bcda5cb8e-1615952046270/node_modules/@zhinan-oppo/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "3.22.0"

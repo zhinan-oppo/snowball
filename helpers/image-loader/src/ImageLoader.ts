@@ -27,6 +27,7 @@ interface Options {
   svgoPlugins?: SVGO.PluginConfig[];
   webp?: Record<string, any>;
   webpOnly?: boolean;
+  lossless?: boolean;
 }
 
 type ImageInfo = {
@@ -67,6 +68,11 @@ export class ImageLoader {
       baseDataPath: 'options',
     });
 
+    if (options.lossless) {
+      if (options.webp) {
+        options.webp.lossless = true;
+      }
+    }
     this.options = options;
 
     this.logger = (loader._compilation as compilation.Compilation).getLogger(

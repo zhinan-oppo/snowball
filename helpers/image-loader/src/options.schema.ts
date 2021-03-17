@@ -72,5 +72,9 @@ export default {
       description: 'Output WebP images only.',
       type: 'boolean' as const,
     },
+    lossless: {
+      description: 'Use lossless WebP and high quality JPEG/PNG',
+      type: 'boolean' as const,
+    },
   },
 };
