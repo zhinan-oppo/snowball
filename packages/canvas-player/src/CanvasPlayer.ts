@@ -317,7 +317,17 @@ export class CanvasPlayer {
     }
 
     try {
-      this.drawImage(await image);
+      const img = await image;
+
+      // 图片加载好了
+      // 只有在当前帧未被覆盖的时候绘图，否则丢弃图片
+      if (playingState.cur === waitingAt) {
+        this.drawImage(img);
+      } else if (CanvasPlayer.DEBUG) {
+        console.info(
+          `The ${waitingAt}th image dropped because the ${playingState.cur}th image was drew`,
+        );
+      }
     } catch (e) {
       console.error(e);
     }
