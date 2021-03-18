@@ -72,7 +72,7 @@ export class CanvasPlayer {
       posterFrame = 'first',
       alpha = false,
       backgroundColor = 'black',
-      shouldClear = false,
+      shouldClear = alpha,
       defaultPlayOptions,
     }: CanvasPlayerOptions = {},
   ) {
