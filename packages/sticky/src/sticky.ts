@@ -156,6 +156,7 @@ export function initStickyElement(
           start,
           end,
           handlers: scrollHandlers,
+          forceInViewBoundary,
         });
       return {
         reset: () => undefined,
