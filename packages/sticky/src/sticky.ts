@@ -90,6 +90,27 @@ export function configure<T extends keyof Configs>(
   CONFIGS[key] = value;
 }
 
+function getScrollPlacements(
+  element: HTMLElement,
+  container: HTMLElement,
+  topPlacement: ReturnType<typeof resolveCSSPlacement>,
+) {
+  const elementRect = element.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  const topToContainer = elementRect.top - containerRect.top;
+  const start = {
+    percent: topPlacement.percent,
+    targetPercent: topPlacement.targetPercent,
+    distance: topPlacement.distance - topToContainer,
+  };
+  const end = {
+    percent: topPlacement.percent,
+    targetPercent: topPlacement.targetPercent,
+    distance: topPlacement.distance + elementRect.height,
+  };
+  return { start, end, elementRect, containerRect };
+}
+
 /**
  * 使用 sticky 布局
  * 当浏览器不支持`position: sticky`时，通过 js 模拟
@@ -106,37 +127,23 @@ export function initStickyElement(
     top: topOffset = '0',
     forceFixed = false,
   }: StickyOptions = {},
-): { destroy: () => void; reset: () => void } {
+): Promise<{ destroy: () => void; reset: () => void }> {
   const container = element.parentElement;
   if (!container) {
-    throw new Error('The element.parentElement should exist');
+    return Promise.reject(new Error('The element.parentElement should exist'));
   }
+
   const topPlacement = resolveCSSPlacement(topOffset);
   const top = typeof topOffset === 'number' ? `${topOffset}px` : topOffset;
 
-  let initialPosition: string | undefined;
-  let placeholder: HTMLDivElement | undefined;
-  let scrollListener: ScrollListener<HTMLElement> | undefined;
   const _init = () => {
+    let initialPosition: string | undefined;
+    let placeholder: HTMLDivElement | undefined;
+    let scrollListener: ScrollListener | undefined;
     if (placeholder) {
       // 隐藏 placeholder 避免影响 element rect 的计算
       placeholder.style.display = 'none';
     }
-
-    const elementRect = element.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-
-    const topToContainer = elementRect.top - containerRect.top;
-    const start = {
-      percent: topPlacement.percent,
-      targetPercent: topPlacement.targetPercent,
-      distance: topPlacement.distance - topToContainer,
-    };
-    const end = {
-      percent: topPlacement.percent,
-      targetPercent: topPlacement.targetPercent,
-      distance: topPlacement.distance + elementRect.height,
-    };
 
     // 支持原生的 sticky 时，使用原生 sticky
     // TODO: 不修改 style
@@ -144,16 +151,22 @@ export function initStickyElement(
     if (supportedSticky) {
       element.style.position = supportedSticky;
       element.style.top = top;
-      const listener =
-        scrollHandlers &&
-        addScrollListener(container, {
+      if (scrollHandlers) {
+        const { start, end } = getScrollPlacements(
+          element,
+          container,
+          topPlacement,
+        );
+        const listener = addScrollListener(container, {
           start,
           end,
           handlers: scrollHandlers,
         });
+        return { reset: () => undefined, destroy: () => listener.destroy() };
+      }
       return {
         reset: () => undefined,
-        destroy: () => listener && listener.destroy(),
+        destroy: () => undefined,
       };
     }
 
@@ -167,11 +180,11 @@ export function initStickyElement(
      * 在使用时也可以避免这种情况，故没有做相应的操作
      */
 
-    const elementStyles = window.getComputedStyle(element);
-    if (!initialPosition) {
-      initialPosition = elementStyles.position;
-    }
-
+    const { elementRect, containerRect, start, end } = getScrollPlacements(
+      element,
+      container,
+      topPlacement,
+    );
     const leftToContainer = elementRect.left - containerRect.left;
     const left = `${elementRect.left}px`;
     const width = `${elementRect.width}px`;
@@ -212,6 +225,10 @@ export function initStickyElement(
       });
     };
 
+    const elementStyles = window.getComputedStyle(element);
+    if (!initialPosition) {
+      initialPosition = elementStyles.position;
+    }
     // 当 element 使用 static/relative 定位时添加 placeholder 占位
     // 避免 element fixed 时对相邻的元素或父元素造成影响
     if (
@@ -259,27 +276,31 @@ export function initStickyElement(
         always: scrollHandlers?.always,
       },
     });
+
+    const reset = () => {
+      setStyles(element);
+      _init();
+    };
+    if (!passive) {
+      windowSize.addWidthListener(() => window.requestAnimationFrame(reset));
+    }
+
+    const destroy = (): void => {
+      if (scrollListener) {
+        scrollListener.destroy();
+        scrollListener = undefined;
+      }
+    };
+
+    return { destroy, reset };
   };
 
   element.setAttribute(CONFIGS.addedFlagAttr, CONFIGS.addedFlagAttr);
-
-  _init();
-  const reset = () => {
-    setStyles(element);
-    _init();
-  };
-  if (!passive) {
-    windowSize.addWidthListener(reset);
-  }
-
-  const destroy = (): void => {
-    if (scrollListener) {
-      scrollListener.destroy();
-      scrollListener = undefined;
-    }
-  };
-
-  return { destroy, reset };
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => {
+      resolve(_init());
+    });
+  });
 }
 
 /**
@@ -295,12 +316,12 @@ export function initBySelector(
     topAttr = CONFIGS.topAttr,
     defaults = {},
   }: StickyMarkupOptions = {},
-): { destroy: () => void; reset: () => void } {
+): Promise<{ destroy: () => void; reset: () => void }> {
   const { passive = false, top = '0' } = defaults;
-  const controllers: Array<ReturnType<typeof initStickyElement>> = [];
+  const controllerPromises: Array<ReturnType<typeof initStickyElement>> = [];
   root.querySelectorAll<HTMLElement>(selector).forEach((element) => {
     if (!element.hasAttribute(CONFIGS.addedFlagAttr)) {
-      controllers.push(
+      controllerPromises.push(
         initStickyElement(element, {
           passive: element.hasAttribute(passiveAttr) || passive,
           top: element.getAttribute(topAttr) || top,
@@ -308,15 +329,19 @@ export function initBySelector(
       );
     }
   });
-  const destroy = () => {
-    controllers.forEach(({ destroy }) => {
-      destroy();
+  return new Promise((resolve) => {
+    Promise.all(controllerPromises).then((controllers) => {
+      const destroy = () => {
+        controllers.forEach(({ destroy }) => {
+          destroy();
+        });
+      };
+      const reset = () => {
+        controllers.forEach(({ reset }) => {
+          reset();
+        });
+      };
+      resolve({ destroy, reset });
     });
-  };
-  const reset = () => {
-    controllers.forEach(({ reset }) => {
-      reset();
-    });
-  };
-  return { destroy, reset };
+  });
 }
