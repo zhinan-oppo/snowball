@@ -1,14 +1,28 @@
-export type PercentToTopAlias = keyof typeof PERCENTS;
+import { Rect } from './rect';
 
-export type PercentToTop = PercentToTopAlias | number;
+export type PercentAlias =
+  | 'bottom'
+  | 'center'
+  | 'top'
+  | 'nextPage'
+  | 'prevPage';
 
-export interface PlacementToTop {
-  percent: PercentToTop;
+export type Percent = PercentAlias | number;
+
+type Direction = 'b2t' | 't2b';
+
+export interface Placement {
+  percent: Percent;
   distance: number;
-  targetPercent: PercentToTop;
+  targetPercent: Percent;
+  /**
+   * 旧的版本没有这个属性，是按照 t2b 来计算的；
+   * 为了能够兼容，加上了这个属性
+   */
+  direction?: Direction;
 }
 
-export type Placement = Partial<PlacementToTop> | PercentToTop;
+export type PlacementOrPercent = Partial<Placement> | Percent;
 
 export interface ResolvedPlacement {
   percent: number;
@@ -16,56 +30,129 @@ export interface ResolvedPlacement {
   targetPercent: number;
 }
 
-export const PERCENTS = {
-  bottom: 1,
-  center: 0.5,
-  top: 0,
-  nextPage: 2,
-  prevPage: -1,
+const aliases = {
+  t2b: {
+    bottom: 1,
+    center: 0.5,
+    top: 0,
+    nextPage: 2,
+    prevPage: -1,
+  },
+  b2t: {
+    bottom: 0,
+    center: 0.5,
+    top: 1,
+    nextPage: -1,
+    prevPage: 2,
+  },
 };
 
-export function getPercentFromAlias(alias: PercentToTop): number {
+const DEFAULT_DIRECTION: Direction = 't2b';
+
+export function getPercentFromAlias(
+  alias: Percent,
+  direction: Direction = DEFAULT_DIRECTION,
+): number {
   if (typeof alias === 'number') {
     return alias;
   }
-  return PERCENTS[alias] || 0;
+  return aliases[direction][alias] || 0;
 }
 
-export function resolveCSSPlacement(str: string | number): ResolvedPlacement {
+function flipT2B({ percent, distance, targetPercent }: ResolvedPlacement) {
+  return {
+    percent: 1 - percent,
+    distance: -distance,
+    targetPercent: -targetPercent,
+  };
+}
+
+function b2t(placement: ResolvedPlacement, direction: Direction) {
+  return direction === 'b2t' ? placement : flipT2B(placement);
+}
+
+export function resolveCSSPlacement(
+  str: string | number,
+  direction: Direction = DEFAULT_DIRECTION,
+): ResolvedPlacement {
   if (typeof str === 'number') {
-    return { percent: 0, distance: str, targetPercent: 0 };
+    return b2t({ percent: 0, distance: str, targetPercent: 0 }, direction);
   }
-  if (Object.keys(PERCENTS).includes(str)) {
-    return {
-      percent: PERCENTS[str as keyof typeof PERCENTS],
-      distance: 0,
-      targetPercent: 0,
-    };
+  const alias = aliases[direction];
+  if (Object.keys(alias).includes(str)) {
+    return b2t(
+      {
+        percent: alias[str as keyof typeof alias],
+        distance: 0,
+        targetPercent: 0,
+      },
+      direction,
+    );
   }
   const matches = str.match(/(-?\d+(\.\d*)?)(%|px)?/i);
   if (matches) {
     if (matches[3] === '%') {
-      return {
-        percent: parseFloat(matches[1]) / 100,
-        distance: 0,
-        targetPercent: 0,
-      };
+      return b2t(
+        {
+          percent: parseFloat(matches[1]) / 100,
+          distance: 0,
+          targetPercent: 0,
+        },
+        direction,
+      );
     }
-    return { percent: 0, distance: parseFloat(matches[1]), targetPercent: 0 };
+    return b2t(
+      {
+        percent: 0,
+        distance: parseFloat(matches[1]),
+        targetPercent: 0,
+      },
+      direction,
+    );
   }
-  console.error(`Invalid sticky top: ${JSON.stringify(str)}`);
-  return { percent: 0, distance: 0, targetPercent: 0 };
+  console.error(`Invalid placement string: ${JSON.stringify(str)}`);
+  return b2t({ percent: 0, distance: 0, targetPercent: 0 }, direction);
 }
 
 export function resolvePlacement(
-  placement: Partial<PlacementToTop> | PercentToTop | string,
-  defaultAlias: keyof typeof PERCENTS = 'top',
+  placement: Partial<Placement> | Percent | string,
+  direction: Direction = DEFAULT_DIRECTION,
 ): ResolvedPlacement {
-  return typeof placement === 'string' || typeof placement === 'number'
-    ? resolveCSSPlacement(placement)
-    : {
-        percent: getPercentFromAlias(placement.percent ?? defaultAlias),
-        distance: placement.distance ?? 0,
-        targetPercent: getPercentFromAlias(placement.targetPercent ?? 0),
-      };
+  if (typeof placement === 'string' || typeof placement === 'number') {
+    return resolveCSSPlacement(placement, direction);
+  }
+
+  const percent = getPercentFromAlias(
+    placement.percent || 0,
+    placement.direction,
+  );
+  const targetPercent = getPercentFromAlias(
+    placement.targetPercent || 0,
+    placement.direction,
+  );
+  const distance = placement.distance || 0;
+  return b2t(
+    { percent, distance, targetPercent },
+    placement.direction || direction,
+  );
+}
+
+export function calcPlacement(
+  { rootRect, targetRect }: { rootRect: Rect; targetRect: Rect },
+  { percent, distance, targetPercent }: ResolvedPlacement,
+): number {
+  return (
+    rootRect.height * percent + distance + targetRect.height * targetPercent
+  );
+}
+
+export function moveResolvedPlacement(
+  from: ResolvedPlacement,
+  movement: ResolvedPlacement,
+): ResolvedPlacement {
+  return {
+    percent: from.percent + movement.percent,
+    distance: from.distance + movement.distance,
+    targetPercent: from.targetPercent + movement.targetPercent,
+  };
 }

@@ -1,4 +1,8 @@
-import { Placement, ResolvedPlacement, resolvePlacement } from './placement';
+import {
+  PlacementOrPercent,
+  ResolvedPlacement,
+  resolvePlacement,
+} from './placement';
 import { getWindowRect } from './windowSize';
 import { Rect, rectFrom } from './rect';
 
@@ -86,15 +90,15 @@ export interface Options<
   /**
    * 可视区域开始的位置
    */
-  start: Placement;
+  start: PlacementOrPercent;
 
   /**
    * 可视区域结束的位置
    */
-  end: Placement;
+  end: PlacementOrPercent;
 
-  before?: Placement;
-  after?: Placement;
+  before?: PlacementOrPercent;
+  after?: PlacementOrPercent;
   root: Window | Element;
 
   passive: boolean;

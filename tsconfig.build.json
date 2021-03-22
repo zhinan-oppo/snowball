@@ -15,5 +15,5 @@
     "declaration": true,
     "lib": ["esnext", "dom"]
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lib"]
 }
