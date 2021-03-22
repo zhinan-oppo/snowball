@@ -65,6 +65,11 @@ export interface StickyOptions {
    * 默认为`false`
    */
   passive?: boolean;
+
+  /**
+   * 传递给 addScrollListener
+   */
+  forceInViewBoundary?: boolean;
 }
 
 export interface StickyMarkupOptions {
@@ -100,6 +105,7 @@ export function configure<T extends keyof Configs>(
 export function initStickyElement(
   element: HTMLElement,
   {
+    forceInViewBoundary,
     handlers,
     scrollHandlers = handlers,
     passive = false,

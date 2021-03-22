@@ -156,7 +156,7 @@ export class ScrollListener<T extends Element> {
       after: _after,
       root = window as Window,
       passive = true,
-      forceInViewBoundary = false,
+      forceInViewBoundary = true,
       useIntersectionObserver = false,
     }: Partial<Options<T>>,
   ) {
