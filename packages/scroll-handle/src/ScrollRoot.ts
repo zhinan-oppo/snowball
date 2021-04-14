@@ -4,7 +4,13 @@ import { ScrollElement, ViewportOptions } from './ScrollElement';
 import { Viewport } from './Viewport';
 
 export type Root = Window | HTMLElement;
-type RootLike = Root | Document;
+export type RootLike = Root | Document;
+
+export type ScrollHandler = (ctx: {
+  rootRect: Rect;
+  seq: number;
+  root: Root;
+}) => void;
 
 function windowEquivalent(container: RootLike): container is Window | Document {
   return (
@@ -45,15 +51,16 @@ export class ScrollRoot {
     return root;
   }
 
-  private readonly id: string;
+  readonly id: string;
+
   private readonly element: Root;
-  private readonly elements: Array<ScrollElement<Element>> = [];
+  private readonly scrollHandlers: ScrollHandler[] = [];
   private seq = 0;
 
   private _rect?: Rect;
   private removeSizeListener?: () => void;
 
-  private scrollHandler = () => this.onScroll();
+  private handler = () => this.onScroll();
 
   private constructor(_element: RootLike) {
     if (notWindowEquivalent(_element)) {
@@ -63,10 +70,6 @@ export class ScrollRoot {
       this.element = window;
       this.id = 'window';
     }
-    this.element.addEventListener('scroll', this.scrollHandler, {
-      passive: true,
-      capture: false,
-    });
   }
 
   get rect(): Rect {
@@ -80,33 +83,46 @@ export class ScrollRoot {
      * 以及目前实际情况下直接监听 window 的 resize 事件勉强能接受，
      * 故此处依然监听 window 的 resize 事件。
      */
-    windowSize.addSizeListener(() => {
+    this.removeSizeListener = windowSize.addSizeListener(() => {
       this._rect = this.queryRect();
     });
     return this._rect;
   }
 
-  watch(
-    element: Element,
-    viewport: Viewport,
-    options: ViewportOptions<Element>,
-  ): this {
-    const scrollElement = ScrollElement.getOrAdd(element, this.id);
-    scrollElement.addViewport(viewport, options);
-    this.elements.push(scrollElement);
-    return this;
+  watch(handler: ScrollHandler): void {
+    if (this.scrollHandlers.length === 0) {
+      this.init();
+    }
+    this.scrollHandlers.push(handler);
   }
 
-  onScroll(): void {
+  unwatch(handler: ScrollHandler): void {
+    const i = this.scrollHandlers.indexOf(handler);
+    if (i >= 0) {
+      this.scrollHandlers.splice(i, 1);
+      if (this.scrollHandlers.length === 0) {
+        this.clear();
+      }
+    }
+  }
+
+  private onScroll(): void {
     const { rect } = this;
     const seq = (this.seq += 1);
-    this.elements.forEach((element) => {
-      element.onScroll({ rootRect: rect, seq, root: this.element });
+    this.scrollHandlers.forEach((handler) => {
+      handler({ rootRect: rect, seq, root: this.element });
     });
   }
 
-  destroy(): void {
-    this.element.removeEventListener('scroll', this.scrollHandler);
+  private init() {
+    this.element.addEventListener('scroll', this.handler, {
+      passive: true,
+      capture: false,
+    });
+  }
+
+  private clear(): void {
+    this.element.removeEventListener('scroll', this.handler);
     if (this.removeSizeListener) {
       this.removeSizeListener();
     }

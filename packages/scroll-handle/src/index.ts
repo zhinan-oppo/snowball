@@ -1,10 +1,10 @@
-import { PlacementOrPercent, resolvePlacement } from './placement';
+import { PlacementShort, resolvePlacement } from './placement';
 import { Rect } from './rect';
-import { ScrollRoot } from './ScrollRoot';
+import { ScrollElement } from './ScrollElement';
 import { BoundaryMode, Viewport } from './Viewport';
 
 export { windowSize } from './windowSize';
-export { resolveCSSPlacement } from './placement';
+export { resolveCSSPlacement, resolveDistance } from './placement';
 
 export type State = 'before' | 'inView' | 'after';
 
@@ -96,15 +96,15 @@ export interface Options<
   /**
    * 可视区域开始的位置
    */
-  start: PlacementOrPercent;
+  start: PlacementShort;
 
   /**
    * 可视区域结束的位置
    */
-  end: PlacementOrPercent;
+  end: PlacementShort;
 
-  before?: PlacementOrPercent;
-  after?: PlacementOrPercent;
+  before?: PlacementShort;
+  after?: PlacementShort;
   root: Window | HTMLElement;
 
   passive: boolean;
@@ -151,17 +151,18 @@ export function addScrollListener<T extends Element>(
     }
   };
 
-  const container = ScrollRoot.getOrAdd(root);
+  const scrollElement = ScrollElement.getOrAdd(element, root);
 
-  const viewport = new Viewport(
+  const viewport = Viewport.create(
     resolvePlacement(start || 'bottom', 't2b'),
     resolvePlacement(end || 'top', 't2b'),
     BoundaryMode.Both,
   );
 
   if (inView) {
-    container.watch(element, viewport, {
-      onScroll({ target, targetRect, rootRect, start, end }) {
+    scrollElement.addViewport(
+      viewport,
+      ({ target, targetRect, rootRect, start, end }) => {
         setState('inView');
 
         inView({
@@ -170,12 +171,13 @@ export function addScrollListener<T extends Element>(
           total: end - start + targetRect.height,
         });
       },
-    });
+    );
   }
 
   if (before) {
-    container.watch(element, viewport.getBefore({ percent: 1 }), {
-      onScroll({ target, targetRect, rootRect, start, end }) {
+    scrollElement.addViewport(
+      viewport.getBefore({ percent: 1 }),
+      ({ target, targetRect, rootRect, start, end }) => {
         setState('before');
 
         const total = end - start + targetRect.height;
@@ -186,12 +188,13 @@ export function addScrollListener<T extends Element>(
           distance: distance - total,
         });
       },
-    });
+    );
   }
 
   if (after) {
-    container.watch(element, viewport.getBefore({ percent: 1 }), {
-      onScroll({ target, targetRect, rootRect, start, end }) {
+    scrollElement.addViewport(
+      viewport.getBefore({ percent: 1 }),
+      ({ target, targetRect, rootRect, start, end }) => {
         setState('after');
 
         const total = end - start + targetRect.height;
@@ -202,7 +205,7 @@ export function addScrollListener<T extends Element>(
           distance: distance + total,
         });
       },
-    });
+    );
   }
 
   return {

@@ -1,7 +1,7 @@
 import {
   calcPlacement,
   moveResolvedPlacement,
-  PlacementOrPercent,
+  PlacementShort,
   ResolvedPlacement,
   resolvePlacement,
 } from './placement';
@@ -17,39 +17,60 @@ export interface ResolvedViewport {
   start: ResolvedPlacement;
   end: ResolvedPlacement;
 }
-export interface CalculatedViewport {
+export interface CalculatedViewport<T = never> {
   start: number;
   end: number;
   boundary: BoundaryMode;
+  context: T;
 }
 
-export class Viewport {
+export class Viewport<TContext = never> {
+  static create(
+    start: PlacementShort,
+    end: PlacementShort,
+    boundary?: BoundaryMode,
+    context?: undefined,
+  ): Viewport<undefined>;
+  static create<T>(
+    start: PlacementShort,
+    end: PlacementShort,
+    boundary: BoundaryMode | undefined,
+    context: T,
+  ): Viewport<T>;
+  static create<T>(...args: [any, any, any, any]): Viewport<T> {
+    return new Viewport<T>(...args);
+  }
+
   private readonly start: ResolvedPlacement;
   private readonly end: ResolvedPlacement;
 
-  constructor(
-    start: PlacementOrPercent,
-    end: PlacementOrPercent,
+  private constructor(
+    start: PlacementShort,
+    end: PlacementShort,
     readonly boundary: BoundaryMode = BoundaryMode.Both,
+    readonly context: TContext,
   ) {
     this.start = resolvePlacement(start, 'b2t');
     this.end = resolvePlacement(end, 'b2t');
   }
 
-  toCalculated(rects: Parameters<typeof calcPlacement>[0]): CalculatedViewport {
+  toCalculated(
+    rects: Parameters<typeof calcPlacement>[0],
+  ): CalculatedViewport<TContext> {
     return {
       start: calcPlacement(rects, this.start),
       end: calcPlacement(rects, this.end),
       boundary: this.boundary,
+      context: this.context,
     };
   }
 
   getBefore(
-    movement: PlacementOrPercent,
+    movement: PlacementShort,
     boundary: BoundaryMode = this.boundary === BoundaryMode.End
       ? BoundaryMode.Both
       : BoundaryMode.Start,
-  ): Viewport {
+  ): Viewport<TContext> {
     const { percent, distance, targetPercent } = resolvePlacement(
       movement,
       'b2t',
@@ -62,26 +83,28 @@ export class Viewport {
       }),
       this.start,
       boundary,
+      this.context,
     );
   }
 
   getAfter(
-    movement: PlacementOrPercent,
+    movement: PlacementShort,
     boundary: BoundaryMode = this.boundary === BoundaryMode.Start
       ? BoundaryMode.Both
       : BoundaryMode.End,
-  ): Viewport {
+  ): Viewport<TContext> {
     return new Viewport(
       this.end,
       moveResolvedPlacement(this.end, resolvePlacement(movement, 'b2t')),
       boundary,
+      this.context,
     );
   }
 
   merge(
     rects: Parameters<typeof calcPlacement>[0],
     ...viewportArray: Viewport[]
-  ): CalculatedViewport {
+  ): CalculatedViewport<TContext> {
     const start = {
       min: Number.MAX_SAFE_INTEGER,
       included: true,
@@ -120,6 +143,7 @@ export class Viewport {
           : end.included
           ? BoundaryMode.End
           : BoundaryMode.Neither,
+      context: this.context,
     };
   }
 }

@@ -1,5 +1,5 @@
 import {
-  PlacementOrPercent,
+  PlacementShort,
   ResolvedPlacement,
   resolvePlacement,
 } from './placement';
@@ -90,15 +90,15 @@ export interface Options<
   /**
    * 可视区域开始的位置
    */
-  start: PlacementOrPercent;
+  start: PlacementShort;
 
   /**
    * 可视区域结束的位置
    */
-  end: PlacementOrPercent;
+  end: PlacementShort;
 
-  before?: PlacementOrPercent;
-  after?: PlacementOrPercent;
+  before?: PlacementShort;
+  after?: PlacementShort;
   root: Window | Element;
 
   passive: boolean;

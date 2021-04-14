@@ -4,6 +4,7 @@ import {
   resolveCSSPlacement,
   ScrollListener,
   windowSize,
+  resolveDistance,
 } from '@zhinan-oppo/scroll-handle';
 
 import { getSupportedKeyword, initPlaceholder } from './util';
@@ -101,12 +102,12 @@ function getScrollPlacements(
   const start = {
     percent: topPlacement.percent,
     targetPercent: topPlacement.targetPercent,
-    distance: topPlacement.distance - topToContainer,
+    distance: () => resolveDistance(topPlacement.distance) - topToContainer,
   };
   const end = {
     percent: topPlacement.percent,
     targetPercent: topPlacement.targetPercent,
-    distance: topPlacement.distance + elementRect.height,
+    distance: () => resolveDistance(topPlacement.distance) + elementRect.height,
   };
   return { start, end, elementRect, containerRect };
 }

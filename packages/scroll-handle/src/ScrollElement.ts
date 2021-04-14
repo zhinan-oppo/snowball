@@ -1,27 +1,31 @@
 import { Rect } from './rect';
 
 import { CalculatedViewport, Viewport, BoundaryMode } from './Viewport';
-import { Root } from './ScrollRoot';
+import { Root, RootLike, ScrollRoot } from './ScrollRoot';
 
-interface HandlerParams<T extends Element> extends CalculatedViewport {
+interface HandlerParams<TContext, T extends Element>
+  extends CalculatedViewport<TContext> {
   target: T;
   targetRect: Rect;
   root: Root;
   rootRect: Rect;
+  context: TContext;
 }
-type Handler<TARGET extends Element> = (params: HandlerParams<TARGET>) => void;
+type Handler<TContext, TARGET extends Element> = (
+  params: HandlerParams<TContext, TARGET>,
+) => void;
 
-export interface ViewportOptions<TARGET extends Element> {
+export interface ViewportOptions<TContext, TARGET extends Element> {
   forceBoundary?: boolean;
-  onScroll: Handler<TARGET>;
+  onScroll: Handler<TContext, TARGET>;
 }
 
-interface ViewportWithOptions<TARGET extends Element> {
-  viewport: Viewport;
-  options: ViewportOptions<TARGET>;
+interface ViewportWithOptions<TContext, TARGET extends Element> {
+  viewport: Viewport<TContext>;
+  options: ViewportOptions<TContext, TARGET>;
 }
 
-export class ScrollElement<T extends Element> {
+export class ScrollElement<T extends Element = Element> {
   /**
    * The attribute name of the scroll element ID;
    * 'data-scroll-ele-id' by default.
@@ -29,41 +33,70 @@ export class ScrollElement<T extends Element> {
   static ATTR_ID = 'data-scroll-ele-id';
 
   private static elementCnt = 0;
-  private static readonly elements: Record<string, ScrollElement<Element>> = {};
+  private static readonly elements: WeakMap<
+    ScrollRoot,
+    WeakMap<Element, ScrollElement>
+  > = new WeakMap();
 
   static getOrAdd<T extends Element>(
     _element: T,
-    rootID: string,
+    _root?: RootLike,
   ): ScrollElement<T> {
-    const id = _element.getAttribute(ScrollElement.ATTR_ID);
-    if (id && this.elements[id]) {
-      return (this.elements[id] as unknown) as ScrollElement<T>;
+    const root = ScrollRoot.getOrAdd(_root);
+    const elementMap = this.elements.get(root);
+
+    const foundInRoot = elementMap && elementMap.get(_element);
+    if (foundInRoot) {
+      return (foundInRoot as unknown) as ScrollElement<T>;
     }
 
-    const element = new ScrollElement(_element, rootID);
-    this.elements[element.id] = (element as unknown) as ScrollElement<Element>;
-    return element;
+    const element = (new ScrollElement(
+      _element,
+      root,
+    ) as unknown) as ScrollElement;
+    if (elementMap) {
+      elementMap.set(_element, element);
+    } else {
+      const map: WeakMap<Element, ScrollElement> = new WeakMap();
+      map.set(_element, element);
+      this.elements.set(root, map);
+    }
+    return (element as unknown) as ScrollElement<T>;
   }
 
   private readonly id: string;
 
   private lastSeq = 0;
-  private viewportArray: ViewportWithOptions<T>[] = [];
+  private viewportArray: ViewportWithOptions<any, T>[] = [];
+  private handler = (...args: Parameters<ScrollElement['onScroll']>) =>
+    this.onScroll(...args);
 
-  constructor(private readonly element: T, rootID: string) {
+  constructor(private readonly element: T, private readonly root: ScrollRoot) {
     this.id = (ScrollElement.elementCnt += 1).toString();
-    element.setAttribute(ScrollElement.ATTR_ID, `${rootID}-${this.id}`);
+    element.setAttribute(ScrollElement.ATTR_ID, `${root.id}-${this.id}`);
+
+    root.watch(this.handler);
   }
 
   get rect(): Rect {
     return this.element.getBoundingClientRect();
   }
 
-  addViewport(viewport: Viewport, options: ViewportOptions<T>): void {
-    this.viewportArray.push({
-      viewport,
-      options,
-    });
+  addViewport<TContext>(
+    viewport: Viewport<TContext>,
+    onScroll: Handler<TContext, T>,
+  ): this {
+    this.viewportArray.push({ viewport, options: { onScroll } });
+    return this;
+  }
+
+  destroy(): void {
+    const map = ScrollElement.elements.get(this.root);
+    if (map) {
+      map.delete(this.element);
+    }
+    this.viewportArray = [];
+    this.root.unwatch(this.handler);
   }
 
   /**
@@ -74,7 +107,7 @@ export class ScrollElement<T extends Element> {
    * 现在的 before 或 after 应该会影响到优化的可能性
    * @param param0
    */
-  onScroll({
+  private onScroll({
     rootRect,
     seq,
     root,

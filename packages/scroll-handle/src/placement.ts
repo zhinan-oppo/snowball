@@ -11,9 +11,11 @@ export type Percent = PercentAlias | number;
 
 type Direction = 'b2t' | 't2b';
 
+type Distance = number | (() => number);
+
 export interface Placement {
   percent: Percent;
-  distance: number;
+  distance: Distance;
   targetPercent: Percent;
   /**
    * 旧的版本没有这个属性，是按照 t2b 来计算的；
@@ -22,15 +24,15 @@ export interface Placement {
   direction?: Direction;
 }
 
-export type PlacementOrPercent = Partial<Placement> | Percent;
+export type PlacementShort = Partial<Placement> | Percent | Distance;
+export type PlacementOrPercent = PlacementShort;
 
-export interface ResolvedPlacement {
+export interface ResolvedPlacement extends Pick<Placement, 'distance'> {
   percent: number;
-  distance: number;
   targetPercent: number;
 }
 
-const aliases = {
+const aliases: { [K in Direction]: { [K in PercentAlias]: number } } = {
   t2b: {
     bottom: 1,
     center: 0.5,
@@ -115,11 +117,15 @@ export function resolveCSSPlacement(
 }
 
 export function resolvePlacement(
-  placement: Partial<Placement> | Percent | string,
+  placement: PlacementShort,
   direction: Direction = DEFAULT_DIRECTION,
 ): ResolvedPlacement {
   if (typeof placement === 'string' || typeof placement === 'number') {
     return resolveCSSPlacement(placement, direction);
+  }
+
+  if (typeof placement === 'function') {
+    return { percent: 0, targetPercent: 0, distance: placement };
   }
 
   const percent = getPercentFromAlias(
@@ -137,13 +143,16 @@ export function resolvePlacement(
   );
 }
 
+export function resolveDistance(distance: Placement['distance']): number {
+  return typeof distance === 'function' ? distance() : distance;
+}
+
 export function calcPlacement(
   { rootRect, targetRect }: { rootRect: Rect; targetRect: Rect },
   { percent, distance, targetPercent }: ResolvedPlacement,
 ): number {
-  return (
-    rootRect.height * percent + distance + targetRect.height * targetPercent
-  );
+  const dist = typeof distance === 'function' ? distance() : distance;
+  return rootRect.height * percent + dist + targetRect.height * targetPercent;
 }
 
 export function moveResolvedPlacement(
@@ -152,7 +161,8 @@ export function moveResolvedPlacement(
 ): ResolvedPlacement {
   return {
     percent: from.percent + movement.percent,
-    distance: from.distance + movement.distance,
+    distance: () =>
+      resolveDistance(from.distance) + resolveDistance(movement.distance),
     targetPercent: from.targetPercent + movement.targetPercent,
   };
 }
