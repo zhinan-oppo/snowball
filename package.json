@@ -54,6 +54,7 @@
     "webpack": "^4.43.0"
   },
   "dependencies": {
+    "@strman/scroll": "file:packages/scroll",
     "@zhinan-oppo/attr-resolver": "file:packages/attr-resolver",
     "@zhinan-oppo/canvas-player": "file:packages/canvas-player",
     "@zhinan-oppo/image-loader": "file:helpers/image-loader",
@@ -62,10 +63,8 @@
     "@zhinan-oppo/lazyload-preprocessor": "file:helpers/lazyload-preprocessor",
     "@zhinan-oppo/postcss-rpx": "file:helpers/postcss-rpx",
     "@zhinan-oppo/postcss-unit2var": "file:helpers/postcss-unit2var",
-    "@zhinan-oppo/scroll-handle": "file:packages/scroll-handle",
     "@zhinan-oppo/shared": "file:packages/shared",
     "@zhinan-oppo/snowball-cli": "file:helpers/cli",
-    "@zhinan-oppo/sticky": "file:packages/sticky",
     "@zhinan-oppo/trans-webpack-plugin": "file:helpers/trans-webpack-plugin"
   },
   "resolutions": {

@@ -26,23 +26,16 @@ interface ViewportWithOptions<TContext, TARGET extends Element> {
 }
 
 export class ScrollElement<T extends Element = Element> {
-  /**
-   * The attribute name of the scroll element ID;
-   * 'data-scroll-ele-id' by default.
-   */
-  static ATTR_ID = 'data-scroll-ele-id';
-
-  private static elementCnt = 0;
   private static readonly elements: WeakMap<
     ScrollRoot,
-    WeakMap<Element, ScrollElement>
+    WeakMap<Element, ScrollElement<any>>
   > = new WeakMap();
 
-  static getOrAdd<T extends Element>(
+  static obtain<T extends Element>(
     _element: T,
-    _root?: RootLike,
+    _root: RootLike = window,
   ): ScrollElement<T> {
-    const root = ScrollRoot.getOrAdd(_root);
+    const root = ScrollRoot.obtain(_root);
     const elementMap = this.elements.get(root);
 
     const foundInRoot = elementMap && elementMap.get(_element);
@@ -50,31 +43,26 @@ export class ScrollElement<T extends Element = Element> {
       return (foundInRoot as unknown) as ScrollElement<T>;
     }
 
-    const element = (new ScrollElement(
-      _element,
-      root,
-    ) as unknown) as ScrollElement;
+    const element = new ScrollElement(_element, root);
     if (elementMap) {
       elementMap.set(_element, element);
     } else {
-      const map: WeakMap<Element, ScrollElement> = new WeakMap();
+      const map: WeakMap<Element, ScrollElement<any>> = new WeakMap();
       map.set(_element, element);
       this.elements.set(root, map);
     }
-    return (element as unknown) as ScrollElement<T>;
+    return element;
   }
-
-  private readonly id: string;
 
   private lastSeq = 0;
   private viewportArray: ViewportWithOptions<any, T>[] = [];
   private handler = (...args: Parameters<ScrollElement['onScroll']>) =>
     this.onScroll(...args);
 
-  constructor(private readonly element: T, private readonly root: ScrollRoot) {
-    this.id = (ScrollElement.elementCnt += 1).toString();
-    element.setAttribute(ScrollElement.ATTR_ID, `${root.id}-${this.id}`);
-
+  private constructor(
+    private readonly element: T,
+    private readonly root: ScrollRoot,
+  ) {
     root.watch(this.handler);
   }
 

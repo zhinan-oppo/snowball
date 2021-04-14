@@ -1,7 +1,5 @@
 import { windowSize, getWindowRect } from './windowSize';
 import { Rect, rectFrom } from './rect';
-import { ScrollElement, ViewportOptions } from './ScrollElement';
-import { Viewport } from './Viewport';
 
 export type Root = Window | HTMLElement;
 export type RootLike = Root | Document;
@@ -26,32 +24,15 @@ function notWindowEquivalent(container: RootLike): container is HTMLElement {
 }
 
 export class ScrollRoot {
-  /**
-   * The attribute name of the scroll root ID;
-   * 'data-scroll-root-id' by default.
-   */
-  static ATTR_ID = 'data-scroll-root-id';
+  private static readonly roots: WeakMap<Root, ScrollRoot> = new WeakMap();
 
-  private static rootCnt = 0;
-  private static readonly roots: Record<string, ScrollRoot> = Object.create(
-    null,
-  );
+  static obtain(element: RootLike = window): ScrollRoot {
+    if (windowEquivalent(element)) {
+      element = window;
+    }
 
-  static getOrAdd(element: RootLike = window): ScrollRoot {
-    let root: ScrollRoot;
-    if (notWindowEquivalent(element)) {
-      const id = element.getAttribute(ScrollRoot.ATTR_ID);
-      root = (id && this.roots[id]) || new ScrollRoot(element);
-    } else {
-      root = this.roots.window || new ScrollRoot(element);
-    }
-    if (!this.roots[root.id]) {
-      this.roots[root.id] = root;
-    }
-    return root;
+    return this.roots.get(element) || new ScrollRoot(element);
   }
-
-  readonly id: string;
 
   private readonly element: Root;
   private readonly scrollHandlers: ScrollHandler[] = [];
@@ -62,13 +43,11 @@ export class ScrollRoot {
 
   private handler = () => this.onScroll();
 
-  private constructor(_element: RootLike) {
+  private constructor(_element: Root) {
     if (notWindowEquivalent(_element)) {
       this.element = _element;
-      this.id = (ScrollRoot.rootCnt += 1).toString();
     } else {
       this.element = window;
-      this.id = 'window';
     }
   }
 
@@ -81,7 +60,7 @@ export class ScrollRoot {
      * FIXME: 实际上当 root 不是 window 时，应该使用 ResizeObserver。
      * 但 ResizeObserver 兼容性不佳，
      * 以及目前实际情况下直接监听 window 的 resize 事件勉强能接受，
-     * 故此处依然监听 window 的 resize 事件。
+     * 故此处依然监听 window 的 resize 事件。TODO: 增加 ResizeObserver
      */
     this.removeSizeListener = windowSize.addSizeListener(() => {
       this._rect = this.queryRect();
@@ -106,7 +85,7 @@ export class ScrollRoot {
     }
   }
 
-  private onScroll(): void {
+  onScroll(): void {
     const { rect } = this;
     const seq = (this.seq += 1);
     this.scrollHandlers.forEach((handler) => {
@@ -115,6 +94,10 @@ export class ScrollRoot {
   }
 
   private init() {
+    /**
+     * TODO: 可以设置 AddEventListenerOptions
+     * 目前一个 root 只会有一个 ScrollRoot 实例，也不好加
+     */
     this.element.addEventListener('scroll', this.handler, {
       passive: true,
       capture: false,

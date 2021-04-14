@@ -1,5 +1,5 @@
 {
-  "name": "@zhinan-oppo/scroll-handle",
+  "name": "@strman/scroll",
   "version": "3.24.0",
   "description": "A library to handle scroll event of browser. Apply custom callback when scolling into elements like inView event.",
   "main": "lib/index.js",
