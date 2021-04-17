@@ -1,9 +1,9 @@
+import { sortViewportEnd, sortViewportStart } from './helpers';
 import { Rect } from './rect';
+import { Root, RootLike, ScrollRoot, ScrollRootHandler } from './ScrollRoot';
+import { BoundaryMode, CalculatedViewport, Viewport } from './Viewport';
 
-import { CalculatedViewport, Viewport, BoundaryMode } from './Viewport';
-import { Root, RootLike, ScrollRoot } from './ScrollRoot';
-
-interface HandlerParams<TContext, T extends Element>
+export interface HandlerParams<TContext, T extends Element>
   extends CalculatedViewport<TContext> {
   target: T;
   targetRect: Rect;
@@ -31,6 +31,10 @@ export class ScrollElement<T extends Element = Element> {
     WeakMap<Element, ScrollElement<any>>
   > = new WeakMap();
 
+  /**
+   * 如果存在一个绑定在`element`上并以`root`作为`ScrollRoot`的
+   * `ScrollElement`实例则返回该实例，否则新建一个实例并返回
+   */
   static obtain<T extends Element>(
     _element: T,
     _root: RootLike = window,
@@ -72,9 +76,9 @@ export class ScrollElement<T extends Element = Element> {
 
   addViewport<TContext>(
     viewport: Viewport<TContext>,
-    onScroll: Handler<TContext, T>,
+    callback: Handler<TContext, T>,
   ): this {
-    this.viewportArray.push({ viewport, options: { onScroll } });
+    this.viewportArray.push({ viewport, options: { onScroll: callback } });
     return this;
   }
 
@@ -88,22 +92,14 @@ export class ScrollElement<T extends Element = Element> {
   }
 
   /**
-   * 在一个回调函数中迭代调用其他回调，
-   * 实际上能否有优化效果是未知的...
-   *
    * TODO: 或许可以通过一些信息省略一部分回调操作
-   * 现在的 before 或 after 应该会影响到优化的可能性
-   * @param param0
    */
   private onScroll({
     rootRect,
     seq,
     root,
-  }: {
-    rootRect: Rect;
-    seq: number;
-    root: Root;
-  }): void {
+    direction,
+  }: Parameters<ScrollRootHandler>[0]): void {
     if (this.lastSeq === seq) {
       return undefined;
     }
@@ -113,13 +109,17 @@ export class ScrollElement<T extends Element = Element> {
     const sorted = this.viewportArray
       .map(({ viewport, options }) => {
         return {
-          viewport: viewport.toCalculated({ targetRect, rootRect }),
           options,
+          viewport: viewport.toCalculated({ targetRect, rootRect }),
         };
       })
-      .sort((a, b) => {
-        return a.viewport.start - b.viewport.end;
-      });
+      .sort(
+        /**
+         * 正常向下浏览时，按 start 位置从前到后排
+         * 回滚向上浏览时，按  end  位置从后到前排
+         */
+        direction > 0 ? sortViewportStart : sortViewportEnd,
+      );
 
     window.requestAnimationFrame(() => {
       sorted.forEach(({ viewport, options: { onScroll } }) => {

@@ -1,13 +1,20 @@
-import { windowSize, getWindowRect } from './windowSize';
 import { Rect, rectFrom } from './rect';
+import { getWindowRect, windowSize } from './windowSize';
 
 export type Root = Window | HTMLElement;
 export type RootLike = Root | Document;
 
-export type ScrollHandler = (ctx: {
+export type ScrollRootHandler = (ctx: {
   rootRect: Rect;
   seq: number;
   root: Root;
+  scrollTop: number;
+  /**
+   * 由两次 scrollTop 差值计算而来，
+   * > 0: 页面内容在向上移动（正常浏览）
+   * < 0: 页面内容在向下移动（回滚）
+   */
+  direction: number;
 }) => void;
 
 function windowEquivalent(container: RootLike): container is Window | Document {
@@ -26,6 +33,10 @@ function notWindowEquivalent(container: RootLike): container is HTMLElement {
 export class ScrollRoot {
   private static readonly roots: WeakMap<Root, ScrollRoot> = new WeakMap();
 
+  /**
+   * 如果存在一个绑定在`element`上的`ScrollRoot`实例则返回该实例，
+   * 否则新建一个实例并返回
+   */
   static obtain(element: RootLike = window): ScrollRoot {
     if (windowEquivalent(element)) {
       element = window;
@@ -35,11 +46,13 @@ export class ScrollRoot {
   }
 
   private readonly element: Root;
-  private readonly scrollHandlers: ScrollHandler[] = [];
+  private readonly scrollHandlers: ScrollRootHandler[] = [];
   private seq = 0;
+  private lastScrollTop = 0;
 
   private _rect?: Rect;
   private removeSizeListener?: () => void;
+  private resizeObserver?: ResizeObserver;
 
   private handler = () => this.onScroll();
 
@@ -56,26 +69,40 @@ export class ScrollRoot {
       return this._rect;
     }
     this._rect = this.queryRect();
+
     /**
-     * FIXME: 实际上当 root 不是 window 时，应该使用 ResizeObserver。
-     * 但 ResizeObserver 兼容性不佳，
-     * 以及目前实际情况下直接监听 window 的 resize 事件勉强能接受，
-     * 故此处依然监听 window 的 resize 事件。TODO: 增加 ResizeObserver
+     * 当 ResizeObserver 不被支持时，只好用 window 的 resize 事件替代
      */
-    this.removeSizeListener = windowSize.addSizeListener(() => {
-      this._rect = this.queryRect();
-    });
+    if (window.ResizeObserver && this.element instanceof Element) {
+      this.resizeObserver = new window.ResizeObserver(() => {
+        this._rect = this.queryRect();
+      });
+      this.resizeObserver.observe(this.element, {
+        box: 'content-box',
+      });
+    } else {
+      this.removeSizeListener = windowSize.addSizeListener(() => {
+        this._rect = this.queryRect();
+      });
+    }
     return this._rect;
   }
 
-  watch(handler: ScrollHandler): void {
+  get scrollTop(): number {
+    if (this.element instanceof Window) {
+      return this.element.scrollY;
+    }
+    return this.element.scrollTop;
+  }
+
+  watch(handler: ScrollRootHandler): void {
     if (this.scrollHandlers.length === 0) {
       this.init();
     }
     this.scrollHandlers.push(handler);
   }
 
-  unwatch(handler: ScrollHandler): void {
+  unwatch(handler: ScrollRootHandler): void {
     const i = this.scrollHandlers.indexOf(handler);
     if (i >= 0) {
       this.scrollHandlers.splice(i, 1);
@@ -86,10 +113,17 @@ export class ScrollRoot {
   }
 
   onScroll(): void {
-    const { rect } = this;
+    const { rect, scrollTop, element, lastScrollTop } = this;
     const seq = (this.seq += 1);
+    const direction = scrollTop - lastScrollTop;
     this.scrollHandlers.forEach((handler) => {
-      handler({ rootRect: rect, seq, root: this.element });
+      handler({
+        seq,
+        direction,
+        root: element,
+        rootRect: rect,
+        scrollTop: scrollTop,
+      });
     });
   }
 
@@ -108,6 +142,9 @@ export class ScrollRoot {
     this.element.removeEventListener('scroll', this.handler);
     if (this.removeSizeListener) {
       this.removeSizeListener();
+    }
+    if (this.element instanceof Element && this.resizeObserver) {
+      this.resizeObserver.unobserve(this.element);
     }
   }
 
