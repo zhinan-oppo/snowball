@@ -2245,7 +2245,7 @@
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
   version "3.22.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.22.0-eec16d49-cebc-4d3b-bffa-0b995437e0ae-1618424932841/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "3.27.0"
@@ -2267,7 +2267,7 @@
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
   version "3.22.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.22.0-c5a7f244-8d85-44a9-a093-abed4bee7293-1618424932968/node_modules/packages/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
@@ -2281,7 +2281,7 @@
 "@zhinan-oppo/lazyload@file:packages/lazyload":
   version "3.22.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-lazyload-3.22.0-9ff586dc-fe5b-486c-b3a5-75da8e91c336-1618424932971/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
     vanilla-lazyload "^15.2.0"
 
 "@zhinan-oppo/postcss-rpx@file:helpers/postcss-rpx":
@@ -2293,7 +2293,7 @@
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
   version "3.28.0"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-scroll-handle-3.28.0-2e2806af-ab36-4e73-97d8-14862d0693fb-1618424932979/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/shared@file:packages/shared":
   version "3.22.0"
@@ -2314,7 +2314,7 @@
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "3.28.1"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.28.1-0e5d8535-e401-4f0f-a7ed-d648c10a65fb-1618424933027/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:packages/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "3.22.0"
@@ -3625,10 +3625,10 @@ color@^3.0.0, color@^3.1.2:
     color-convert "^1.9.1"
     color-string "^1.5.2"
 
-colorette@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/colorette/-/colorette-1.2.1.tgz#4d0b921325c14faf92633086a536db6e89564b1b"
-  integrity sha512-puCDz0CzydiSYOrnXpz/PKd69zRrribezjtE9yd4zvytoRc8+RY/KJPvtPFKZS3E3wP6neGyMe0vOTlHO5L3Pw==
+colorette@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/colorette/-/colorette-1.2.2.tgz#cbcc79d5e99caea2dbf10eb3a26fd8b3e6acfa94"
+  integrity sha512-MKGMzyfeuutC/ZJ1cba9NqcNpfeqMUcYmyF1ZFY6/Cn7CNSAKx6a+s48sqLqyAiZuaP2TcqMhoo+dlwFnVxT9w==
 
 colors@^1.1.2:
   version "1.4.0"
@@ -7368,14 +7368,6 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-line-column@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/line-column/-/line-column-1.0.2.tgz#d25af2936b6f4849172b312e4792d1d987bc34a2"
-  integrity sha1-0lryk2tvSEkXKzEuR5LR2Ye8NKI=
-  dependencies:
-    isarray "^1.0.0"
-    isobject "^2.0.0"
-
 lines-and-columns@^1.1.6:
   version "1.1.6"
   resolved "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
@@ -8130,10 +8122,10 @@ nan@^2.12.1:
   resolved "https://registry.npm.taobao.org/nan/download/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha1-eBj3IgJ7JFmobwKV1DTR/CM2xSw=
 
-nanoid@^3.1.16:
-  version "3.1.16"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.16.tgz#b21f0a7d031196faf75314d7c65d36352beeef64"
-  integrity sha512-+AK8MN0WHji40lj8AEuwLOvLSbWYApQpre/aFJZD71r43wVRLrOYS4FmJOPQYon1TqB462RzrrxlfA74XRES8w==
+nanoid@^3.1.22:
+  version "3.1.23"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.23.tgz#f744086ce7c2bc47ee0a8472574d5c78e4183a81"
+  integrity sha512-FiB0kzdP0FFVGDKlRLEQ1BgDzU87dy5NnzjeW9YZNt+/c3+q82EQDUwniSAUxp/F0gFNI1ZhKU1FqYsMuqZVnw==
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -9478,13 +9470,12 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.11, postcss@^7.0.14, postcss@^7.0.1
     supports-color "^6.1.0"
 
 postcss@^8.1.7:
-  version "8.1.7"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.1.7.tgz#ff6a82691bd861f3354fd9b17b2332f88171233f"
-  integrity sha512-llCQW1Pz4MOPwbZLmOddGM9eIJ8Bh7SZ2Oj5sxZva77uVaotYDsYTch1WBTNu7fUY0fpWp0fdt7uW40D4sRiiQ==
+  version "8.2.10"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.2.10.tgz#ca7a042aa8aff494b334d0ff3e9e77079f6f702b"
+  integrity sha512-b/h7CPV7QEdrqIxtAf2j31U5ef05uBDuvoXv6L51Q4rcS1jdlXAVKJv+atCFdUXYl9dyTHGyoMzIepwowRJjFw==
   dependencies:
-    colorette "^1.2.1"
-    line-column "^1.0.2"
-    nanoid "^3.1.16"
+    colorette "^1.2.2"
+    nanoid "^3.1.22"
     source-map "^0.6.1"
 
 posthtml-parser@^0.4.0, posthtml-parser@^0.4.1, posthtml-parser@^0.4.2:
