@@ -1,6 +1,6 @@
 import Lazy, { ILazyLoadOptions } from 'vanilla-lazyload';
 
-import { matchMedia, Media } from '@zhinan-oppo/shared';
+import { matchMedia, Media, Size } from '@zhinan-oppo/shared';
 import { getDataAttrName, isImage, isVideo } from './utils';
 import { Exception } from './Exception';
 
@@ -179,8 +179,8 @@ class LazyLoad {
     return this.lazyload.update(elements);
   };
 
-  refresh(windowWidth?: number): void {
-    const media = this.matchMedia(windowWidth);
+  refresh(windowSize?: Size): void {
+    const media = this.matchMedia(windowSize);
     if (!this.destroyed && media === this.media) {
       return;
     }
@@ -194,8 +194,8 @@ class LazyLoad {
     this.destroyed = true;
   }
 
-  private matchMedia(windowWidth?: number) {
-    return matchMedia(this.options.medias, windowWidth);
+  private matchMedia(windowSize?: Size) {
+    return matchMedia(this.options.medias, windowSize);
   }
 
   private getLazy(media = this.matchMedia()) {

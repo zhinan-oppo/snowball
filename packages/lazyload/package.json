@@ -22,7 +22,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@zhinan-oppo/shared": "file:../shared",
     "vanilla-lazyload": "^15.2.0"
+  },
+  "peerDependencies": {
+    "@zhinan-oppo/shared": "^3.22.0"
   }
 }
