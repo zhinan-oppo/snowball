@@ -28,6 +28,7 @@ interface Options {
   webp?: Record<string, any>;
   webpOnly?: boolean;
   lossless?: boolean;
+  noWebp?: boolean;
 }
 
 type ImageInfo = {
@@ -93,6 +94,7 @@ export class ImageLoader {
       input,
       webp: webpOptions,
       webpOnly = false,
+      noWebp = false,
     } = this.options;
 
     const img = sharp(source);
@@ -226,7 +228,10 @@ export class ImageLoader {
             });
             images.push(image);
 
-            if (image.content.byteLength < imageWebP.content.byteLength) {
+            if (
+              noWebp ||
+              image.content.byteLength < imageWebP.content.byteLength
+            ) {
               image.noCode = false;
               imageWebP.noCode = true;
             } else {

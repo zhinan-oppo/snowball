@@ -76,5 +76,9 @@ export default {
       description: 'Use lossless WebP and high quality JPEG/PNG',
       type: 'boolean' as const,
     },
+    noWebp: {
+      description: "Don't use WebP format",
+      type: 'boolean' as const,
+    },
   },
 };
