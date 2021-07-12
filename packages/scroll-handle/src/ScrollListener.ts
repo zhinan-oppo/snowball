@@ -191,6 +191,7 @@ export class ScrollListener<T extends Element> {
       this.observer = undefined;
     }
     this.root.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('resize', this.handleScroll);
   }
 
   private get state() {
@@ -246,6 +247,8 @@ export class ScrollListener<T extends Element> {
     if (this.observer) {
       this.observer.disconnect();
     }
+
+    window.addEventListener('resize', this.handleScroll, { passive: true });
 
     const { root, rootMargin } = this;
     if (__DEBUG__) {
@@ -380,7 +383,6 @@ export class ScrollListener<T extends Element> {
       this.root.addEventListener('scroll', this.handleScroll, {
         passive: true,
       });
-      window.addEventListener('resize', this.handleScroll, { passive: true });
       this.handleScroll();
     }
   }
