@@ -6,6 +6,11 @@ declare const __DEBUG__: boolean;
 
 export type State = 'before' | 'inView' | 'after';
 
+type PlacementCalculator = (options: {
+  targetRect: Rect;
+  rootRect: Rect;
+}) => number;
+
 interface BoundaryY {
   start: number;
   end: number;
@@ -72,9 +77,13 @@ export interface Handlers<
   always?: Handler<T, TRoot>;
 }
 
-interface Placements {
-  start: ResolvedPlacement;
-  end: ResolvedPlacement;
+interface Placements<
+  T extends ResolvedPlacement | PlacementCalculator =
+    | ResolvedPlacement
+    | PlacementCalculator
+> {
+  start: T;
+  end: T;
 }
 
 export interface Options<
@@ -86,17 +95,22 @@ export interface Options<
   /**
    * 可视区域开始的位置
    */
-  start: Placement;
+  start: Placement | PlacementCalculator;
 
   /**
    * 可视区域结束的位置
    */
-  end: Placement;
+  end: Placement | PlacementCalculator;
 
   before?: Placement;
   after?: Placement;
   root: Window | Element;
 
+  /**
+   * 该参数对应 addEventListener 中的 passive:
+   *
+   * {@link https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener#%E4%BD%BF%E7%94%A8_passive_%E6%94%B9%E5%96%84%E7%9A%84%E6%BB%9A%E5%B1%8F%E6%80%A7%E8%83%BD 使用 passive 改善的滚屏性能}
+   */
   passive: boolean;
 
   /**
@@ -111,6 +125,11 @@ export interface Options<
    * 暂时不可用
    */
   useIntersectionObserver: boolean;
+
+  /**
+   * 自定义 rootRect 计算方法
+   */
+  calcRootRect: () => Rect;
 }
 
 export class ScrollListener<T extends Element> {
@@ -119,6 +138,10 @@ export class ScrollListener<T extends Element> {
     options: Partial<Options<T>>,
   ): ScrollListener<T> {
     return new ScrollListener<T>(element, options);
+  }
+
+  static getViewportRect(): Rect {
+    return rectFrom(getWindowRect());
   }
 
   private readonly options: Pick<
@@ -133,8 +156,10 @@ export class ScrollListener<T extends Element> {
 
   private placementsInView: Placements;
 
-  private placementsActive: Placements;
+  private placementsActive: Placements<ResolvedPlacement>;
   private _targetRect?: Rect;
+
+  private calcRootRect: () => Rect;
   private _rootRect?: Rect;
 
   private observer?: IntersectionObserver;
@@ -158,15 +183,24 @@ export class ScrollListener<T extends Element> {
       passive = true,
       forceInViewBoundary = true,
       useIntersectionObserver = false,
+      calcRootRect = () =>
+        root instanceof Window
+          ? ScrollListener.getViewportRect()
+          : root.getBoundingClientRect(),
     }: Partial<Options<T>>,
   ) {
     this.root = root;
     this.target = target;
     this.handlers = handlers;
+    this.calcRootRect = calcRootRect;
     this.options = { passive, forceInViewBoundary, useIntersectionObserver };
 
-    const start = resolvePlacement(_start, 'bottom');
-    const end = resolvePlacement(_end, 'top');
+    const start =
+      typeof _start === 'function'
+        ? _start
+        : resolvePlacement(_start, 'bottom');
+    const end =
+      typeof _end === 'function' ? _end : resolvePlacement(_end, 'top');
     this.placementsInView = {
       start,
       end,
@@ -194,6 +228,20 @@ export class ScrollListener<T extends Element> {
     window.removeEventListener('resize', this.handleScroll);
   }
 
+  get targetRect(): Rect {
+    if (!this._targetRect) {
+      this._targetRect = this.target.getBoundingClientRect();
+    }
+    return this._targetRect;
+  }
+
+  get rootRect(): Rect {
+    if (!this._rootRect) {
+      this._rootRect = this.calcRootRect();
+    }
+    return this._rootRect;
+  }
+
   private get state() {
     return this._state;
   }
@@ -201,23 +249,6 @@ export class ScrollListener<T extends Element> {
     const oldState = this._state;
     this._state = state;
     this.onStateChange(state, oldState);
-  }
-
-  private get targetRect(): Rect {
-    if (!this._targetRect) {
-      this._targetRect = this.target.getBoundingClientRect();
-    }
-    return this._targetRect;
-  }
-
-  private get rootRect(): Rect {
-    if (!this._rootRect) {
-      this._rootRect =
-        this.root === window
-          ? rectFrom(getWindowRect())
-          : (this.root as Element).getBoundingClientRect();
-    }
-    return this._rootRect;
   }
 
   private get rootMargin(): string {
@@ -239,8 +270,12 @@ export class ScrollListener<T extends Element> {
   }
 
   private get boundaryYInView() {
-    const { start, end } = this.placementsInView;
-    return { start: this.calcPlacement(start), end: this.calcPlacement(end) };
+    const { start: _start, end: _end } = this.placementsInView;
+    const start =
+      typeof _start === 'function' ? _start(this) : this.calcPlacement(_start);
+    const end =
+      typeof _end === 'function' ? _end(this) : this.calcPlacement(_end);
+    return { start, end };
   }
 
   private init() {

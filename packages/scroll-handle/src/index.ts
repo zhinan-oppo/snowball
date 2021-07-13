@@ -6,6 +6,8 @@ import {
   State,
 } from './ScrollListener';
 
+export * from './rect';
+
 export { windowSize } from './windowSize';
 export { resolveCSSPlacement } from './placement';
 export { ScrollListener, StdHandler, StdHandlers };
