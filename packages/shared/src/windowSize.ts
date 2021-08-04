@@ -23,8 +23,8 @@ interface Listeners {
   height: LengthListener[];
   size: SizeListener[];
 }
-type LengthListener = (n?: number, o?: number) => void;
-type SizeListener = (nSize: Partial<Size>, oSize: Partial<Size>) => void;
+type LengthListener = (n: number, o: number) => void;
+type SizeListener = (nSize: Size, oSize: Size) => void;
 type Remover = () => void;
 
 function removeElementFrom<T>(arr: T[]) {
@@ -62,7 +62,8 @@ export class WindowSize {
     return this.singleton.addHeightListener(callback);
   }
 
-  private readonly size: Partial<Size> = Object.create(null);
+  private readonly size: Size = { width: 0, height: 0 };
+
   private readonly listeners: Listeners = {
     width: [],
     height: [],
@@ -124,6 +125,7 @@ export class WindowSize {
     this.listeners.height.push(callback);
     return () => this.removeHeightHandler(callback);
   }
+
   /**
    * 当 width 或 height 变化时被调用
    * @param {(size: Size, oldSize: Size) => void} callback
