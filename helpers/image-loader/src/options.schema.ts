@@ -80,5 +80,10 @@ export default {
       description: "Don't use WebP format",
       type: 'boolean' as const,
     },
+    noWebpIfExpanded: {
+      description:
+        "Don't use WebP format if transformed WebP file size is larger",
+      type: 'boolean' as const,
+    },
   },
 };
