@@ -6,6 +6,19 @@ export default {
       min: 0,
       max: 1,
     },
+    Ratios: {
+      description: 'The ratio(s) to scale images',
+      anyOf: [
+        { $ref: '#/definitions/Ratio' },
+        {
+          type: 'array' as const,
+          minLength: 1,
+          items: {
+            $ref: '#/definitions/Ratio',
+          },
+        },
+      ],
+    },
   },
   additionalProperties: true,
   type: 'object' as const,
@@ -20,13 +33,8 @@ export default {
         'By default, image-loader generates JS modules that use the ES modules syntax.',
       type: 'boolean' as const,
     },
-    ratios: {
-      type: 'array' as const,
-      minLength: 1,
-      items: {
-        $ref: '#/definitions/Ratio',
-      },
-    },
+    ratios: { $ref: '#/definitions/Ratios' },
+    ratio: { $ref: '#/definitions/Ratios' },
     type: {
       enum: ['src', 'srcset'],
     },

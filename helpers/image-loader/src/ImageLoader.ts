@@ -3,6 +3,7 @@ import png from 'imagemin-pngquant';
 import svg from 'imagemin-svgo';
 import webp from 'imagemin-webp';
 import { getOptions, interpolateName, parseQuery } from 'loader-utils';
+import merge from 'lodash/merge';
 import * as path from 'path';
 import validate from 'schema-utils';
 import sharp from 'sharp';
@@ -12,8 +13,9 @@ import { compilation, loader, Logger } from 'webpack';
 import schema from './options.schema';
 import { formatRatio, readIfDirExists, writeFileUnder } from './utils';
 
-interface Options {
-  ratios?: number[];
+interface OptionsWithAlias {
+  ratios?: number[] | number;
+  ratio?: number[] | number; // alias of ratios
   name?: string | ((path: string, query?: string) => string);
   type?: 'src' | 'srcset';
   esModule?: boolean;
@@ -32,12 +34,21 @@ interface Options {
   noWebpIfExpanded?: boolean;
 }
 
+type Options = Omit<OptionsWithAlias, 'ratio' | 'ratios'> & {
+  ratios?: number[];
+};
+
 type ImageInfo = {
   filename: string;
   content: Buffer;
   width: number;
   noCode?: boolean;
 };
+
+function resolveOptionsAlias(optionsWithAlias: OptionsWithAlias): Options {
+  const { ratio, ratios = ratio, ...options } = optionsWithAlias;
+  return { ratios: typeof ratios === 'number' ? [ratios] : ratios, ...options };
+}
 
 export class ImageLoader {
   static async load(
@@ -58,12 +69,13 @@ export class ImageLoader {
   private readonly logger: Logger;
 
   constructor(private readonly loader: loader.LoaderContext) {
-    const globalOptions = (getOptions(loader) as Options) || {};
-    const options = Object.assign(
-      {},
-      globalOptions,
-      loader.resourceQuery && parseQuery(loader.resourceQuery),
+    const globalOptions = resolveOptionsAlias(getOptions(loader) || {});
+
+    const queryOptions = resolveOptionsAlias(
+      (loader.resourceQuery && parseQuery(loader.resourceQuery)) || {},
     );
+
+    const options = merge({}, globalOptions, queryOptions);
 
     validate(schema, options, {
       name: ImageLoader.name,
