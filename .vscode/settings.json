@@ -16,6 +16,7 @@
     "snowballrc",
     "toplevel",
     "tslib",
+    "webp",
     "zhinan"
   ],
   "[typescript]": {

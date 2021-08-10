@@ -20,10 +20,11 @@ interface OptionsWithAlias {
   type?: 'src' | 'srcset';
   esModule?: boolean;
   quality?: number;
+  qualityRaw?: number; // 压缩得到的 jpg/png 质量，默认同 quality
   qualityMin?: number;
   progressive?: boolean;
-  output?: string;
-  input?: string;
+  output?: string; // 缓存写入文件夹
+  input?: string; // 缓存读取文件夹
   errorInputNotFound?: boolean;
   context?: string;
   svgoPlugins?: SVGO.PluginConfig[];
@@ -46,8 +47,19 @@ type ImageInfo = {
 };
 
 function resolveOptionsAlias(optionsWithAlias: OptionsWithAlias): Options {
-  const { ratio, ratios = ratio, ...options } = optionsWithAlias;
-  return { ratios: typeof ratios === 'number' ? [ratios] : ratios, ...options };
+  const {
+    ratio,
+    ratios = ratio,
+    quality,
+    qualityRaw = quality,
+    ...options
+  } = optionsWithAlias;
+  return {
+    ratios: typeof ratios === 'number' ? [ratios] : ratios,
+    quality,
+    qualityRaw,
+    ...options,
+  };
 }
 
 export class ImageLoader {
@@ -99,7 +111,8 @@ export class ImageLoader {
       name = '[path][name]_[width]@[ratio]-[md5:contenthash:hex:6].[ext]',
       ratios = [1],
       quality = 100,
-      qualityMin = quality,
+      qualityRaw = quality,
+      qualityMin = qualityRaw,
       progressive = false,
       context = this.loader.rootContext,
       errorInputNotFound = false,
@@ -150,7 +163,7 @@ export class ImageLoader {
 
     const filename = interpolateName(
       this.loader,
-      `[path][name].[ext]/[sha1:contenthash:hex:24]/${qualityMin}-${quality}.[ext]`,
+      `[path][name].[ext]/[sha1:contenthash:hex:24]/${quality}(${qualityMin}-${qualityRaw}).[ext]`,
       { content: source, context },
     );
     const parsed = path.parse(filename);
@@ -158,9 +171,9 @@ export class ImageLoader {
     const outputDir = output && path.resolve(output, parsed.dir, parsed.name);
 
     let pngPlugin: ReturnType<typeof png> | undefined;
-    if (format === 'png' && quality <= 100) {
+    if (format === 'png' && qualityRaw <= 100) {
       pngPlugin = png({
-        quality: [qualityMin / 100, quality / 100],
+        quality: [qualityMin / 100, qualityRaw / 100],
         strip: true,
       });
     }
@@ -188,7 +201,7 @@ export class ImageLoader {
               plugins: [webp({ ...(webpOptions || {}), quality })],
             })
           : !pngPlugin
-          ? await resized.jpeg({ quality, progressive }).toBuffer()
+          ? await resized.jpeg({ quality: qualityRaw, progressive }).toBuffer()
           : await imagemin.buffer(await resized.toBuffer(), {
               plugins: [pngPlugin],
             });

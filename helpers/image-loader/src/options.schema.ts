@@ -43,6 +43,12 @@ export default {
       min: 50,
       max: 100,
     },
+    qualityRaw: {
+      description: '压缩得到的 jpg/png 质量，默认同 quality',
+      type: 'number' as const,
+      min: 10,
+      max: 100,
+    },
     qualityMin: {
       type: 'number' as const,
       min: 50,
