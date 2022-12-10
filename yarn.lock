@@ -1442,7 +1442,7 @@
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
   version "3.30.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.30.1-8fc171ea-c3db-44a6-ad1b-5ec5826a9900-1655168286528/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "3.27.0"
@@ -1464,7 +1464,7 @@
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
   version "3.30.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.30.1-4874608d-0afd-4203-9e7e-9517bf80c6ee-1655168288782/node_modules/packages/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
@@ -1489,7 +1489,7 @@
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
   version "3.30.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-scroll-handle-3.30.1-8a3f2eee-4341-4067-89f0-01465fb7d1c2-1655168288785/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/shared@file:packages/shared":
   version "3.30.1"
@@ -1510,7 +1510,7 @@
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "3.30.1"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.30.1-23331897-4c42-45a9-93a6-96303b33c2c0-1655168288806/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:packages/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "3.22.0"
@@ -7670,9 +7670,9 @@ qqjs@^0.3.10:
     write-json-file "^4.1.1"
 
 qs@~6.5.2:
-  version "6.5.2"
-  resolved "https://registry.npm.taobao.org/qs/download/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
-  integrity sha1-yzroBuh0BERYTvFUzo7pjUA/PjY=
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.3.tgz#3aeeffc91967ef6e35c0e488ef46fb296ab76aad"
+  integrity sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==
 
 query-string@^5.0.1:
   version "5.1.1"
