@@ -1442,7 +1442,7 @@
 "@zhinan-oppo/attr-resolver@file:packages/attr-resolver":
   version "3.30.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-attr-resolver-3.30.1-8fc171ea-c3db-44a6-ad1b-5ec5826a9900-1655168286528/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/canvas-player@file:packages/canvas-player":
   version "3.27.0"
@@ -1464,7 +1464,7 @@
 "@zhinan-oppo/image-sizes-loader@file:helpers/image-sizes-loader":
   version "3.30.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-image-sizes-loader-3.30.1-4874608d-0afd-4203-9e7e-9517bf80c6ee-1655168288782/node_modules/packages/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
     image-size "^0.8.3"
     loader-utils "^1.0.0"
     schema-utils "^2.6.6"
@@ -1489,7 +1489,7 @@
 "@zhinan-oppo/scroll-handle@file:packages/scroll-handle":
   version "3.30.1"
   dependencies:
-    "@zhinan-oppo/shared" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-scroll-handle-3.30.1-8a3f2eee-4341-4067-89f0-01465fb7d1c2-1655168288785/node_modules/@zhinan-oppo/shared"
+    "@zhinan-oppo/shared" "file:packages/shared"
 
 "@zhinan-oppo/shared@file:packages/shared":
   version "3.30.1"
@@ -1510,7 +1510,7 @@
 "@zhinan-oppo/sticky@file:packages/sticky":
   version "3.30.1"
   dependencies:
-    "@zhinan-oppo/scroll-handle" "file:../../../Library/Caches/Yarn/v6/npm-@zhinan-oppo-sticky-3.30.1-23331897-4c42-45a9-93a6-96303b33c2c0-1655168288806/node_modules/@zhinan-oppo/scroll-handle"
+    "@zhinan-oppo/scroll-handle" "file:packages/scroll-handle"
 
 "@zhinan-oppo/trans-webpack-plugin@file:helpers/trans-webpack-plugin":
   version "3.22.0"
@@ -6443,19 +6443,14 @@ minimist-options@^3.0.1:
     is-plain-obj "^1.1.0"
 
 minimist@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.2.1.tgz#827ba4e7593464e7c221e8c5bed930904ee2c455"
-  integrity sha512-GY8fANSrTMfBVfInqJAY41QkOM+upUTytK1jZ0c8+3HdHrJxBJ3rF5i9moClXTE8uUSnUo8cAsCoxDXvSY4DHg==
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.2.4.tgz#0085d5501e29033748a2f2a4da0180142697a475"
+  integrity sha512-Pkrrm8NjyQ8yVt8Am9M+yUt74zE3iokhzbG1bFVNjLB92vwM71hf40RkEsryg98BujhVOncKm/C1xROxZ030LQ==
 
-minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.npm.taobao.org/minimist/download/minimist-1.2.5.tgz?cache=0&sync_timestamp=1584051509720&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fminimist%2Fdownload%2Fminimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
-  integrity sha1-Z9ZgFLZqaoqqDAg8X9WN9OTpdgI=
-
-minimist@^1.2.3:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
-  integrity sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==
+minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.3, minimist@^1.2.5:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
+  integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
 minipass@^2.3.5, minipass@^2.6.0, minipass@^2.9.0:
   version "2.9.0"
